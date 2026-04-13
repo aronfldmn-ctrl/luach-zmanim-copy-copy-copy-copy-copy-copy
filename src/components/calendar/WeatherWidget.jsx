@@ -192,6 +192,70 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
     );
   }
 
+  // Combined: current conditions + hourly breakdown
+  if (effectiveView === "combined") {
+    return (
+      <div className="bg-card border border-border rounded-lg overflow-hidden">
+        {/* Header */}
+        <div className="px-5 pt-4 pb-3 border-b border-border/60">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-heading font-semibold text-foreground">{t("Weather", HEB_UI.weather)}</h3>
+            <span className="text-xs text-muted-foreground font-body">{location.name}</span>
+          </div>
+          {/* Current conditions */}
+          <div className="flex items-center gap-4">
+            <WeatherIcon className={`h-12 w-12 ${info.color}`} />
+            <div>
+              <p className="text-4xl font-heading font-bold text-foreground">{weather.current.temp}°F</p>
+              <p className="text-sm text-muted-foreground font-body">{t(info.label, info.labelHeb)}</p>
+            </div>
+            <div className="ml-auto flex flex-col gap-1.5 text-right">
+              <div className="flex items-center gap-1.5 justify-end text-xs font-body text-muted-foreground">
+                <Thermometer className="h-3.5 w-3.5 text-orange-400" />
+                <span>{t("Feels", "מורגש")} {weather.current.feelsLike}°</span>
+              </div>
+              <div className="flex items-center gap-1.5 justify-end text-xs font-body text-muted-foreground">
+                <Wind className="h-3.5 w-3.5 text-blue-400" />
+                <span>{weather.current.wind} mph</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Hourly breakdown */}
+        <div className="px-4 py-3">
+          <p className="text-[10px] font-body text-muted-foreground uppercase tracking-wider mb-2">{t("Today · Hour by Hour", "היום · שעה אחר שעה")}</p>
+          <div className="space-y-0.5 max-h-[280px] overflow-y-auto pr-1">
+            {weather.hourly.length === 0 ? (
+              <p className="text-xs text-muted-foreground font-body text-center py-3">{t("No data", "אין נתונים")}</p>
+            ) : weather.hourly.map((h, i) => {
+              const HourIcon = getWeatherInfo(h.code).icon;
+              const hourColor = getWeatherInfo(h.code).color;
+              const isNow = i === 0;
+              return (
+                <div key={i} className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-body ${isNow ? "bg-accent/10 border border-accent/20" : "hover:bg-muted/30"}`}>
+                  <span className={`w-12 flex-shrink-0 tabular-nums ${isNow ? "font-semibold text-accent" : "text-muted-foreground"}`}>
+                    {isNow ? t("Now", "עכשיו") : format(h.time, "h a")}
+                  </span>
+                  <HourIcon className={`h-3.5 w-3.5 flex-shrink-0 ${hourColor}`} />
+                  <span className={`font-semibold w-10 flex-shrink-0 ${isNow ? "text-accent" : "text-foreground"}`}>{h.temp}°</span>
+                  <div className="flex items-center gap-1 text-muted-foreground">
+                    <Droplets className="h-3 w-3 text-blue-400" />
+                    <span>{h.precip}%</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-muted-foreground ml-auto">
+                    <Wind className="h-3 w-3 text-slate-400" />
+                    <span>{h.wind}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Daily (default full card): current + 7-day
   return (
     <div className={embedded ? "p-4" : "bg-card border border-border rounded-lg p-5"}>
