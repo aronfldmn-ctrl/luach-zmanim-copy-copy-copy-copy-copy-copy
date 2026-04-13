@@ -1,7 +1,7 @@
 import React from "react";
 import { format } from "date-fns";
 import { getHebrewDate, getJewishHoliday, isShabbat, isFriday } from "@/lib/hebrewDateUtils";
-import { useSettings, ALL_ZMANIM } from "@/lib/settingsContext";
+import { useSettings, ALL_ZMANIM, HEB_UI } from "@/lib/settingsContext";
 import { useZmanim } from "@/lib/useZmanim";
 import { Sunrise, Sun, Sunset, Flame, Moon, Star, Clock } from "lucide-react";
 import ZmanimPanel from "./ZmanimPanel";

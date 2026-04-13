@@ -3,20 +3,22 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
 import { format } from "date-fns";
 import { getHebrewDate } from "@/lib/hebrewDateUtils";
-import { useSettings } from "@/lib/settingsContext";
+import { useSettings, HEB_UI } from "@/lib/settingsContext";
 import SettingsPanel from "./SettingsPanel";
 import WeatherWidget from "./WeatherWidget";
 
 const VIEW_OPTIONS = [
-  { key: "day", label: "Day" },
-  { key: "week", label: "Week" },
-  { key: "month", label: "Month" },
-  { key: "year", label: "Year" },
+  { key: "day", labelEn: "Day", labelHeb: HEB_UI.day },
+  { key: "week", labelEn: "Week", labelHeb: HEB_UI.week },
+  { key: "month", labelEn: "Month", labelHeb: HEB_UI.month },
+  { key: "year", labelEn: "Year", labelHeb: HEB_UI.year },
 ];
 
 export default function CalendarHeader({ currentDate, view, onViewChange, onNavigate, onToday }) {
   const hebrewDate = getHebrewDate(currentDate);
-  const { location, showWeather } = useSettings();
+  const { location, showWeather, hebrewMode } = useSettings();
+
+  const t = (en, heb) => hebrewMode ? heb : en;
 
   const getTitle = () => {
     if (view === "day") return format(currentDate, "EEEE, MMMM d, yyyy");
@@ -56,9 +58,10 @@ export default function CalendarHeader({ currentDate, view, onViewChange, onNavi
                 variant={view === opt.key ? "default" : "ghost"}
                 size="sm"
                 onClick={() => onViewChange(opt.key)}
-                className="font-body text-sm"
+                className="font-body text-sm focus:ring-2 focus:ring-primary"
+                tabIndex={0}
               >
-                {opt.label}
+                {t(opt.labelEn, opt.labelHeb)}
               </Button>
             ))}
           </div>
@@ -68,13 +71,33 @@ export default function CalendarHeader({ currentDate, view, onViewChange, onNavi
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" onClick={() => onNavigate(-1)} className="h-8 w-8">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => onNavigate(-1)}
+            className="h-8 w-8 focus:ring-2 focus:ring-primary"
+            tabIndex={0}
+            aria-label={t("Previous", "הקודם")}
+          >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <Button variant="outline" size="sm" onClick={onToday} className="font-body text-xs h-8 px-3">
-            Today
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onToday}
+            className="font-body text-xs h-8 px-3 focus:ring-2 focus:ring-primary"
+            tabIndex={0}
+          >
+            {t("Today", HEB_UI.today)}
           </Button>
-          <Button variant="outline" size="icon" onClick={() => onNavigate(1)} className="h-8 w-8">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => onNavigate(1)}
+            className="h-8 w-8 focus:ring-2 focus:ring-primary"
+            tabIndex={0}
+            aria-label={t("Next", "הבא")}
+          >
             <ChevronRight className="h-4 w-4" />
           </Button>
           {showWeather && (
@@ -91,16 +114,17 @@ export default function CalendarHeader({ currentDate, view, onViewChange, onNavi
               variant={view === opt.key ? "default" : "ghost"}
               size="sm"
               onClick={() => onViewChange(opt.key)}
-              className="font-body text-xs px-2 h-8"
+              className="font-body text-xs px-2 h-8 focus:ring-2 focus:ring-primary"
+              tabIndex={0}
             >
-              {opt.label}
+              {t(opt.labelEn, opt.labelHeb)}
             </Button>
           ))}
         </div>
       </div>
 
       <div className="text-xs text-muted-foreground font-body opacity-60">
-        Zmanim for {location.name} · Times are approximate
+        {t("Zmanim for", HEB_UI.zmanim_for)} {location.name} · {t("Times are approximate", HEB_UI.times_approx)}
       </div>
     </div>
   );

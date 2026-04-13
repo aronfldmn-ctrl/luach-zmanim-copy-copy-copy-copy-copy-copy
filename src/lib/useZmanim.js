@@ -10,18 +10,18 @@ const EMPTY_ZMANIM = {
 };
 
 export function useZmanim(date) {
-  const { location } = useSettings();
+  const { location, candleLightingMinutes } = useSettings();
   const [zmanim, setZmanim] = useState(EMPTY_ZMANIM);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
-    fetchZmanim(date, location.lat, location.lng, location.tzid)
+    fetchZmanim(date, location.lat, location.lng, location.tzid, candleLightingMinutes)
       .then((z) => { setZmanim(z); setLoading(false); })
       .catch(() => setLoading(false));
   }, [
     date.getFullYear(), date.getMonth(), date.getDate(),
-    location.lat, location.lng
+    location.lat, location.lng, candleLightingMinutes
   ]);
 
   return { zmanim, loading };

@@ -2,20 +2,32 @@ import React from "react";
 import { format, startOfWeek, addDays, isSameDay } from "date-fns";
 import { getHebrewDate, getJewishHoliday, isShabbat, isFriday } from "@/lib/hebrewDateUtils";
 import { useWeekZmanim } from "@/lib/useWeekZmanim";
+import { useSettings, HEB_UI } from "@/lib/settingsContext";
 import { Star, Flame, Sunrise, Sunset } from "lucide-react";
 import { cn } from "@/lib/utils";
+import WeatherWidget from "./WeatherWidget";
+
+const DAY_LABELS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Shabbat"];
+const DAY_LABELS_HEB = [HEB_UI.sun, HEB_UI.mon, HEB_UI.tue, HEB_UI.wed, HEB_UI.thu, HEB_UI.fri, HEB_UI.shabbat];
 
 export default function WeekView({ date, onDateSelect }) {
   const weekStart = startOfWeek(date, { weekStartsOn: 0 });
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
   const today = new Date();
   const zmanimMap = useWeekZmanim(date);
+  const { showWeather, hebrewMode, candleLightingMinutes } = useSettings();
+
+  const t = (en, heb) => hebrewMode ? heb : en;
+  const dayLabels = hebrewMode ? DAY_LABELS_HEB : DAY_LABELS_EN;
 
   return (
     <div className="space-y-3">
+      {/* Weekly weather banner */}
+      {showWeather && <WeatherWidget weekly />}
+
       <div className="grid grid-cols-7 gap-2">
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Shabbat"].map((d) => (
-          <div key={d} className="text-center text-xs font-body font-medium text-muted-foreground uppercase tracking-wider py-2">
+        {dayLabels.map((d, i) => (
+          <div key={i} className="text-center text-xs font-body font-medium text-muted-foreground uppercase tracking-wider py-2">
             {d}
           </div>
         ))}
@@ -36,7 +48,7 @@ export default function WeekView({ date, onDateSelect }) {
               key={day.toISOString()}
               onClick={() => onDateSelect(day)}
               className={cn(
-                "flex flex-col rounded-lg border p-2 md:p-3 min-h-[140px] md:min-h-[180px] transition-all text-left hover:shadow-md",
+                "flex flex-col rounded-lg border p-2 md:p-3 min-h-[140px] md:min-h-[180px] transition-all text-left hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary",
                 isSelected ? "border-primary bg-primary/5 shadow-md" : "border-border bg-card hover:border-primary/30",
                 isToday && !isSelected && "border-accent",
                 shabbat && "bg-secondary/50"
@@ -70,9 +82,14 @@ export default function WeekView({ date, onDateSelect }) {
                   <span>{zmanim.sunset || "..."}</span>
                 </div>
                 {friday && (
-                  <div className="flex items-center gap-1 text-[10px] text-accent font-body font-medium">
-                    <Flame className="h-2.5 w-2.5" />
-                    <span>{zmanim.candleLighting || "..."}</span>
+                  <div className="flex flex-col gap-0.5">
+                    <div className="flex items-center gap-1 text-[10px] text-accent font-body font-medium">
+                      <Flame className="h-2.5 w-2.5 flex-shrink-0" />
+                      <span>{zmanim.candleLighting || "..."}</span>
+                    </div>
+                    <span className="text-[9px] text-muted-foreground font-body pl-3.5">
+                      {t(`${candleLightingMinutes} min before sunset`, `${candleLightingMinutes} דק' לפני שקיעה`)}
+                    </span>
                   </div>
                 )}
               </div>

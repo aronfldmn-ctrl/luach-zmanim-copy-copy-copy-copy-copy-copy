@@ -1,10 +1,9 @@
 import React, { useState, useRef } from "react";
-import { Settings, X, MapPin, Search, Loader2 } from "lucide-react";
+import { Settings, X, MapPin, Search, Loader2, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
-import { useSettings, ALL_ZMANIM } from "@/lib/settingsContext";
-import { base44 } from "@/api/base44Client";
+import { useSettings, ALL_ZMANIM, HEB_UI } from "@/lib/settingsContext";
 
 export default function SettingsPanel() {
   const [open, setOpen] = useState(false);
@@ -18,7 +17,11 @@ export default function SettingsPanel() {
     zmanimVisible, setZmanimVisible,
     showZmanim, setShowZmanim,
     showWeather, setShowWeather,
+    candleLightingMinutes, setCandleLightingMinutes,
+    hebrewMode, setHebrewMode,
   } = useSettings();
+
+  const t = (en, heb) => hebrewMode ? heb : en;
 
   const handleCitySearch = (val) => {
     setCitySearch(val);
@@ -35,7 +38,7 @@ export default function SettingsPanel() {
           name: d.display_name.split(",").slice(0, 3).join(","),
           lat: parseFloat(d.lat),
           lng: parseFloat(d.lon),
-          tzid: Intl.DateTimeFormat().resolvedOptions().timeZone, // will be refined on select
+          tzid: Intl.DateTimeFormat().resolvedOptions().timeZone,
         })));
       } catch {
         setSearchResults([]);
@@ -46,7 +49,6 @@ export default function SettingsPanel() {
   };
 
   const handleSelectCity = async (result) => {
-    // Try to get timezone from timezonefinder API
     let tzid = Intl.DateTimeFormat().resolvedOptions().timeZone;
     try {
       const tzRes = await fetch(
@@ -64,9 +66,21 @@ export default function SettingsPanel() {
     setZmanimVisible({ ...zmanimVisible, [key]: !zmanimVisible[key] });
   };
 
+  const adjustCandle = (delta) => {
+    const next = Math.max(1, Math.min(60, candleLightingMinutes + delta));
+    setCandleLightingMinutes(next);
+  };
+
   if (!open) {
     return (
-      <Button variant="outline" size="icon" onClick={() => setOpen(true)} className="h-9 w-9" title="Settings">
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={() => setOpen(true)}
+        className="h-9 w-9 focus:ring-2 focus:ring-primary"
+        title={t("Settings", HEB_UI.settings)}
+        tabIndex={0}
+      >
         <Settings className="h-4 w-4" />
       </Button>
     );
@@ -74,13 +88,11 @@ export default function SettingsPanel() {
 
   return (
     <div className="fixed inset-0 z-50 flex">
-      {/* Backdrop */}
       <div className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
 
-      {/* Panel */}
       <div className="relative ml-auto w-full max-w-sm bg-card border-l border-border shadow-2xl flex flex-col h-full overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-          <h2 className="font-heading font-semibold text-lg">Settings</h2>
+          <h2 className="font-heading font-semibold text-lg">{t("Settings", HEB_UI.settings)}</h2>
           <Button variant="ghost" size="icon" onClick={() => setOpen(false)}>
             <X className="h-4 w-4" />
           </Button>
@@ -88,10 +100,29 @@ export default function SettingsPanel() {
 
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-7">
 
+          {/* Language */}
+          <section>
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-body font-semibold text-sm text-muted-foreground uppercase tracking-wider">
+                  {t("Language", HEB_UI.language)}
+                </h3>
+                <p className="text-xs text-muted-foreground font-body mt-0.5">
+                  {t("Switch to Hebrew UI", "עברית")}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-body text-muted-foreground">EN</span>
+                <Switch checked={hebrewMode} onCheckedChange={setHebrewMode} />
+                <span className="text-xs font-body text-muted-foreground">עב</span>
+              </div>
+            </div>
+          </section>
+
           {/* Location */}
           <section>
             <h3 className="font-body font-semibold text-sm text-muted-foreground uppercase tracking-wider mb-3">
-              Location
+              {t("Location", HEB_UI.location)}
             </h3>
             <div className="flex items-center gap-2 mb-3 p-3 bg-muted rounded-lg">
               <MapPin className="h-4 w-4 text-accent flex-shrink-0" />
@@ -106,7 +137,7 @@ export default function SettingsPanel() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <Input
-                  placeholder="Search city..."
+                  placeholder={t("Search city...", HEB_UI.search_city)}
                   value={citySearch}
                   onChange={(e) => handleCitySearch(e.target.value)}
                   className="pl-9 text-sm font-body h-9"
@@ -119,7 +150,7 @@ export default function SettingsPanel() {
                     <button
                       key={i}
                       onClick={() => handleSelectCity(r)}
-                      className="w-full text-left px-3 py-2.5 text-sm font-body hover:bg-muted border-b border-border/50 last:border-0 transition-colors"
+                      className="w-full text-left px-3 py-2.5 text-sm font-body hover:bg-muted border-b border-border/50 last:border-0 transition-colors focus:outline-none focus:bg-muted"
                     >
                       {r.name}
                     </button>
@@ -129,24 +160,58 @@ export default function SettingsPanel() {
             </div>
           </section>
 
+          {/* Candle Lighting Minutes */}
+          <section>
+            <h3 className="font-body font-semibold text-sm text-muted-foreground uppercase tracking-wider mb-3">
+              {t("Candle Lighting", HEB_UI.candle_lighting_minutes)}
+            </h3>
+            <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8 flex-shrink-0"
+                onClick={() => adjustCandle(-1)}
+                tabIndex={0}
+              >
+                <Minus className="h-3.5 w-3.5" />
+              </Button>
+              <div className="flex-1 text-center">
+                <p className="text-2xl font-heading font-bold text-foreground">{candleLightingMinutes}</p>
+                <p className="text-xs text-muted-foreground font-body">{t("minutes before sunset", "דק' לפני שקיעה")}</p>
+              </div>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8 flex-shrink-0"
+                onClick={() => adjustCandle(1)}
+                tabIndex={0}
+              >
+                <Plus className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground font-body mt-2 text-center">
+              {t("Common: 18 min (Ashkenaz), 40 min (Yerushalayim)", "נהוג: 18 דק' (אשכנז), 40 דק' (ירושלים)")}
+            </p>
+          </section>
+
           {/* Zmanim toggle */}
           <section>
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-body font-semibold text-sm text-muted-foreground uppercase tracking-wider">
-                Show Zmanim
+                {t("Show Zmanim", HEB_UI.show_zmanim)}
               </h3>
               <Switch checked={showZmanim} onCheckedChange={setShowZmanim} />
             </div>
 
             {showZmanim && (
               <div className="space-y-1 border border-border rounded-lg overflow-hidden">
-                {ALL_ZMANIM.map((z, i) => (
+                {ALL_ZMANIM.map((z) => (
                   <div
                     key={z.key}
                     className="flex items-center justify-between px-3 py-2.5 border-b border-border/50 last:border-0 hover:bg-muted/50 transition-colors"
                   >
                     <div>
-                      <p className="text-sm font-body font-medium">{z.labelEn}</p>
+                      <p className="text-sm font-body font-medium">{t(z.labelEn, z.labelHeb)}</p>
                       <p className="text-xs text-muted-foreground font-body" dir="rtl">{z.labelHeb}</p>
                     </div>
                     <Switch
@@ -164,13 +229,14 @@ export default function SettingsPanel() {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-body font-semibold text-sm text-muted-foreground uppercase tracking-wider">
-                  Show Weather
+                  {t("Show Weather", HEB_UI.show_weather)}
                 </h3>
-                <p className="text-xs text-muted-foreground font-body mt-0.5">Display local weather info</p>
+                <p className="text-xs text-muted-foreground font-body mt-0.5">{t("Display local weather info", "הצג מזג אוויר מקומי")}</p>
               </div>
               <Switch checked={showWeather} onCheckedChange={setShowWeather} />
             </div>
           </section>
+
         </div>
       </div>
     </div>

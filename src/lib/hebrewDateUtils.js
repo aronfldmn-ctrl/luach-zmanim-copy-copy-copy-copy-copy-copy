@@ -1,4 +1,4 @@
-// Hebrew date conversion utilities (zmanim now via Hebcal API)
+// Hebrew date conversion utilities (zmanim via Hebcal API)
 
 const HEBREW_MONTHS = [
   "Nisan", "Iyar", "Sivan", "Tammuz", "Av", "Elul",
@@ -110,12 +110,20 @@ export function isoToTime(isoStr) {
   return `${h}:${m.toString().padStart(2, '0')} ${ampm}`;
 }
 
+// Compute candle lighting time: X minutes before sunset ISO string
+export function computeCandleLighting(sunsetIso, minutesBefore) {
+  if (!sunsetIso) return null;
+  const d = new Date(sunsetIso);
+  if (isNaN(d)) return null;
+  return new Date(d.getTime() - minutesBefore * 60000).toISOString();
+}
+
 // Fetch accurate zmanim from Hebcal API
 const zmanimCache = {};
 
-export async function fetchZmanim(date, lat, lng, tzid) {
+export async function fetchZmanim(date, lat, lng, tzid, candleMinutes = 18) {
   const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-  const cacheKey = `${dateStr}_${lat}_${lng}`;
+  const cacheKey = `${dateStr}_${lat}_${lng}_${candleMinutes}`;
   if (zmanimCache[cacheKey]) return zmanimCache[cacheKey];
 
   const tz = tzid || Intl.DateTimeFormat().resolvedOptions().timeZone || "America/New_York";
@@ -136,7 +144,7 @@ export async function fetchZmanim(date, lat, lng, tzid) {
     minchaGedolah: isoToTime(t.minchaGedola),
     plagHaMincha: isoToTime(t.plagHaMincha),
     sunset: isoToTime(t.sunset),
-    candleLighting: isoToTime(t.sunset ? new Date(new Date(t.sunset).getTime() - 18 * 60000).toISOString() : null),
+    candleLighting: isoToTime(computeCandleLighting(t.sunset, candleMinutes)),
     tzeitKochavim: isoToTime(t.tzeit42min || t.dusk),
     rabbeinuTam: isoToTime(t.tzeit72min),
     _raw: t,
