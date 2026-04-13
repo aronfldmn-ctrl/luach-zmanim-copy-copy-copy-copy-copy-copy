@@ -143,4 +143,7 @@ export const HEB_UI = {
   shabbat: "שבת",
   // Month holidays
   min_before_sunset: "דק' לפני שקיעה",
+  // Weather views
+  daily: "יומי",
+  weekly: "שבועי",
 };

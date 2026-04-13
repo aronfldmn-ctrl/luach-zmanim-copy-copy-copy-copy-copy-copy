@@ -6,7 +6,6 @@ import { useSettings, HEB_UI } from "@/lib/settingsContext";
 import { getParasha } from "@/lib/parasha";
 import { Star, Flame, Sunrise, Sunset, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
-import WeatherWidget from "./WeatherWidget";
 import SidePanel from "./SidePanel";
 
 const DAY_LABELS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Shabbat"];
@@ -17,7 +16,7 @@ export default function WeekView({ date, onDateSelect }) {
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
   const today = new Date();
   const zmanimMap = useWeekZmanim(date);
-  const { showWeather, hebrewMode, candleLightingMinutes } = useSettings();
+  const { hebrewMode, candleLightingMinutes } = useSettings();
 
   const t = (en, heb) => hebrewMode ? heb : en;
   const dayLabels = hebrewMode ? DAY_LABELS_HEB : DAY_LABELS_EN;
@@ -123,8 +122,7 @@ export default function WeekView({ date, onDateSelect }) {
           })}
         </div>
 
-        {/* Weekly weather BELOW the calendar grid */}
-        {showWeather && <WeatherWidget weekly />}
+
       </div>
 
       {/* Side panel: Zmanim / Weather tabs */}

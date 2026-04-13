@@ -81,7 +81,10 @@ export default function ZmanimPanel({ date }) {
                         <span className="text-[10px] text-muted-foreground ml-1">({candleLightingMinutes} {t("min", "דק'")})</span>
                       )}
                     </p>
-                    <p className="font-body text-[10px] text-muted-foreground" dir="rtl">{z.labelHeb}</p>
+                    {/* Only show Hebrew subtitle in English mode */}
+                    {!hebrewMode && (
+                      <p className="font-body text-[10px] text-muted-foreground" dir="rtl">{z.labelHeb}</p>
+                    )}
                   </div>
                 </div>
                 <span className={`font-body font-semibold text-sm tabular-nums ${loading ? "text-muted-foreground" : "text-foreground"}`}>
