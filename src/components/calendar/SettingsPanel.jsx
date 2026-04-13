@@ -212,7 +212,7 @@ export default function SettingsPanel() {
                   >
                     <div>
                       <p className="text-sm font-body font-medium">{t(z.labelEn, z.labelHeb)}</p>
-                      <p className="text-xs text-muted-foreground font-body" dir="rtl">{z.labelHeb}</p>
+                      {!hebrewMode && <p className="text-xs text-muted-foreground font-body" dir="rtl">{z.labelHeb}</p>}
                     </div>
                     <Switch
                       checked={!!zmanimVisible[z.key]}
