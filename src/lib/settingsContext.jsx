@@ -145,5 +145,6 @@ export const HEB_UI = {
   min_before_sunset: "דק' לפני שקיעה",
   // Weather views
   daily: "יומי",
+  hourly: "שעתי",
   weekly: "שבועי",
 };

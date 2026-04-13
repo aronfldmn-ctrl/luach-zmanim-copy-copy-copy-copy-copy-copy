@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Cloud, Sun, CloudRain, CloudSnow, Wind, Thermometer, Loader2, CloudLightning, CloudDrizzle } from "lucide-react";
+import { Cloud, Sun, CloudRain, CloudSnow, Wind, Thermometer, Loader2, CloudLightning, CloudDrizzle, Droplets } from "lucide-react";
 import { useSettings, HEB_UI } from "@/lib/settingsContext";
-import { format, addDays, startOfWeek } from "date-fns";
+import { format } from "date-fns";
 
 const WMO_CODES = {
   0: { label: "Clear sky", labelHeb: "שמיים בהירים", icon: Sun, color: "text-yellow-500" },
@@ -32,8 +32,8 @@ function getWeatherInfo(code) {
   return WMO_CODES[code] || { label: "Unknown", labelHeb: "לא ידוע", icon: Cloud, color: "text-slate-400" };
 }
 
-// compact = just icon+temp in header; weekly = show 7-day forecast panel; else = full card
-export default function WeatherWidget({ compact = false, weekly = false }) {
+// view: "daily" | "weekly" | "hourly" | "compact"
+export default function WeatherWidget({ compact = false, weekly = false, view = "daily", embedded = false }) {
   const { location, hebrewMode } = useSettings();
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -41,10 +41,13 @@ export default function WeatherWidget({ compact = false, weekly = false }) {
 
   const t = (en, heb) => hebrewMode ? heb : en;
 
+  // Resolve effective view
+  const effectiveView = compact ? "compact" : weekly ? "weekly" : view;
+
   useEffect(() => {
     setLoading(true);
     setError(null);
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${location.lat}&longitude=${location.lng}&current=temperature_2m,weathercode,windspeed_10m,apparent_temperature&daily=weathercode,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=auto&forecast_days=7`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${location.lat}&longitude=${location.lng}&current=temperature_2m,weathercode,windspeed_10m,apparent_temperature&daily=weathercode,temperature_2m_max,temperature_2m_min&hourly=temperature_2m,weathercode,precipitation_probability,windspeed_10m&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=auto&forecast_days=7`;
 
     fetch(url)
       .then((r) => r.json())
@@ -62,7 +65,22 @@ export default function WeatherWidget({ compact = false, weekly = false }) {
           high: Math.round(data.daily.temperature_2m_max[i]),
           low: Math.round(data.daily.temperature_2m_min[i]),
         }));
-        setWeather({ current, daily });
+        // Get today's hourly data (next 24 hours)
+        const nowHour = new Date().getHours();
+        const hourly = (data.hourly?.time || [])
+          .map((timeStr, i) => ({
+            time: new Date(timeStr),
+            temp: Math.round(data.hourly.temperature_2m[i]),
+            code: data.hourly.weathercode[i],
+            precip: data.hourly.precipitation_probability[i],
+            wind: Math.round(data.hourly.windspeed_10m[i]),
+          }))
+          .filter((h) => {
+            const isToday = h.time.toDateString() === new Date().toDateString();
+            return isToday && h.time.getHours() >= nowHour;
+          })
+          .slice(0, 24);
+        setWeather({ current, daily, hourly });
         setLoading(false);
       })
       .catch(() => {
@@ -73,7 +91,7 @@ export default function WeatherWidget({ compact = false, weekly = false }) {
 
   if (loading) {
     return (
-      <div className="flex items-center gap-2 text-muted-foreground text-sm">
+      <div className={`flex items-center gap-2 text-muted-foreground text-sm ${embedded ? "p-4" : ""}`}>
         <Loader2 className="h-4 w-4 animate-spin" />
         <span className="font-body text-xs">{t("Loading weather...", "טוען מזג אוויר...")}</span>
       </div>
@@ -87,7 +105,7 @@ export default function WeatherWidget({ compact = false, weekly = false }) {
   const todayDate = new Date();
 
   // Compact: just icon + temp for header bar
-  if (compact) {
+  if (effectiveView === "compact") {
     return (
       <div className="flex items-center gap-2 text-sm font-body">
         <WeatherIcon className={`h-4 w-4 ${info.color}`} />
@@ -97,27 +115,29 @@ export default function WeatherWidget({ compact = false, weekly = false }) {
     );
   }
 
-  // Weekly panel: 7-day forecast grid (used in WeekView)
-  if (weekly) {
+  // Weekly panel: 7-day forecast grid
+  if (effectiveView === "weekly") {
     const DAY_LABELS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const DAY_LABELS_HEB = [HEB_UI.sun, HEB_UI.mon, HEB_UI.tue, HEB_UI.wed, HEB_UI.thu, HEB_UI.fri, HEB_UI.shabbat];
     return (
-      <div className="bg-card border border-border rounded-lg p-4 mb-4">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-heading font-semibold text-foreground">{t("Weekly Weather", "תחזית שבועית")}</h3>
-          <p className="text-xs text-muted-foreground font-body">{location.name}</p>
-        </div>
+      <div className={embedded ? "p-4" : "bg-card border border-border rounded-lg p-4"}>
+        {!embedded && (
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-heading font-semibold text-foreground">{t("Weekly Weather", "תחזית שבועית")}</h3>
+            <p className="text-xs text-muted-foreground font-body">{location.name}</p>
+          </div>
+        )}
         <div className="grid grid-cols-7 gap-1">
           {weather.daily.slice(0, 7).map((day, i) => {
             const DayIcon = getWeatherInfo(day.code).icon;
             const dayColor = getWeatherInfo(day.code).color;
             const isToday = day.date.toDateString() === todayDate.toDateString();
-            const dayLabel = hebrewMode ? DAY_LABELS_HEB[day.date.getDay()] : DAY_LABELS_EN[day.date.getDay()];
+            const dayLabel = hebrewMode
+              ? DAY_LABELS_HEB[day.date.getDay()]
+              : DAY_LABELS_EN[day.date.getDay()];
             return (
               <div key={i} className={`flex flex-col items-center gap-1 p-1.5 rounded-lg ${isToday ? "bg-accent/10 border border-accent/20" : "hover:bg-muted/50"}`}>
-                <span className={`text-[10px] font-body font-medium ${isToday ? "text-accent" : "text-muted-foreground"}`}>
-                  {dayLabel}
-                </span>
+                <span className={`text-[10px] font-body font-medium ${isToday ? "text-accent" : "text-muted-foreground"}`}>{dayLabel}</span>
                 <span className="text-[10px] font-body text-muted-foreground">{format(day.date, "M/d")}</span>
                 <DayIcon className={`h-4 w-4 ${dayColor}`} />
                 <span className="text-[10px] font-body font-semibold text-foreground">{day.high}°</span>
@@ -130,14 +150,60 @@ export default function WeatherWidget({ compact = false, weekly = false }) {
     );
   }
 
-  // Full card: current weather with date + weekly forecast
-  return (
-    <div className="bg-card border border-border rounded-lg p-5">
-      <div className="flex items-center justify-between mb-1">
-        <h3 className="font-heading font-semibold text-foreground">{t("Weather", HEB_UI.weather)}</h3>
-        <span className="text-xs text-muted-foreground font-body">{format(todayDate, "EEEE, MMM d")}</span>
+  // Hourly view: hour-by-hour for today
+  if (effectiveView === "hourly") {
+    return (
+      <div className={embedded ? "p-3" : "bg-card border border-border rounded-lg p-4"}>
+        {!embedded && (
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-heading font-semibold text-foreground">{t("Hourly Forecast", "תחזית שעתית")}</h3>
+            <p className="text-xs text-muted-foreground font-body">{location.name}</p>
+          </div>
+        )}
+        {weather.hourly.length === 0 ? (
+          <p className="text-xs text-muted-foreground font-body text-center py-3">{t("No hourly data", "אין נתונים שעתיים")}</p>
+        ) : (
+          <div className="space-y-1 max-h-[340px] overflow-y-auto pr-1">
+            {weather.hourly.map((h, i) => {
+              const HourIcon = getWeatherInfo(h.code).icon;
+              const hourColor = getWeatherInfo(h.code).color;
+              const isNow = i === 0;
+              return (
+                <div key={i} className={`flex items-center gap-2 px-2 py-1.5 rounded-md text-xs font-body ${isNow ? "bg-accent/10 border border-accent/20" : "hover:bg-muted/30"}`}>
+                  <span className={`w-14 flex-shrink-0 tabular-nums ${isNow ? "font-semibold text-accent" : "text-muted-foreground"}`}>
+                    {isNow ? t("Now", "עכשיו") : format(h.time, "h:mm a")}
+                  </span>
+                  <HourIcon className={`h-3.5 w-3.5 flex-shrink-0 ${hourColor}`} />
+                  <span className="font-semibold text-foreground w-10 flex-shrink-0">{h.temp}°F</span>
+                  <div className="flex items-center gap-1 text-muted-foreground">
+                    <Droplets className="h-3 w-3 text-blue-400" />
+                    <span>{h.precip}%</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-muted-foreground ml-auto">
+                    <Wind className="h-3 w-3 text-slate-400" />
+                    <span>{h.wind}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
-      <p className="text-xs text-muted-foreground font-body mb-4">{location.name}</p>
+    );
+  }
+
+  // Daily (default full card): current + 7-day
+  return (
+    <div className={embedded ? "p-4" : "bg-card border border-border rounded-lg p-5"}>
+      {!embedded && (
+        <>
+          <div className="flex items-center justify-between mb-1">
+            <h3 className="font-heading font-semibold text-foreground">{t("Weather", HEB_UI.weather)}</h3>
+            <span className="text-xs text-muted-foreground font-body">{format(todayDate, "EEEE, MMM d")}</span>
+          </div>
+          <p className="text-xs text-muted-foreground font-body mb-4">{location.name}</p>
+        </>
+      )}
 
       <div className="flex items-center gap-4 mb-4">
         <WeatherIcon className={`h-12 w-12 ${info.color}`} />
@@ -164,7 +230,6 @@ export default function WeatherWidget({ compact = false, weekly = false }) {
         </div>
       </div>
 
-      {/* 7-day mini forecast */}
       {weather.daily.length > 0 && (
         <div>
           <p className="text-xs text-muted-foreground font-body mb-2 uppercase tracking-wide">{t("7-Day Forecast", "תחזית 7 ימים")}</p>
