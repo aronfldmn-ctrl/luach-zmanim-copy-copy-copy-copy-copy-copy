@@ -1,9 +1,10 @@
 import React from "react";
-import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, addMonths, isSameMonth, isSameDay } from "date-fns";
-import { getJewishHoliday, isShabbat } from "@/lib/hebrewDateUtils";
+import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameMonth, isSameDay } from "date-fns";
+import { getJewishHoliday, isShabbat, getHebrewDate } from "@/lib/hebrewDateUtils";
+import { useSettings } from "@/lib/settingsContext";
 import { cn } from "@/lib/utils";
 
-function MiniMonth({ monthDate, selectedDate, onDateSelect }) {
+function MiniMonth({ monthDate, selectedDate, onDateSelect, hebrewMode }) {
   const monthStart = startOfMonth(monthDate);
   const monthEnd = endOfMonth(monthDate);
   const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 });
@@ -17,11 +18,25 @@ function MiniMonth({ monthDate, selectedDate, onDateSelect }) {
     current = addDays(current, 1);
   }
 
+  // Get Hebrew month name(s) for this Gregorian month (use 1st and 15th to cover both Hebrew months)
+  const heb1 = getHebrewDate(monthStart);
+  const hebMid = getHebrewDate(new Date(monthDate.getFullYear(), monthDate.getMonth(), 15));
+  const hebMonths = heb1.monthName === hebMid.monthName
+    ? heb1.monthName
+    : `${heb1.monthName} – ${hebMid.monthName}`;
+
+  const engName = format(monthDate, "MMMM");
+
   return (
     <div className="bg-card border border-border rounded-lg p-3 hover:shadow-md transition-shadow">
-      <h3 className="font-heading font-semibold text-sm text-center mb-2 text-foreground">
-        {format(monthDate, "MMMM")}
-      </h3>
+      <div className="text-center mb-2">
+        <h3 className="font-heading font-semibold text-sm text-foreground leading-tight">
+          {hebrewMode ? hebMonths : engName}
+        </h3>
+        {!hebrewMode && (
+          <p className="text-[10px] text-muted-foreground font-body" dir="rtl">{hebMonths}</p>
+        )}
+      </div>
       <div className="grid grid-cols-7 gap-0">
         {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
           <div key={i} className="text-center text-[9px] font-body text-muted-foreground py-0.5">
@@ -59,6 +74,7 @@ function MiniMonth({ monthDate, selectedDate, onDateSelect }) {
 export default function YearView({ date, onDateSelect }) {
   const year = date.getFullYear();
   const months = Array.from({ length: 12 }, (_, i) => new Date(year, i, 1));
+  const { hebrewMode } = useSettings();
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -68,6 +84,7 @@ export default function YearView({ date, onDateSelect }) {
           monthDate={monthDate}
           selectedDate={date}
           onDateSelect={onDateSelect}
+          hebrewMode={hebrewMode}
         />
       ))}
     </div>
