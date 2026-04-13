@@ -15,7 +15,6 @@ export default function SidePanel({ date }) {
   const weatherTabs = [
     { key: "daily", label: t("Daily", HEB_UI.daily) },
     { key: "hourly", label: t("Hourly", HEB_UI.hourly) },
-    { key: "weekly", label: t("Weekly", HEB_UI.weekly) },
   ];
 
   return (
