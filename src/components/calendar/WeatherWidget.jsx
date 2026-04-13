@@ -223,7 +223,7 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
         </div>
 
         {/* Hourly breakdown */}
-        <div className="px-4 py-3">
+        <div className="px-4 py-3 border-b border-border/60">
           <p className="text-[10px] font-body text-muted-foreground uppercase tracking-wider mb-2">{t("Today · Hour by Hour", "היום · שעה אחר שעה")}</p>
           <div className="space-y-0.5 max-h-[280px] overflow-y-auto pr-1">
             {weather.hourly.length === 0 ? (
@@ -247,6 +247,30 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
                     <Wind className="h-3 w-3 text-slate-400" />
                     <span>{h.wind}</span>
                   </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Weekly forecast */}
+        <div className="px-4 py-3">
+          <p className="text-[10px] font-body text-muted-foreground uppercase tracking-wider mb-2">{t("7-Day Forecast", "תחזית 7 ימים")}</p>
+          <div className="grid grid-cols-7 gap-1">
+            {weather.daily.slice(0, 7).map((day, i) => {
+              const DAY_LABELS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+              const DAY_LABELS_HEB = [HEB_UI.sun, HEB_UI.mon, HEB_UI.tue, HEB_UI.wed, HEB_UI.thu, HEB_UI.fri, HEB_UI.shabbat];
+              const DayIcon = getWeatherInfo(day.code).icon;
+              const dayColor = getWeatherInfo(day.code).color;
+              const isToday = day.date.toDateString() === todayDate.toDateString();
+              const dayLabel = hebrewMode ? DAY_LABELS_HEB[day.date.getDay()] : DAY_LABELS_EN[day.date.getDay()];
+              return (
+                <div key={i} className={`flex flex-col items-center gap-1 p-1.5 rounded-lg ${isToday ? "bg-accent/10 border border-accent/20" : "hover:bg-muted/50"}`}>
+                  <span className={`text-[10px] font-body font-medium ${isToday ? "text-accent" : "text-muted-foreground"}`}>{dayLabel}</span>
+                  <span className="text-[9px] font-body text-muted-foreground">{format(day.date, "M/d")}</span>
+                  <DayIcon className={`h-4 w-4 ${dayColor}`} />
+                  <span className="text-[10px] font-body font-semibold text-foreground">{day.high}°</span>
+                  <span className="text-[10px] font-body text-muted-foreground">{day.low}°</span>
                 </div>
               );
             })}
