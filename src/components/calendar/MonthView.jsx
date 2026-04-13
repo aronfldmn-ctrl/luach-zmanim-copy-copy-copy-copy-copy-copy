@@ -84,7 +84,7 @@ export default function MonthView({ date, onDateSelect }) {
                   <span className="text-[10px] font-body text-primary font-semibold">
                     {t(weekParasha.en, weekParasha.heb)}
                   </span>
-                  <span className="text-[10px] text-muted-foreground font-body" dir="rtl">{weekParasha.heb}</span>
+                  {!hebrewMode && <span className="text-[10px] text-muted-foreground font-body" dir="rtl">{weekParasha.heb}</span>}
                 </div>
               )}
               <div className="grid grid-cols-7">
