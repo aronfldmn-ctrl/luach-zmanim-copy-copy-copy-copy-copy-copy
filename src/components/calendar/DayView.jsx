@@ -1,7 +1,8 @@
 import React from "react";
 import { format } from "date-fns";
-import { getHebrewDate, getZmanim, getJewishHoliday, isShabbat, isFriday } from "@/lib/hebrewDateUtils";
+import { getHebrewDate, getJewishHoliday, isShabbat, isFriday } from "@/lib/hebrewDateUtils";
 import { useSettings, ALL_ZMANIM } from "@/lib/settingsContext";
+import { useZmanim } from "@/lib/useZmanim";
 import { Sunrise, Sun, Sunset, Flame, Moon, Star, Clock } from "lucide-react";
 import ZmanimPanel from "./ZmanimPanel";
 import WeatherWidget from "./WeatherWidget";
@@ -31,24 +32,26 @@ const ZMAN_ICONS = {
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
 
-function timeToMinutes(timeStr) {
+function timeToHour(timeStr) {
+  if (!timeStr || timeStr === "...") return -1;
   const match = timeStr.match(/^(\d+):(\d+)\s(AM|PM)$/);
   if (!match) return -1;
   let h = parseInt(match[1]);
-  const m = parseInt(match[2]);
   const ampm = match[3];
   if (ampm === 'PM' && h !== 12) h += 12;
   if (ampm === 'AM' && h === 12) h = 0;
-  return h * 60 + m;
+  return h;
 }
 
 export default function DayView({ date }) {
-  const { location, zmanimVisible, showZmanim, showWeather } = useSettings();
+  const { showZmanim, showWeather } = useSettings();
+  const { zmanim } = useZmanim(date);
   const hebrewDate = getHebrewDate(date);
-  const zmanim = getZmanim(date, location.lat, location.lng);
   const holiday = getJewishHoliday(date);
   const shabbat = isShabbat(date);
   const friday = isFriday(date);
+
+  const { zmanimVisible } = useSettings();
 
   const activeZmanim = showZmanim
     ? ALL_ZMANIM.filter((z) => {
@@ -82,10 +85,7 @@ export default function DayView({ date }) {
 
         <div className="max-h-[600px] overflow-y-auto">
           {HOURS.map((hour) => {
-            const eventsThisHour = activeZmanim.filter((z) => {
-              const mins = timeToMinutes(zmanim[z.key] || "");
-              return mins >= 0 && Math.floor(mins / 60) === hour;
-            });
+            const eventsThisHour = activeZmanim.filter((z) => timeToHour(zmanim[z.key]) === hour);
             return (
               <div key={hour} className="flex border-b border-border/30 min-h-[52px]">
                 <div className="w-16 flex-shrink-0 text-right pr-3 pt-2">

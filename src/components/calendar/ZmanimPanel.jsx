@@ -1,44 +1,30 @@
 import React from "react";
-import { Sunrise, Sun, Sunset, Flame, Moon, Star, Clock } from "lucide-react";
-import { getZmanim, isFriday, isShabbat, getJewishHoliday, getHebrewDate } from "@/lib/hebrewDateUtils";
+import { Sunrise, Sun, Sunset, Flame, Moon, Star, Clock, Loader2 } from "lucide-react";
+import { isFriday, isShabbat, getJewishHoliday, getHebrewDate } from "@/lib/hebrewDateUtils";
 import { useSettings, ALL_ZMANIM } from "@/lib/settingsContext";
+import { useZmanim } from "@/lib/useZmanim";
 import { format } from "date-fns";
 
 const ZMAN_ICONS = {
-  alotHaShachar: Moon,
-  zmanTzitzit: Star,
-  sunrise: Sunrise,
-  sofShmaGRA: Clock,
-  sofShmaMA: Clock,
-  sofTfila: Clock,
-  midday: Sun,
-  minchaGedolah: Sun,
-  plagHaMincha: Sunset,
-  sunset: Sunset,
-  candleLighting: Flame,
-  tzeitKochavim: Moon,
-  rabbeinuTam: Moon,
+  alotHaShachar: Moon, zmanTzitzit: Star, sunrise: Sunrise,
+  sofShmaGRA: Clock, sofShmaMA: Clock, sofTfila: Clock,
+  midday: Sun, minchaGedolah: Sun, plagHaMincha: Sunset,
+  sunset: Sunset, candleLighting: Flame, tzeitKochavim: Moon, rabbeinuTam: Moon,
 };
 
 const ZMAN_COLORS = {
-  alotHaShachar: "text-indigo-400",
-  zmanTzitzit: "text-violet-400",
-  sunrise: "text-amber-500",
-  sofShmaGRA: "text-sky-500",
-  sofShmaMA: "text-sky-400",
-  sofTfila: "text-blue-500",
-  midday: "text-yellow-500",
-  minchaGedolah: "text-orange-400",
-  plagHaMincha: "text-orange-500",
-  sunset: "text-orange-600",
-  candleLighting: "text-amber-600",
-  tzeitKochavim: "text-indigo-500",
+  alotHaShachar: "text-indigo-400", zmanTzitzit: "text-violet-400",
+  sunrise: "text-amber-500", sofShmaGRA: "text-sky-500",
+  sofShmaMA: "text-sky-400", sofTfila: "text-blue-500",
+  midday: "text-yellow-500", minchaGedolah: "text-orange-400",
+  plagHaMincha: "text-orange-500", sunset: "text-orange-600",
+  candleLighting: "text-amber-600", tzeitKochavim: "text-indigo-500",
   rabbeinuTam: "text-purple-500",
 };
 
 export default function ZmanimPanel({ date }) {
-  const { location, zmanimVisible, showZmanim } = useSettings();
-  const zmanim = getZmanim(date, location.lat, location.lng);
+  const { zmanimVisible, showZmanim } = useSettings();
+  const { zmanim, loading } = useZmanim(date);
   const holiday = getJewishHoliday(date);
   const hebrewDate = getHebrewDate(date);
   const friday = isFriday(date);
@@ -55,9 +41,15 @@ export default function ZmanimPanel({ date }) {
     <div className="bg-card border border-border rounded-lg p-5">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="font-heading font-semibold text-foreground text-lg">Zmanim</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="font-heading font-semibold text-foreground text-lg">Zmanim</h3>
+            {loading && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />}
+          </div>
           <p className="text-xs text-muted-foreground font-body mt-0.5">
             {format(date, "EEEE, MMM d")} · {hebrewDate.displayEn}
+          </p>
+          <p className="text-[10px] text-muted-foreground font-body opacity-60 mt-0.5">
+            via Hebcal · KosherJava
           </p>
         </div>
         {(holiday || shabbat) && (
@@ -85,7 +77,7 @@ export default function ZmanimPanel({ date }) {
                     <p className="font-body text-[10px] text-muted-foreground" dir="rtl">{z.labelHeb}</p>
                   </div>
                 </div>
-                <span className="font-body font-semibold text-sm text-foreground tabular-nums">
+                <span className={`font-body font-semibold text-sm tabular-nums ${loading ? "text-muted-foreground" : "text-foreground"}`}>
                   {zmanim[z.key]}
                 </span>
               </div>

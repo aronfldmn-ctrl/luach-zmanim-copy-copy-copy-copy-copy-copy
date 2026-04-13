@@ -4,6 +4,7 @@ const DEFAULT_LOCATION = {
   name: "New York, NY",
   lat: 40.7128,
   lng: -74.006,
+  tzid: "America/New_York",
 };
 
 const DEFAULT_ZMANIM_VISIBLE = {

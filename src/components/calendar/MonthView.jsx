@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameMonth, isSameDay } from "date-fns";
-import { getHebrewDate, getJewishHoliday, isShabbat, isFriday, getZmanim } from "@/lib/hebrewDateUtils";
+import { getHebrewDate, getJewishHoliday, isShabbat, isFriday, fetchZmanim } from "@/lib/hebrewDateUtils";
 import { useSettings } from "@/lib/settingsContext";
 import { Star, Flame } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -9,6 +9,8 @@ import WeatherWidget from "./WeatherWidget";
 
 export default function MonthView({ date, onDateSelect }) {
   const { location, showWeather } = useSettings();
+  const [zmanimMap, setZmanimMap] = useState({});
+
   const monthStart = startOfMonth(date);
   const monthEnd = endOfMonth(date);
   const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 });
@@ -22,6 +24,19 @@ export default function MonthView({ date, onDateSelect }) {
     current = addDays(current, 1);
   }
 
+  // Fetch zmanim for all Fridays in the month view (for candle lighting)
+  useEffect(() => {
+    const fridays = days.filter((d) => isFriday(d));
+    const tz = location.tzid || Intl.DateTimeFormat().resolvedOptions().timeZone;
+    Promise.all(
+      fridays.map((d) => fetchZmanim(d, location.lat, location.lng, tz).then((z) => ({ d, z })))
+    ).then((results) => {
+      const map = {};
+      results.forEach(({ d, z }) => { map[d.toDateString()] = z; });
+      setZmanimMap(map);
+    });
+  }, [date.getFullYear(), date.getMonth(), location.lat, location.lng]);
+
   const weeks = [];
   for (let i = 0; i < days.length; i += 7) {
     weeks.push(days.slice(i, i + 7));
@@ -30,7 +45,6 @@ export default function MonthView({ date, onDateSelect }) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
       <div className="lg:col-span-3">
-        {/* Day headers */}
         <div className="grid grid-cols-7 mb-2">
           {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Shabbat"].map((d) => (
             <div key={d} className="text-center text-xs font-body font-medium text-muted-foreground uppercase tracking-wider py-2">
@@ -39,7 +53,6 @@ export default function MonthView({ date, onDateSelect }) {
           ))}
         </div>
 
-        {/* Calendar grid */}
         <div className="border border-border rounded-lg overflow-hidden">
           {weeks.map((week, wi) => (
             <div key={wi} className="grid grid-cols-7 border-b border-border last:border-0">
@@ -51,7 +64,7 @@ export default function MonthView({ date, onDateSelect }) {
                 const holiday = getJewishHoliday(day);
                 const shabbat = isShabbat(day);
                 const friday = isFriday(day);
-                const zmanim = getZmanim(day, location.lat, location.lng);
+                const zmanim = zmanimMap[day.toDateString()];
 
                 return (
                   <button
@@ -87,7 +100,9 @@ export default function MonthView({ date, onDateSelect }) {
                     {friday && inMonth && (
                       <div className="flex items-center gap-0.5 mt-0.5">
                         <Flame className="h-2.5 w-2.5 text-accent flex-shrink-0" />
-                        <span className="text-[9px] font-body text-accent">{zmanim.candleLighting}</span>
+                        <span className="text-[9px] font-body text-accent">
+                          {zmanim ? zmanim.candleLighting : "..."}
+                        </span>
                       </div>
                     )}
                   </button>
@@ -98,7 +113,6 @@ export default function MonthView({ date, onDateSelect }) {
         </div>
       </div>
 
-      {/* Side panel */}
       <div className="space-y-4">
         {showWeather && <WeatherWidget />}
         <ZmanimPanel date={date} />

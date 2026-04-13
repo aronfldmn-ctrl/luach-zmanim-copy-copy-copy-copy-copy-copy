@@ -1,4 +1,4 @@
-// Hebrew date conversion and full halachic zmanim calculations
+// Hebrew date conversion utilities (zmanim now via Hebcal API)
 
 const HEBREW_MONTHS = [
   "Nisan", "Iyar", "Sivan", "Tammuz", "Av", "Elul",
@@ -98,93 +98,52 @@ export function getHebrewDate(date) {
   };
 }
 
-function getDayOfYear(date) {
-  const start = new Date(date.getFullYear(), 0, 0);
-  return Math.floor((date - start) / (1000 * 60 * 60 * 24));
+// Format an ISO datetime string to 12-hour time
+export function isoToTime(isoStr) {
+  if (!isoStr) return "—";
+  const d = new Date(isoStr);
+  if (isNaN(d)) return "—";
+  let h = d.getHours();
+  const m = d.getMinutes();
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  return `${h}:${m.toString().padStart(2, '0')} ${ampm}`;
 }
 
-function minutesToTime(minutes) {
-  const totalMin = Math.round(minutes);
-  let hours = Math.floor(totalMin / 60);
-  let mins = totalMin % 60;
-  if (hours < 0) hours += 24;
-  if (mins < 0) { mins += 60; hours -= 1; }
-  if (hours >= 24) hours -= 24;
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  const displayHours = hours % 12 || 12;
-  return `${displayHours}:${mins.toString().padStart(2, '0')} ${ampm}`;
-}
+// Fetch accurate zmanim from Hebcal API
+const zmanimCache = {};
 
-// Full halachic zmanim
-export function getZmanim(date, lat = 40.7128, lng = -74.006) {
-  const dayOfYear = getDayOfYear(date);
-  const declination = 23.45 * Math.sin((2 * Math.PI / 365) * (dayOfYear - 81));
-  const decRad = declination * Math.PI / 180;
-  const latRad = lat * Math.PI / 180;
+export async function fetchZmanim(date, lat, lng, tzid) {
+  const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  const cacheKey = `${dateStr}_${lat}_${lng}`;
+  if (zmanimCache[cacheKey]) return zmanimCache[cacheKey];
 
-  // Standard sunrise/sunset (0.833° depression for refraction)
-  const cosHA = -Math.tan(latRad) * Math.tan(decRad);
-  const clampedCosHA = Math.max(-1, Math.min(1, cosHA));
-  const HA = Math.acos(clampedCosHA) * 180 / Math.PI;
+  const tz = tzid || Intl.DateTimeFormat().resolvedOptions().timeZone || "America/New_York";
+  const url = `https://www.hebcal.com/zmanim?cfg=json&latitude=${lat}&longitude=${lng}&tzid=${encodeURIComponent(tz)}&date=${dateStr}`;
 
-  // Equation of time
-  const B = (2 * Math.PI / 365) * (dayOfYear - 81);
-  const EoT = 9.87 * Math.sin(2 * B) - 7.53 * Math.cos(B) - 1.5 * Math.sin(B);
+  const res = await fetch(url);
+  const data = await res.json();
+  const t = data.times;
 
-  const solarNoon = 720 - 4 * lng - EoT; // UTC minutes
-  const timezone = -date.getTimezoneOffset(); // local offset in minutes
-
-  const sunriseMin = solarNoon - HA * 4 + timezone;
-  const sunsetMin = solarNoon + HA * 4 + timezone;
-  const middayMin = solarNoon + timezone;
-
-  // Shaah zmanit (halachic hour) = 1/12 of daylight time
-  const shaahZmanit = (sunsetMin - sunriseMin) / 12; // in minutes
-
-  // Alot HaShachar (dawn) = 72 minutes (Gra/Baal HaTanya: 16.1° before sunrise)
-  const alotMin = sunriseMin - 72;
-
-  // Misheyakir / Zman Tzitzit = 3 halachic hours before midday, but practically ~50 min after alot
-  const tzitzitMin = alotMin + 50;
-
-  // Sof Zman Kriat Shema (Magen Avraham) = alot + 3 sha'ot zmaniyot
-  const sofShmaMAMin = alotMin + 3 * ((middayMin * 2 - alotMin - (sunsetMin + 72)) / 12);
-  // Sof Zman Kriat Shema (GRA) = sunrise + 3 sha'ot zmaniyot
-  const sofShmaGRAMin = sunriseMin + 3 * shaahZmanit;
-
-  // Sof Zman Tfila (GRA) = sunrise + 4 sha'ot zmaniyot
-  const sofTfilaGRAMin = sunriseMin + 4 * shaahZmanit;
-
-  // Mincha Gedolah = midday + 0.5 sha'ah zmanit (30 min if day is standard)
-  const minchaGedolahMin = middayMin + 0.5 * shaahZmanit;
-
-  // Plag HaMincha = sunset - 1.25 sha'ot zmaniyot
-  const plagHaMinchaMin = sunsetMin - 1.25 * shaahZmanit;
-
-  // Tzet HaKochavim (nightfall) = 42 min after sunset (3 stars visible)
-  const tzeitMin = sunsetMin + 42;
-
-  // Rabbeinu Tam = 72 min after sunset (or 16.1° depression — using 72 min)
-  const rabbeinuTamMin = sunsetMin + 72;
-
-  return {
-    alotHaShachar: minutesToTime(alotMin),
-    zmanTzitzit: minutesToTime(tzitzitMin),
-    sunrise: minutesToTime(sunriseMin),
-    sofShmaGRA: minutesToTime(sofShmaGRAMin),
-    sofShmaMA: minutesToTime(sofShmaMAMin),
-    sofTfila: minutesToTime(sofTfilaGRAMin),
-    midday: minutesToTime(middayMin),
-    minchaGedolah: minutesToTime(minchaGedolahMin),
-    plagHaMincha: minutesToTime(plagHaMinchaMin),
-    sunset: minutesToTime(sunsetMin),
-    candleLighting: minutesToTime(sunsetMin - 18),
-    tzeitKochavim: minutesToTime(tzeitMin),
-    rabbeinuTam: minutesToTime(rabbeinuTamMin),
-    // raw minutes for internal use
-    _sunriseMin: sunriseMin,
-    _sunsetMin: sunsetMin,
+  const result = {
+    alotHaShachar: isoToTime(t.alotHaShachar),
+    zmanTzitzit: isoToTime(t.misheyakir),
+    sunrise: isoToTime(t.sunrise),
+    sofShmaGRA: isoToTime(t.sofZmanShma),
+    sofShmaMA: isoToTime(t.sofZmanShmaMGA),
+    sofTfila: isoToTime(t.sofZmanTfilla),
+    midday: isoToTime(t.chatzot),
+    minchaGedolah: isoToTime(t.minchaGedola),
+    plagHaMincha: isoToTime(t.plagHaMincha),
+    sunset: isoToTime(t.sunset),
+    candleLighting: isoToTime(t.sunset ? new Date(new Date(t.sunset).getTime() - 18 * 60000).toISOString() : null),
+    tzeitKochavim: isoToTime(t.tzeit42min || t.dusk),
+    rabbeinuTam: isoToTime(t.tzeit72min),
+    _raw: t,
   };
+
+  zmanimCache[cacheKey] = result;
+  return result;
 }
 
 export function getJewishHoliday(date) {

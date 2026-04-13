@@ -35,6 +35,7 @@ export default function SettingsPanel() {
           name: d.display_name.split(",").slice(0, 3).join(","),
           lat: parseFloat(d.lat),
           lng: parseFloat(d.lon),
+          tzid: Intl.DateTimeFormat().resolvedOptions().timeZone, // will be refined on select
         })));
       } catch {
         setSearchResults([]);
@@ -44,8 +45,17 @@ export default function SettingsPanel() {
     }, 500);
   };
 
-  const handleSelectCity = (result) => {
-    setLocation(result);
+  const handleSelectCity = async (result) => {
+    // Try to get timezone from timezonefinder API
+    let tzid = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    try {
+      const tzRes = await fetch(
+        `https://timezonefinder.michelfe.it/api/0?lat=${result.lat}&lng=${result.lng}`
+      );
+      const tzData = await tzRes.json();
+      if (tzData.timezone_id) tzid = tzData.timezone_id;
+    } catch {}
+    setLocation({ ...result, tzid });
     setCitySearch("");
     setSearchResults([]);
   };
