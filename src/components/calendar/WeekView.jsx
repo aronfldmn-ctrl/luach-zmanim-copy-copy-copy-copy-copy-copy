@@ -39,7 +39,7 @@ export default function WeekView({ date, onDateSelect }) {
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-xs font-body text-muted-foreground uppercase tracking-wider">{t("Parashat HaShavua", "פרשת השבוע")}</span>
               <span className="font-heading font-semibold text-foreground">{t(parasha.en, parasha.heb)}</span>
-              <span className="text-sm text-muted-foreground font-body" dir="rtl">{parasha.heb}</span>
+              {!hebrewMode && <span className="text-sm text-muted-foreground font-body" dir="rtl">{parasha.heb}</span>}
             </div>
           </div>
         )}
