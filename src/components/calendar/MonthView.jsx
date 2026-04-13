@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameMonth, isSameDay } from "date-fns";
 import { getHebrewDate, getJewishHoliday, isShabbat, isFriday, fetchZmanim } from "@/lib/hebrewDateUtils";
 import { useSettings, HEB_UI } from "@/lib/settingsContext";
-import { getParasha } from "@/lib/parasha";
+import { fetchParasha } from "@/lib/parasha";
 import { Star, Flame, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import SidePanel from "./SidePanel";
@@ -13,6 +13,7 @@ const DAY_LABELS_HEB = [HEB_UI.sun, HEB_UI.mon, HEB_UI.tue, HEB_UI.wed, HEB_UI.t
 export default function MonthView({ date, onDateSelect }) {
   const { location, hebrewMode, candleLightingMinutes } = useSettings();
   const [zmanimMap, setZmanimMap] = useState({});
+  const [parashaMap, setParashaMap] = useState({});
 
   const monthStart = startOfMonth(date);
   const monthEnd = endOfMonth(date);
@@ -44,18 +45,20 @@ export default function MonthView({ date, onDateSelect }) {
     weeks.push(days.slice(i, i + 7));
   }
 
+  // Fetch parasha for each Shabbat in the visible weeks
+  useEffect(() => {
+    const shabbatDays = weeks.map(week => week.find(d => d.getDay() === 6)).filter(Boolean);
+    Promise.all(
+      shabbatDays.map(d => fetchParasha(d).then(p => ({ key: d.toDateString(), p })))
+    ).then(results => {
+      const map = {};
+      results.forEach(({ key, p }) => { if (p) map[key] = p; });
+      setParashaMap(map);
+    });
+  }, [date.getFullYear(), date.getMonth()]);
+
   const dayLabels = hebrewMode ? DAY_LABELS_HEB : DAY_LABELS_EN;
   const t = (en, heb) => hebrewMode ? heb : en;
-
-  // Build parasha map: shabbatDateString -> parasha
-  const parashaMap = {};
-  weeks.forEach((week) => {
-    const shabbat = week.find(d => d.getDay() === 6);
-    if (shabbat) {
-      const p = getParasha(shabbat);
-      if (p) parashaMap[shabbat.toDateString()] = p;
-    }
-  });
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">

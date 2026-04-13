@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { format, startOfWeek, addDays, isSameDay } from "date-fns";
 import { getHebrewDate, getJewishHoliday, isShabbat, isFriday } from "@/lib/hebrewDateUtils";
 import { useWeekZmanim } from "@/lib/useWeekZmanim";
 import { useSettings, HEB_UI } from "@/lib/settingsContext";
-import { getParasha } from "@/lib/parasha";
+import { fetchParasha } from "@/lib/parasha";
 import { Star, Flame, Sunrise, Sunset, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import SidePanel from "./SidePanel";
@@ -17,10 +17,14 @@ export default function WeekView({ date, onDateSelect }) {
   const today = new Date();
   const zmanimMap = useWeekZmanim(date);
   const { hebrewMode, candleLightingMinutes } = useSettings();
+  const [parasha, setParasha] = useState(null);
 
   const t = (en, heb) => hebrewMode ? heb : en;
   const dayLabels = hebrewMode ? DAY_LABELS_HEB : DAY_LABELS_EN;
-  const parasha = getParasha(date);
+
+  useEffect(() => {
+    fetchParasha(date).then(setParasha);
+  }, [date.toDateString()]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
