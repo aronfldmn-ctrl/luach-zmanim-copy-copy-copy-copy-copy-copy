@@ -34,12 +34,13 @@ function getWeatherInfo(code) {
 
 // view: "daily" | "weekly" | "hourly" | "compact"
 export default function WeatherWidget({ compact = false, weekly = false, view = "daily", embedded = false }) {
-  const { location, hebrewMode } = useSettings();
+  const { location, hebrewMode, celsiusMode } = useSettings();
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const t = (en, heb) => hebrewMode ? heb : en;
+  const unit = celsiusMode ? "°C" : "°F";
 
   // Resolve effective view
   const effectiveView = compact ? "compact" : weekly ? "weekly" : view;
@@ -47,7 +48,8 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
   useEffect(() => {
     setLoading(true);
     setError(null);
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${location.lat}&longitude=${location.lng}&current=temperature_2m,weathercode,windspeed_10m,apparent_temperature&daily=weathercode,temperature_2m_max,temperature_2m_min&hourly=temperature_2m,weathercode,precipitation_probability,windspeed_10m&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=auto&forecast_days=7`;
+    const tempUnit = celsiusMode ? "celsius" : "fahrenheit";
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${location.lat}&longitude=${location.lng}&current=temperature_2m,weathercode,windspeed_10m,apparent_temperature&daily=weathercode,temperature_2m_max,temperature_2m_min&hourly=temperature_2m,weathercode,precipitation_probability,windspeed_10m&temperature_unit=${tempUnit}&windspeed_unit=mph&timezone=auto&forecast_days=7`;
 
     fetch(url)
       .then((r) => r.json())
@@ -87,7 +89,7 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
         setError("Unable to load weather");
         setLoading(false);
       });
-  }, [location.lat, location.lng]);
+  }, [location.lat, location.lng, celsiusMode]);
 
   if (loading) {
     return (
@@ -109,7 +111,7 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
     return (
       <div className="flex items-center gap-2 text-sm font-body">
         <WeatherIcon className={`h-4 w-4 ${info.color}`} />
-        <span className="font-semibold">{weather.current.temp}°F</span>
+        <span className="font-semibold">{weather.current.temp}{unit}</span>
         <span className="text-muted-foreground text-xs hidden sm:inline">{t(info.label, info.labelHeb)}</span>
       </div>
     );
@@ -174,7 +176,7 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
                     {isNow ? t("Now", "עכשיו") : format(h.time, "h:mm a")}
                   </span>
                   <HourIcon className={`h-3.5 w-3.5 flex-shrink-0 ${hourColor}`} />
-                  <span className="font-semibold text-foreground w-10 flex-shrink-0">{h.temp}°F</span>
+                  <span className="font-semibold text-foreground w-10 flex-shrink-0">{h.temp}{unit}</span>
                   <div className="flex items-center gap-1 text-muted-foreground">
                     <Droplets className="h-3 w-3 text-blue-400" />
                     <span>{h.precip}%</span>
@@ -206,13 +208,13 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
           <div className="flex items-center gap-4">
             <WeatherIcon className={`h-12 w-12 ${info.color}`} />
             <div>
-              <p className="text-4xl font-heading font-bold text-foreground">{weather.current.temp}°F</p>
+              <p className="text-4xl font-heading font-bold text-foreground">{weather.current.temp}{unit}</p>
               <p className="text-sm text-muted-foreground font-body">{t(info.label, info.labelHeb)}</p>
-            </div>
-            <div className="ml-auto flex flex-col gap-1.5 text-right">
+              </div>
+              <div className="ml-auto flex flex-col gap-1.5 text-right">
               <div className="flex items-center gap-1.5 justify-end text-xs font-body text-muted-foreground">
                 <Thermometer className="h-3.5 w-3.5 text-orange-400" />
-                <span>{t("Feels", "מורגש")} {weather.current.feelsLike}°</span>
+                <span>{t("Feels", "מורגש")} {weather.current.feelsLike}{unit}</span>
               </div>
               <div className="flex items-center gap-1.5 justify-end text-xs font-body text-muted-foreground">
                 <Wind className="h-3.5 w-3.5 text-blue-400" />
@@ -296,7 +298,7 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
       <div className="flex items-center gap-4 mb-4">
         <WeatherIcon className={`h-12 w-12 ${info.color}`} />
         <div>
-          <p className="text-4xl font-heading font-bold text-foreground">{weather.current.temp}°F</p>
+          <p className="text-4xl font-heading font-bold text-foreground">{weather.current.temp}{unit}</p>
           <p className="text-sm text-muted-foreground font-body">{t(info.label, info.labelHeb)}</p>
         </div>
       </div>
@@ -306,7 +308,7 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
           <Thermometer className="h-4 w-4 text-orange-400" />
           <div>
             <p className="text-xs text-muted-foreground font-body">{t("Feels like", HEB_UI.feels_like)}</p>
-            <p className="text-sm font-semibold font-body">{weather.current.feelsLike}°F</p>
+            <p className="text-sm font-semibold font-body">{weather.current.feelsLike}{unit}</p>
           </div>
         </div>
         <div className="flex items-center gap-2 p-2.5 bg-muted rounded-md">

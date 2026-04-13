@@ -19,6 +19,7 @@ export default function SettingsPanel() {
     showWeather, setShowWeather,
     candleLightingMinutes, setCandleLightingMinutes,
     hebrewMode, setHebrewMode,
+    celsiusMode, setCelsiusMode,
   } = useSettings();
 
   const t = (en, heb) => hebrewMode ? heb : en;
@@ -226,7 +227,7 @@ export default function SettingsPanel() {
 
           {/* Weather toggle */}
           <section>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-3">
               <div>
                 <h3 className="font-body font-semibold text-sm text-muted-foreground uppercase tracking-wider">
                   {t("Show Weather", HEB_UI.show_weather)}
@@ -235,6 +236,16 @@ export default function SettingsPanel() {
               </div>
               <Switch checked={showWeather} onCheckedChange={setShowWeather} />
             </div>
+            {showWeather && (
+              <div className="flex items-center justify-between px-3 py-2.5 bg-muted rounded-lg">
+                <p className="text-sm font-body font-medium">{t("Temperature Unit", "יחידת טמפרטורה")}</p>
+                <div className="flex items-center gap-2">
+                  <span className={`text-xs font-body ${!celsiusMode ? "font-semibold text-foreground" : "text-muted-foreground"}`}>°F</span>
+                  <Switch checked={celsiusMode} onCheckedChange={setCelsiusMode} />
+                  <span className={`text-xs font-body ${celsiusMode ? "font-semibold text-foreground" : "text-muted-foreground"}`}>°C</span>
+                </div>
+              </div>
+            )}
           </section>
 
         </div>

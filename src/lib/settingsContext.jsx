@@ -41,6 +41,7 @@ export function SettingsProvider({ children }) {
   const [showWeather, setShowWeatherState] = useState(() => loadFromStorage("jcal_show_weather", true));
   const [candleLightingMinutes, setCandleLightingMinutesState] = useState(() => loadFromStorage("jcal_candle_minutes", 18));
   const [hebrewMode, setHebrewModeState] = useState(() => loadFromStorage("jcal_hebrew_mode", false));
+  const [celsiusMode, setCelsiusModeState] = useState(() => loadFromStorage("jcal_celsius_mode", false));
 
   const setLocation = (loc) => {
     setLocationState(loc);
@@ -66,6 +67,10 @@ export function SettingsProvider({ children }) {
     setHebrewModeState(v);
     localStorage.setItem("jcal_hebrew_mode", JSON.stringify(v));
   };
+  const setCelsiusMode = (v) => {
+    setCelsiusModeState(v);
+    localStorage.setItem("jcal_celsius_mode", JSON.stringify(v));
+  };
 
   return (
     <SettingsContext.Provider value={{
@@ -75,6 +80,7 @@ export function SettingsProvider({ children }) {
       showWeather, setShowWeather,
       candleLightingMinutes, setCandleLightingMinutes,
       hebrewMode, setHebrewMode,
+      celsiusMode, setCelsiusMode,
     }}>
       {children}
     </SettingsContext.Provider>
