@@ -1,10 +1,12 @@
 import React from "react";
 import { format, startOfWeek, addDays, isSameDay } from "date-fns";
 import { getHebrewDate, getJewishHoliday, isShabbat, isFriday, getZmanim } from "@/lib/hebrewDateUtils";
+import { useSettings } from "@/lib/settingsContext";
 import { Star, Flame, Sunrise, Sunset } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function WeekView({ date, onDateSelect }) {
+  const { location } = useSettings();
   const weekStart = startOfWeek(date, { weekStartsOn: 0 }); // Sunday
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
   const today = new Date();
@@ -29,7 +31,7 @@ export default function WeekView({ date, onDateSelect }) {
           const friday = isFriday(day);
           const isToday = isSameDay(day, today);
           const isSelected = isSameDay(day, date);
-          const zmanim = getZmanim(day);
+          const zmanim = getZmanim(day, location.lat, location.lng);
 
           return (
             <button

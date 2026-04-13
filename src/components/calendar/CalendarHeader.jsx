@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
 import { format } from "date-fns";
 import { getHebrewDate } from "@/lib/hebrewDateUtils";
+import { useSettings } from "@/lib/settingsContext";
+import SettingsPanel from "./SettingsPanel";
+import WeatherWidget from "./WeatherWidget";
 
 const VIEW_OPTIONS = [
   { key: "day", label: "Day" },
@@ -13,6 +16,7 @@ const VIEW_OPTIONS = [
 
 export default function CalendarHeader({ currentDate, view, onViewChange, onNavigate, onToday }) {
   const hebrewDate = getHebrewDate(currentDate);
+  const { location, showWeather } = useSettings();
 
   const getTitle = () => {
     if (view === "day") return format(currentDate, "EEEE, MMMM d, yyyy");
@@ -23,14 +27,14 @@ export default function CalendarHeader({ currentDate, view, onViewChange, onNavi
   };
 
   return (
-    <div className="flex flex-col gap-4 mb-6">
+    <div className="flex flex-col gap-3 mb-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center">
+          <div className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
             <CalendarDays className="h-5 w-5 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="text-2xl md:text-3xl font-heading font-bold text-foreground tracking-tight">
+            <h1 className="text-xl md:text-3xl font-heading font-bold text-foreground tracking-tight leading-tight">
               {getTitle()}
             </h1>
             <p className="text-sm font-body text-accent font-medium mt-0.5">
@@ -39,18 +43,26 @@ export default function CalendarHeader({ currentDate, view, onViewChange, onNavi
           </div>
         </div>
 
-        <div className="hidden md:flex items-center gap-2">
-          {VIEW_OPTIONS.map((opt) => (
-            <Button
-              key={opt.key}
-              variant={view === opt.key ? "default" : "ghost"}
-              size="sm"
-              onClick={() => onViewChange(opt.key)}
-              className="font-body text-sm"
-            >
-              {opt.label}
-            </Button>
-          ))}
+        <div className="flex items-center gap-2">
+          {showWeather && (
+            <div className="hidden md:flex items-center">
+              <WeatherWidget compact />
+            </div>
+          )}
+          <div className="hidden md:flex items-center gap-1 ml-2">
+            {VIEW_OPTIONS.map((opt) => (
+              <Button
+                key={opt.key}
+                variant={view === opt.key ? "default" : "ghost"}
+                size="sm"
+                onClick={() => onViewChange(opt.key)}
+                className="font-body text-sm"
+              >
+                {opt.label}
+              </Button>
+            ))}
+          </div>
+          <SettingsPanel />
         </div>
       </div>
 
@@ -65,6 +77,11 @@ export default function CalendarHeader({ currentDate, view, onViewChange, onNavi
           <Button variant="outline" size="icon" onClick={() => onNavigate(1)} className="h-8 w-8">
             <ChevronRight className="h-4 w-4" />
           </Button>
+          {showWeather && (
+            <div className="flex md:hidden">
+              <WeatherWidget compact />
+            </div>
+          )}
         </div>
 
         <div className="flex md:hidden items-center gap-1">
@@ -80,6 +97,10 @@ export default function CalendarHeader({ currentDate, view, onViewChange, onNavi
             </Button>
           ))}
         </div>
+      </div>
+
+      <div className="text-xs text-muted-foreground font-body opacity-60">
+        Zmanim for {location.name} · Times are approximate
       </div>
     </div>
   );

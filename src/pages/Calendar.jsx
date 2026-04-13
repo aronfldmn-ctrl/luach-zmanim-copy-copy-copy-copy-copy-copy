@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { addDays, addWeeks, addMonths, addYears } from "date-fns";
+import { SettingsProvider } from "@/lib/settingsContext";
 import CalendarHeader from "@/components/calendar/CalendarHeader";
 import DayView from "@/components/calendar/DayView";
 import WeekView from "@/components/calendar/WeekView";
 import MonthView from "@/components/calendar/MonthView";
 import YearView from "@/components/calendar/YearView";
 
-export default function Calendar() {
+function CalendarApp() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState("month");
 
@@ -41,16 +42,20 @@ export default function Calendar() {
         />
 
         <div className="mt-2">
-          {view === "day" && <DayView date={currentDate} onDateSelect={setCurrentDate} />}
+          {view === "day" && <DayView date={currentDate} />}
           {view === "week" && <WeekView date={currentDate} onDateSelect={handleDateSelect} />}
           {view === "month" && <MonthView date={currentDate} onDateSelect={handleDateSelect} />}
           {view === "year" && <YearView date={currentDate} onDateSelect={handleDateSelect} />}
         </div>
-
-        <footer className="mt-8 text-center text-xs text-muted-foreground font-body opacity-60">
-          Zmanim calculated for New York, NY · Times are approximate
-        </footer>
       </div>
     </div>
+  );
+}
+
+export default function Calendar() {
+  return (
+    <SettingsProvider>
+      <CalendarApp />
+    </SettingsProvider>
   );
 }

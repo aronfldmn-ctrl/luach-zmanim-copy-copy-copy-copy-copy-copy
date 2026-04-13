@@ -1,11 +1,14 @@
 import React from "react";
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameMonth, isSameDay } from "date-fns";
 import { getHebrewDate, getJewishHoliday, isShabbat, isFriday, getZmanim } from "@/lib/hebrewDateUtils";
+import { useSettings } from "@/lib/settingsContext";
 import { Star, Flame } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ZmanimPanel from "./ZmanimPanel";
+import WeatherWidget from "./WeatherWidget";
 
 export default function MonthView({ date, onDateSelect }) {
+  const { location, showWeather } = useSettings();
   const monthStart = startOfMonth(date);
   const monthEnd = endOfMonth(date);
   const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 });
@@ -48,7 +51,7 @@ export default function MonthView({ date, onDateSelect }) {
                 const holiday = getJewishHoliday(day);
                 const shabbat = isShabbat(day);
                 const friday = isFriday(day);
-                const zmanim = getZmanim(day);
+                const zmanim = getZmanim(day, location.lat, location.lng);
 
                 return (
                   <button
@@ -95,8 +98,9 @@ export default function MonthView({ date, onDateSelect }) {
         </div>
       </div>
 
-      {/* Side zmanim panel */}
-      <div>
+      {/* Side panel */}
+      <div className="space-y-4">
+        {showWeather && <WeatherWidget />}
         <ZmanimPanel date={date} />
       </div>
     </div>

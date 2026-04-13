@@ -1,35 +1,65 @@
 import React from "react";
 import { format } from "date-fns";
 import { getHebrewDate, getZmanim, getJewishHoliday, isShabbat, isFriday } from "@/lib/hebrewDateUtils";
-import { Sunrise, Sun, Sunset, Flame, Star } from "lucide-react";
+import { useSettings, ALL_ZMANIM } from "@/lib/settingsContext";
+import { Sunrise, Sun, Sunset, Flame, Moon, Star, Clock } from "lucide-react";
+import ZmanimPanel from "./ZmanimPanel";
+import WeatherWidget from "./WeatherWidget";
+
+const ZMAN_COLORS_BG = {
+  alotHaShachar: "bg-indigo-50 text-indigo-700 border-indigo-200",
+  zmanTzitzit: "bg-violet-50 text-violet-700 border-violet-200",
+  sunrise: "bg-amber-50 text-amber-700 border-amber-200",
+  sofShmaGRA: "bg-sky-50 text-sky-700 border-sky-200",
+  sofShmaMA: "bg-sky-50 text-sky-600 border-sky-200",
+  sofTfila: "bg-blue-50 text-blue-700 border-blue-200",
+  midday: "bg-yellow-50 text-yellow-700 border-yellow-200",
+  minchaGedolah: "bg-orange-50 text-orange-600 border-orange-200",
+  plagHaMincha: "bg-orange-50 text-orange-700 border-orange-200",
+  sunset: "bg-orange-100 text-orange-700 border-orange-200",
+  candleLighting: "bg-amber-100 text-amber-700 border-amber-200",
+  tzeitKochavim: "bg-indigo-100 text-indigo-700 border-indigo-200",
+  rabbeinuTam: "bg-purple-50 text-purple-700 border-purple-200",
+};
+
+const ZMAN_ICONS = {
+  alotHaShachar: Moon, zmanTzitzit: Star, sunrise: Sunrise,
+  sofShmaGRA: Clock, sofShmaMA: Clock, sofTfila: Clock,
+  midday: Sun, minchaGedolah: Sun, plagHaMincha: Sunset,
+  sunset: Sunset, candleLighting: Flame, tzeitKochavim: Moon, rabbeinuTam: Moon,
+};
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
 
-export default function DayView({ date, onDateSelect }) {
+function timeToMinutes(timeStr) {
+  const match = timeStr.match(/^(\d+):(\d+)\s(AM|PM)$/);
+  if (!match) return -1;
+  let h = parseInt(match[1]);
+  const m = parseInt(match[2]);
+  const ampm = match[3];
+  if (ampm === 'PM' && h !== 12) h += 12;
+  if (ampm === 'AM' && h === 12) h = 0;
+  return h * 60 + m;
+}
+
+export default function DayView({ date }) {
+  const { location, zmanimVisible, showZmanim, showWeather } = useSettings();
   const hebrewDate = getHebrewDate(date);
-  const zmanim = getZmanim(date);
+  const zmanim = getZmanim(date, location.lat, location.lng);
   const holiday = getJewishHoliday(date);
   const shabbat = isShabbat(date);
   const friday = isFriday(date);
 
-  const zmanimEvents = [
-    { label: "Sunrise (הנץ)", time: zmanim.sunrise, icon: Sunrise, color: "bg-amber-100 text-amber-700 border-amber-200" },
-    { label: "Chatzot (חצות)", time: zmanim.midday, icon: Sun, color: "bg-yellow-100 text-yellow-700 border-yellow-200" },
-    { label: "Sunset (שקיעה)", time: zmanim.sunset, icon: Sunset, color: "bg-orange-100 text-orange-700 border-orange-200" },
-  ];
-
-  if (friday) {
-    zmanimEvents.push({
-      label: "Candle Lighting (הדלקת נרות)",
-      time: zmanim.candleLighting,
-      icon: Flame,
-      color: "bg-accent/10 text-accent border-accent/20"
-    });
-  }
+  const activeZmanim = showZmanim
+    ? ALL_ZMANIM.filter((z) => {
+        if (z.key === "candleLighting" && !friday) return false;
+        return !!zmanimVisible[z.key];
+      })
+    : [];
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Main timeline */}
+      {/* Timeline */}
       <div className="lg:col-span-2 bg-card border border-border rounded-lg overflow-hidden">
         <div className="p-4 border-b border-border bg-muted/30">
           <div className="flex items-center justify-between">
@@ -43,7 +73,7 @@ export default function DayView({ date, onDateSelect }) {
             </div>
           </div>
           {(holiday || shabbat) && (
-            <div className="mt-3 flex items-center gap-2">
+            <div className="mt-2 flex items-center gap-2">
               <Star className="h-4 w-4 text-accent" />
               <span className="text-sm font-medium text-accent font-body">{holiday || "Shabbat Kodesh"}</span>
             </div>
@@ -51,63 +81,41 @@ export default function DayView({ date, onDateSelect }) {
         </div>
 
         <div className="max-h-[600px] overflow-y-auto">
-          {HOURS.map((hour) => (
-            <div key={hour} className="flex border-b border-border/30 min-h-[48px]">
-              <div className="w-16 flex-shrink-0 text-right pr-3 pt-1">
-                <span className="text-xs text-muted-foreground font-body tabular-nums">
-                  {hour === 0 ? '12 AM' : hour < 12 ? `${hour} AM` : hour === 12 ? '12 PM' : `${hour - 12} PM`}
-                </span>
+          {HOURS.map((hour) => {
+            const eventsThisHour = activeZmanim.filter((z) => {
+              const mins = timeToMinutes(zmanim[z.key] || "");
+              return mins >= 0 && Math.floor(mins / 60) === hour;
+            });
+            return (
+              <div key={hour} className="flex border-b border-border/30 min-h-[52px]">
+                <div className="w-16 flex-shrink-0 text-right pr-3 pt-2">
+                  <span className="text-xs text-muted-foreground font-body tabular-nums">
+                    {hour === 0 ? '12 AM' : hour < 12 ? `${hour} AM` : hour === 12 ? '12 PM' : `${hour - 12} PM`}
+                  </span>
+                </div>
+                <div className="flex-1 border-l border-border/50 pl-3 py-1.5 space-y-1">
+                  {eventsThisHour.map((z) => {
+                    const Icon = ZMAN_ICONS[z.key] || Clock;
+                    const color = ZMAN_COLORS_BG[z.key] || "bg-muted text-foreground border-border";
+                    return (
+                      <div key={z.key} className={`flex items-center gap-2 px-3 py-1.5 rounded-md border text-xs font-body ${color}`}>
+                        <Icon className="h-3 w-3 flex-shrink-0" />
+                        <span className="font-medium">{z.labelEn}</span>
+                        <span className="ml-auto tabular-nums opacity-80">{zmanim[z.key]}</span>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-              <div className="flex-1 border-l border-border/50 pl-3 py-1">
-                {zmanimEvents.filter(ev => {
-                  const match = ev.time.match(/^(\d+):(\d+)\s(AM|PM)$/);
-                  if (!match) return false;
-                  let h = parseInt(match[1]);
-                  const ampm = match[3];
-                  if (ampm === 'PM' && h !== 12) h += 12;
-                  if (ampm === 'AM' && h === 12) h = 0;
-                  return h === hour;
-                }).map((ev) => (
-                  <div key={ev.label} className={`flex items-center gap-2 px-3 py-1.5 rounded-md border text-sm font-body ${ev.color} mb-1`}>
-                    <ev.icon className="h-3.5 w-3.5" />
-                    <span className="font-medium">{ev.label}</span>
-                    <span className="ml-auto text-xs opacity-80">{ev.time}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
-      {/* Side panel with zmanim */}
+      {/* Side panel */}
       <div className="space-y-4">
-        <div className="bg-card border border-border rounded-lg p-5">
-          <h3 className="font-heading font-semibold text-foreground mb-4">Daily Zmanim</h3>
-          <div className="space-y-3">
-            {zmanimEvents.map((item) => (
-              <div key={item.label} className="flex items-center justify-between py-2 border-b border-border/50 last:border-0">
-                <div className="flex items-center gap-2">
-                  <item.icon className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-body">{item.label.split(' (')[0]}</span>
-                </div>
-                <span className="text-sm font-semibold font-body tabular-nums">{item.time}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {friday && (
-          <div className="bg-accent/5 border border-accent/20 rounded-lg p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <Flame className="h-5 w-5 text-accent" />
-              <h3 className="font-heading font-semibold text-accent">Shabbat Shalom!</h3>
-            </div>
-            <p className="text-sm text-muted-foreground font-body">
-              Light Shabbat candles at <strong className="text-foreground">{zmanim.candleLighting}</strong>
-            </p>
-          </div>
-        )}
+        {showWeather && <WeatherWidget />}
+        <ZmanimPanel date={date} />
       </div>
     </div>
   );
