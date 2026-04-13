@@ -23,8 +23,10 @@ export default function WeekView({ date, onDateSelect }) {
   const dayLabels = hebrewMode ? DAY_LABELS_HEB : DAY_LABELS_EN;
 
   useEffect(() => {
-    fetchParasha(date).then(setParasha);
-  }, [date.toDateString()]);
+    // Use the actual Shabbat of this week, not the selected date
+    const shabbat = days.find(d => d.getDay() === 6) || days[6];
+    fetchParasha(shabbat).then(setParasha);
+  }, [weekStart.toDateString()]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
