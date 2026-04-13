@@ -3,7 +3,8 @@ import { format, startOfWeek, addDays, isSameDay } from "date-fns";
 import { getHebrewDate, getJewishHoliday, isShabbat, isFriday } from "@/lib/hebrewDateUtils";
 import { useWeekZmanim } from "@/lib/useWeekZmanim";
 import { useSettings, HEB_UI } from "@/lib/settingsContext";
-import { Star, Flame, Sunrise, Sunset } from "lucide-react";
+import { getParasha } from "@/lib/parasha";
+import { Star, Flame, Sunrise, Sunset, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import WeatherWidget from "./WeatherWidget";
 
@@ -19,11 +20,24 @@ export default function WeekView({ date, onDateSelect }) {
 
   const t = (en, heb) => hebrewMode ? heb : en;
   const dayLabels = hebrewMode ? DAY_LABELS_HEB : DAY_LABELS_EN;
+  const parasha = getParasha(date);
 
   return (
     <div className="space-y-3">
       {/* Weekly weather banner */}
       {showWeather && <WeatherWidget weekly />}
+
+      {/* Parasha banner */}
+      {parasha && (
+        <div className="flex items-center gap-3 px-4 py-2.5 bg-primary/8 border border-primary/20 rounded-lg">
+          <BookOpen className="h-4 w-4 text-primary flex-shrink-0" />
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs font-body text-muted-foreground uppercase tracking-wider">{t("Parashat HaShavua", "פרשת השבוע")}</span>
+            <span className="font-heading font-semibold text-foreground">{t(parasha.en, parasha.heb)}</span>
+            <span className="text-sm text-muted-foreground font-body" dir="rtl">{parasha.heb}</span>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-7 gap-2">
         {dayLabels.map((d, i) => (
@@ -69,6 +83,15 @@ export default function WeekView({ date, onDateSelect }) {
                 <div className="flex items-center gap-1 mb-1.5">
                   <Star className="h-3 w-3 text-accent flex-shrink-0" />
                   <span className="text-[10px] font-body text-accent font-medium truncate">{holiday}</span>
+                </div>
+              )}
+
+              {shabbat && parasha && (
+                <div className="flex items-center gap-1 mb-1.5">
+                  <BookOpen className="h-2.5 w-2.5 text-primary flex-shrink-0" />
+                  <span className="text-[10px] font-body text-primary font-semibold truncate">
+                    {t(parasha.en, parasha.heb)}
+                  </span>
                 </div>
               )}
 

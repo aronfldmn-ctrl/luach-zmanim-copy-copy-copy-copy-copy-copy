@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameMonth, isSameDay } from "date-fns";
 import { getHebrewDate, getJewishHoliday, isShabbat, isFriday, fetchZmanim } from "@/lib/hebrewDateUtils";
 import { useSettings, HEB_UI } from "@/lib/settingsContext";
-import { Star, Flame } from "lucide-react";
+import { getParasha } from "@/lib/parasha";
+import { Star, Flame, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ZmanimPanel from "./ZmanimPanel";
 import WeatherWidget from "./WeatherWidget";
@@ -47,6 +48,16 @@ export default function MonthView({ date, onDateSelect }) {
   const dayLabels = hebrewMode ? DAY_LABELS_HEB : DAY_LABELS_EN;
   const t = (en, heb) => hebrewMode ? heb : en;
 
+  // Build parasha map: shabbatDateString -> parasha
+  const parashaMap = {};
+  weeks.forEach((week) => {
+    const shabbat = week.find(d => d.getDay() === 6);
+    if (shabbat) {
+      const p = getParasha(shabbat);
+      if (p) parashaMap[shabbat.toDateString()] = p;
+    }
+  });
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
       <div className="lg:col-span-3">
@@ -59,8 +70,22 @@ export default function MonthView({ date, onDateSelect }) {
         </div>
 
         <div className="border border-border rounded-lg overflow-hidden">
-          {weeks.map((week, wi) => (
-            <div key={wi} className="grid grid-cols-7 border-b border-border last:border-0">
+          {weeks.map((week, wi) => {
+            const shabbatDay = week.find(d => d.getDay() === 6);
+            const weekParasha = shabbatDay ? parashaMap[shabbatDay.toDateString()] : null;
+            return (
+            <div key={wi} className="border-b border-border last:border-0">
+              {/* Parasha label row */}
+              {weekParasha && (
+                <div className="flex items-center gap-1.5 px-2 py-1 bg-primary/5 border-b border-primary/10">
+                  <BookOpen className="h-3 w-3 text-primary flex-shrink-0" />
+                  <span className="text-[10px] font-body text-primary font-semibold">
+                    {t(weekParasha.en, weekParasha.heb)}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground font-body" dir="rtl">{weekParasha.heb}</span>
+                </div>
+              )}
+              <div className="grid grid-cols-7">
               {week.map((day) => {
                 const inMonth = isSameMonth(day, date);
                 const isToday = isSameDay(day, today);
@@ -118,8 +143,9 @@ export default function MonthView({ date, onDateSelect }) {
                   </button>
                 );
               })}
+              </div>
             </div>
-          ))}
+          );})}
         </div>
       </div>
 
