@@ -5,14 +5,13 @@ import { useSettings, HEB_UI } from "@/lib/settingsContext";
 import { getParasha } from "@/lib/parasha";
 import { Star, Flame, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
-import ZmanimPanel from "./ZmanimPanel";
-import WeatherWidget from "./WeatherWidget";
+import SidePanel from "./SidePanel";
 
 const DAY_LABELS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Shabbat"];
 const DAY_LABELS_HEB = [HEB_UI.sun, HEB_UI.mon, HEB_UI.tue, HEB_UI.wed, HEB_UI.thu, HEB_UI.fri, HEB_UI.shabbat];
 
 export default function MonthView({ date, onDateSelect }) {
-  const { location, showWeather, hebrewMode, candleLightingMinutes } = useSettings();
+  const { location, hebrewMode, candleLightingMinutes } = useSettings();
   const [zmanimMap, setZmanimMap] = useState({});
 
   const monthStart = startOfMonth(date);
@@ -149,9 +148,8 @@ export default function MonthView({ date, onDateSelect }) {
         </div>
       </div>
 
-      <div className="space-y-4">
-        {showWeather && <WeatherWidget />}
-        <ZmanimPanel date={date} />
+      <div>
+        <SidePanel date={date} />
       </div>
     </div>
   );

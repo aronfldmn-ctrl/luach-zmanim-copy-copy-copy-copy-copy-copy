@@ -4,8 +4,7 @@ import { getHebrewDate, getJewishHoliday, isShabbat, isFriday } from "@/lib/hebr
 import { useSettings, ALL_ZMANIM, HEB_UI } from "@/lib/settingsContext";
 import { useZmanim } from "@/lib/useZmanim";
 import { Sunrise, Sun, Sunset, Flame, Moon, Star, Clock } from "lucide-react";
-import ZmanimPanel from "./ZmanimPanel";
-import WeatherWidget from "./WeatherWidget";
+import SidePanel from "./SidePanel";
 
 const ZMAN_COLORS_BG = {
   alotHaShachar: "bg-indigo-50 text-indigo-700 border-indigo-200",
@@ -44,14 +43,14 @@ function timeToHour(timeStr) {
 }
 
 export default function DayView({ date }) {
-  const { showZmanim, showWeather } = useSettings();
+  const { showZmanim, zmanimVisible, hebrewMode } = useSettings();
   const { zmanim } = useZmanim(date);
   const hebrewDate = getHebrewDate(date);
   const holiday = getJewishHoliday(date);
   const shabbat = isShabbat(date);
   const friday = isFriday(date);
 
-  const { zmanimVisible } = useSettings();
+  const t = (en, heb) => hebrewMode ? heb : en;
 
   const activeZmanim = showZmanim
     ? ALL_ZMANIM.filter((z) => {
@@ -78,7 +77,7 @@ export default function DayView({ date }) {
           {(holiday || shabbat) && (
             <div className="mt-2 flex items-center gap-2">
               <Star className="h-4 w-4 text-accent" />
-              <span className="text-sm font-medium text-accent font-body">{holiday || "Shabbat Kodesh"}</span>
+              <span className="text-sm font-medium text-accent font-body">{holiday || t("Shabbat Kodesh", "שבת קודש")}</span>
             </div>
           )}
         </div>
@@ -100,7 +99,8 @@ export default function DayView({ date }) {
                     return (
                       <div key={z.key} className={`flex items-center gap-2 px-3 py-1.5 rounded-md border text-xs font-body ${color}`}>
                         <Icon className="h-3 w-3 flex-shrink-0" />
-                        <span className="font-medium">{z.labelEn}</span>
+                        {/* Show Hebrew label when in Hebrew mode */}
+                        <span className="font-medium">{t(z.labelEn, z.labelHeb)}</span>
                         <span className="ml-auto tabular-nums opacity-80">{zmanim[z.key]}</span>
                       </div>
                     );
@@ -112,10 +112,9 @@ export default function DayView({ date }) {
         </div>
       </div>
 
-      {/* Side panel */}
-      <div className="space-y-4">
-        {showWeather && <WeatherWidget />}
-        <ZmanimPanel date={date} />
+      {/* Side panel with Zmanim/Weather tabs */}
+      <div>
+        <SidePanel date={date} />
       </div>
     </div>
   );
