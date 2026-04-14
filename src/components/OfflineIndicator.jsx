@@ -1,8 +1,8 @@
 import React from 'react';
-import { Wifi, WifiOff } from 'lucide-react';
+import { WifiOff } from 'lucide-react';
 import { useOnlineStatus } from '@/lib/offline';
 
-export default function OfflineIndicator() {
+function OfflineContent() {
   const online = useOnlineStatus();
 
   if (online) return null;
@@ -13,4 +13,8 @@ export default function OfflineIndicator() {
       <span>Offline mode · Using cached data</span>
     </div>
   );
+}
+
+export default function OfflineIndicator() {
+  return <OfflineContent />;
 }
