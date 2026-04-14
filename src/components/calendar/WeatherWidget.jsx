@@ -38,6 +38,7 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedHourlyDate, setSelectedHourlyDate] = useState(null);
 
   const t = (en, heb) => hebrewMode ? heb : en;
   const unit = celsiusMode ? "°C" : "°F";
@@ -67,24 +68,7 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
           high: Math.round(data.daily.temperature_2m_max[i]),
           low: Math.round(data.daily.temperature_2m_min[i]),
         }));
-        // Get hourly data for the selected date
-        const selectedDate = date ? new Date(date) : new Date();
-        const isToday = selectedDate.toDateString() === new Date().toDateString();
-        const nowHour = isToday ? new Date().getHours() : 0;
-        const hourly = (data.hourly?.time || [])
-          .map((timeStr, i) => ({
-            time: new Date(timeStr),
-            temp: Math.round(data.hourly.temperature_2m[i]),
-            code: data.hourly.weathercode[i],
-            precip: data.hourly.precipitation_probability[i],
-            wind: Math.round(data.hourly.windspeed_10m[i]),
-          }))
-          .filter((h) => {
-            const matchesDate = h.time.toDateString() === selectedDate.toDateString();
-            return matchesDate && h.time.getHours() >= nowHour;
-          })
-          .slice(0, 24);
-        setWeather({ current, daily, hourly });
+        setWeather({ current, daily, hourlyAll: data.hourly });
         setLoading(false);
       })
       .catch(() => {
@@ -198,6 +182,28 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
 
   // Combined: current conditions + hourly breakdown
   if (effectiveView === "combined") {
+    const DAY_LABELS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const DAY_LABELS_HEB = [HEB_UI.sun, HEB_UI.mon, HEB_UI.tue, HEB_UI.wed, HEB_UI.thu, HEB_UI.fri, HEB_UI.shabbat];
+
+    // Determine which date's hourly to show: selectedHourlyDate > calendar date > today
+    const hourlyTarget = selectedHourlyDate || (date ? new Date(date) : new Date());
+    const hourlyIsToday = hourlyTarget.toDateString() === todayDate.toDateString();
+    const nowHour = hourlyIsToday ? new Date().getHours() : 0;
+
+    const hourlyForTarget = (weather.hourlyAll?.time || [])
+      .map((timeStr, i) => ({
+        time: new Date(timeStr),
+        temp: Math.round(weather.hourlyAll.temperature_2m[i]),
+        code: weather.hourlyAll.weathercode[i],
+        precip: weather.hourlyAll.precipitation_probability[i],
+        wind: Math.round(weather.hourlyAll.windspeed_10m[i]),
+      }))
+      .filter((h) => h.time.toDateString() === hourlyTarget.toDateString() && h.time.getHours() >= nowHour);
+
+    const hourlyLabel = hourlyIsToday
+      ? t("Today · Hour by Hour", "היום · שעה אחר שעה")
+      : `${format(hourlyTarget, "EEEE, MMM d")} · ${t("Hour by Hour", "שעה אחר שעה")}`;
+
     return (
       <div className="bg-card border border-border rounded-lg overflow-hidden">
         {/* Header */}
@@ -212,8 +218,8 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
             <div>
               <p className="text-4xl font-heading font-bold text-foreground">{weather.current.temp}{unit}</p>
               <p className="text-sm text-muted-foreground font-body">{t(info.label, info.labelHeb)}</p>
-              </div>
-              <div className="ml-auto flex flex-col gap-1.5 text-right">
+            </div>
+            <div className="ml-auto flex flex-col gap-1.5 text-right">
               <div className="flex items-center gap-1.5 justify-end text-xs font-body text-muted-foreground">
                 <Thermometer className="h-3.5 w-3.5 text-orange-400" />
                 <span>{t("Feels", "מורגש")} {weather.current.feelsLike}{unit}</span>
@@ -226,16 +232,47 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
           </div>
         </div>
 
-        {/* Hourly breakdown */}
+        {/* 7-Day Forecast — tappable to select hourly date */}
         <div className="px-4 py-3 border-b border-border/60">
-          <p className="text-[10px] font-body text-muted-foreground uppercase tracking-wider mb-2">{t("Today · Hour by Hour", "היום · שעה אחר שעה")}</p>
+          <p className="text-[10px] font-body text-muted-foreground uppercase tracking-wider mb-2">{t("7-Day Forecast", "תחזית 7 ימים")}</p>
+          <div className="grid grid-cols-7 gap-1">
+            {weather.daily.slice(0, 7).map((day, i) => {
+              const DayIcon = getWeatherInfo(day.code).icon;
+              const dayColor = getWeatherInfo(day.code).color;
+              const isToday = day.date.toDateString() === todayDate.toDateString();
+              const isSelected = day.date.toDateString() === hourlyTarget.toDateString();
+              const dayLabel = hebrewMode ? DAY_LABELS_HEB[day.date.getDay()] : DAY_LABELS_EN[day.date.getDay()];
+              return (
+                <button
+                  key={i}
+                  onClick={() => setSelectedHourlyDate(new Date(day.date))}
+                  className={`flex flex-col items-center gap-1 p-1.5 rounded-lg transition-colors ${
+                    isSelected ? "bg-primary/15 border border-primary/40 ring-1 ring-primary/30" :
+                    isToday ? "bg-accent/10 border border-accent/20 hover:bg-accent/20" :
+                    "hover:bg-muted/50 border border-transparent"
+                  }`}
+                >
+                  <span className={`text-[10px] font-body font-medium ${isSelected ? "text-primary" : isToday ? "text-accent" : "text-muted-foreground"}`}>{dayLabel}</span>
+                  <span className="text-[9px] font-body text-muted-foreground">{format(day.date, "M/d")}</span>
+                  <DayIcon className={`h-4 w-4 ${dayColor}`} />
+                  <span className="text-[10px] font-body font-semibold text-foreground">{day.high}°</span>
+                  <span className="text-[10px] font-body text-muted-foreground">{day.low}°</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Hourly breakdown for selected day */}
+        <div className="px-4 py-3">
+          <p className="text-[10px] font-body text-muted-foreground uppercase tracking-wider mb-2">{hourlyLabel}</p>
           <div className="space-y-0.5 max-h-[280px] overflow-y-auto pr-1">
-            {weather.hourly.length === 0 ? (
+            {hourlyForTarget.length === 0 ? (
               <p className="text-xs text-muted-foreground font-body text-center py-3">{t("No data", "אין נתונים")}</p>
-            ) : weather.hourly.map((h, i) => {
+            ) : hourlyForTarget.map((h, i) => {
               const HourIcon = getWeatherInfo(h.code).icon;
               const hourColor = getWeatherInfo(h.code).color;
-              const isNow = i === 0;
+              const isNow = hourlyIsToday && i === 0;
               return (
                 <div key={i} className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-body ${isNow ? "bg-accent/10 border border-accent/20" : "hover:bg-muted/30"}`}>
                   <span className={`w-12 flex-shrink-0 tabular-nums ${isNow ? "font-semibold text-accent" : "text-muted-foreground"}`}>
@@ -251,30 +288,6 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
                     <Wind className="h-3 w-3 text-slate-400" />
                     <span>{h.wind}</span>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Weekly forecast */}
-        <div className="px-4 py-3">
-          <p className="text-[10px] font-body text-muted-foreground uppercase tracking-wider mb-2">{t("7-Day Forecast", "תחזית 7 ימים")}</p>
-          <div className="grid grid-cols-7 gap-1">
-            {weather.daily.slice(0, 7).map((day, i) => {
-              const DAY_LABELS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-              const DAY_LABELS_HEB = [HEB_UI.sun, HEB_UI.mon, HEB_UI.tue, HEB_UI.wed, HEB_UI.thu, HEB_UI.fri, HEB_UI.shabbat];
-              const DayIcon = getWeatherInfo(day.code).icon;
-              const dayColor = getWeatherInfo(day.code).color;
-              const isToday = day.date.toDateString() === todayDate.toDateString();
-              const dayLabel = hebrewMode ? DAY_LABELS_HEB[day.date.getDay()] : DAY_LABELS_EN[day.date.getDay()];
-              return (
-                <div key={i} className={`flex flex-col items-center gap-1 p-1.5 rounded-lg ${isToday ? "bg-accent/10 border border-accent/20" : "hover:bg-muted/50"}`}>
-                  <span className={`text-[10px] font-body font-medium ${isToday ? "text-accent" : "text-muted-foreground"}`}>{dayLabel}</span>
-                  <span className="text-[9px] font-body text-muted-foreground">{format(day.date, "M/d")}</span>
-                  <DayIcon className={`h-4 w-4 ${dayColor}`} />
-                  <span className="text-[10px] font-body font-semibold text-foreground">{day.high}°</span>
-                  <span className="text-[10px] font-body text-muted-foreground">{day.low}°</span>
                 </div>
               );
             })}
