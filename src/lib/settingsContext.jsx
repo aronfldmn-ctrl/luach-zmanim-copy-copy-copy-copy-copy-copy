@@ -31,6 +31,7 @@ export const ALL_ZMANIM = [
   { key: 'minchaGedolah', labelEn: 'Mincha Gedola', labelHeb: 'מנחה גדולה' },
   { key: 'plagHaMincha', labelEn: 'Plag HaMincha', labelHeb: 'פלג המנחה' },
   { key: 'sunset', labelEn: 'Sunset', labelHeb: 'שקיעה' },
+  { key: 'candleLighting', labelEn: 'Candle Lighting', labelHeb: 'הדלקת נרות' },
   { key: 'tzeitKochavim', labelEn: 'Tzeit Kochavim', labelHeb: 'צאת הכוכבים' },
   { key: 'rabbeinuTam', labelEn: 'Rabbenu Tam', labelHeb: 'רבינו תם' },
 ];
@@ -51,6 +52,7 @@ export function SettingsProvider({ children }) {
     minchaGedolah: true, 
     plagHaMincha: true, 
     sunset: true, 
+    candleLighting: true,
     tzeitKochavim: true, 
     rabbeinuTam: true 
   });
