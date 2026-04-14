@@ -33,7 +33,7 @@ function getWeatherInfo(code) {
 }
 
 // view: "daily" | "weekly" | "hourly" | "compact"
-export default function WeatherWidget({ compact = false, weekly = false, view = "daily", embedded = false }) {
+export default function WeatherWidget({ compact = false, weekly = false, view = "daily", embedded = false, date }) {
   const { location, hebrewMode, celsiusMode } = useSettings();
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -67,8 +67,10 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
           high: Math.round(data.daily.temperature_2m_max[i]),
           low: Math.round(data.daily.temperature_2m_min[i]),
         }));
-        // Get today's hourly data (next 24 hours)
-        const nowHour = new Date().getHours();
+        // Get hourly data for the selected date
+        const selectedDate = date ? new Date(date) : new Date();
+        const isToday = selectedDate.toDateString() === new Date().toDateString();
+        const nowHour = isToday ? new Date().getHours() : 0;
         const hourly = (data.hourly?.time || [])
           .map((timeStr, i) => ({
             time: new Date(timeStr),
@@ -78,8 +80,8 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
             wind: Math.round(data.hourly.windspeed_10m[i]),
           }))
           .filter((h) => {
-            const isToday = h.time.toDateString() === new Date().toDateString();
-            return isToday && h.time.getHours() >= nowHour;
+            const matchesDate = h.time.toDateString() === selectedDate.toDateString();
+            return matchesDate && h.time.getHours() >= nowHour;
           })
           .slice(0, 24);
         setWeather({ current, daily, hourly });
@@ -89,7 +91,7 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
         setError("Unable to load weather");
         setLoading(false);
       });
-  }, [location.lat, location.lng, celsiusMode]);
+  }, [location.lat, location.lng, celsiusMode, date]);
 
   if (loading) {
     return (

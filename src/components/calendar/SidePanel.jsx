@@ -14,7 +14,7 @@ export default function SidePanel({ date }) {
       {showZmanim && <ZmanimPanel date={date} />}
 
       {/* Weather: combined daily + hourly in one panel */}
-      {showWeather && <WeatherWidget view="combined" />}
+      {showWeather && <WeatherWidget view="combined" date={date} />}
     </div>
   );
 }
