@@ -1,9 +1,10 @@
 import React, { useState, useRef } from "react";
-import { Settings, X, MapPin, Search, Loader2, Minus, Plus } from "lucide-react";
+import { Settings, X, MapPin, Search, Loader2, Minus, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { useSettings, ALL_ZMANIM, HEB_UI } from "@/lib/settingsContext";
+import { base44 } from "@/api/base44Client";
 
 export default function SettingsPanel() {
   const [open, setOpen] = useState(false);
@@ -72,6 +73,17 @@ export default function SettingsPanel() {
   const adjustCandle = (delta) => {
     const next = Math.max(1, Math.min(60, candleLightingMinutes + delta));
     setCandleLightingMinutes(next);
+  };
+
+  const handleDeleteAccount = async () => {
+    if (window.confirm(t("Are you sure? This cannot be undone.", "האם אתה בטוח? לא ניתן לבטל זאת."))) {
+      try {
+        await base44.auth.deleteMe?.();
+        window.location.href = "/";
+      } catch (error) {
+        alert(t("Error deleting account", "שגיאה במחיקת חשבון"));
+      }
+    }
   };
 
   if (!open) {
@@ -270,6 +282,21 @@ export default function SettingsPanel() {
                 </div>
               </div>
             )}
+          </section>
+
+          {/* Delete Account */}
+          <section className="border-t border-border pt-7">
+            <Button
+              variant="destructive"
+              onClick={handleDeleteAccount}
+              className="w-full justify-center gap-2"
+            >
+              <Trash2 className="h-4 w-4" />
+              {t("Delete Account", "מחק חשבון")}
+            </Button>
+            <p className="text-xs text-muted-foreground font-body mt-2 text-center">
+              {t("Permanently delete your account and all data", "מחק את החשבון שלך וכל הנתונים בצורה קבועה")}
+            </p>
           </section>
 
         </div>

@@ -84,7 +84,17 @@
   * {
     @apply border-border outline-ring/50;
   }
+  
   body {
     @apply bg-background text-foreground;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none;
+  }
+  
+  button, a, input, textarea, select {
+    user-select: none;
+    -webkit-user-select: none;
   }
 }

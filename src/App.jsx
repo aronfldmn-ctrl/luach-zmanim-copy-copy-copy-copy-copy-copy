@@ -35,6 +35,7 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       <Route path="/" element={<Calendar />} />
+      <Route path="/:view" element={<Calendar />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

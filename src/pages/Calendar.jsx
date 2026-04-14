@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { addDays, addWeeks, addMonths, addYears } from "date-fns";
+import { useNavigate, useParams } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { SettingsProvider, useSettings } from "@/lib/settingsContext";
 import CalendarHeader from "@/components/calendar/CalendarHeader";
 import DayView from "@/components/calendar/DayView";
@@ -8,13 +10,27 @@ import MonthView from "@/components/calendar/MonthView";
 import YearView from "@/components/calendar/YearView";
 import StatusBar from "@/components/calendar/StatusBar.jsx";
 import DailyBanner from "@/components/calendar/DailyBanner.jsx";
+import BottomNav from "@/components/calendar/BottomNav.jsx";
 import { initPushNotifications, scheduleDailyNotification } from "@/lib/pushNotifications";
 
 const VIEWS = ["day", "week", "month", "year"];
+const VIEW_VARIANTS = {
+  enter: (direction) => ({
+    x: direction > 0 ? 300 : -300,
+    opacity: 0,
+  }),
+  center: { x: 0, opacity: 1 },
+  exit: (direction) => ({
+    x: direction > 0 ? -300 : 300,
+    opacity: 0,
+  }),
+};
 
 function CalendarApp() {
+  const navigate = useNavigate();
+  const { view = "month" } = useParams();
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [view, setView] = useState("month");
+  const [direction, setDirection] = useState(0);
   const { showStatusBar } = useSettings();
 
   // Initialize push notifications and request permissions on startup
@@ -40,12 +56,13 @@ function CalendarApp() {
     });
   }, []);
 
-  const handleNavigate = useCallback((direction) => {
+  const handleNavigate = useCallback((dir) => {
+    setDirection(dir);
     setCurrentDate((prev) => {
-      if (view === "day") return addDays(prev, direction);
-      if (view === "week") return addWeeks(prev, direction);
-      if (view === "month") return addMonths(prev, direction);
-      if (view === "year") return addYears(prev, direction);
+      if (view === "day") return addDays(prev, dir);
+      if (view === "week") return addWeeks(prev, dir);
+      if (view === "month") return addMonths(prev, dir);
+      if (view === "year") return addYears(prev, dir);
       return prev;
     });
   }, [view]);
@@ -54,18 +71,30 @@ function CalendarApp() {
 
   const handleDateSelect = (date) => {
     setCurrentDate(date);
-    if (view === "year") setView("month");
-    else if (view === "month") setView("day");
-    else if (view === "week") setView("day");
+    if (view === "year") navigate("/month");
+    else if (view === "month") navigate("/day");
+    else if (view === "week") navigate("/day");
   };
 
-  const cycleView = useCallback((direction) => {
-    setView((prev) => {
-      const idx = VIEWS.indexOf(prev);
-      const next = (idx + direction + VIEWS.length) % VIEWS.length;
-      return VIEWS[next];
-    });
-  }, []);
+  const cycleView = useCallback((dir) => {
+    const idx = VIEWS.indexOf(view);
+    const next = (idx + dir + VIEWS.length) % VIEWS.length;
+    setDirection(dir);
+    navigate(`/${VIEWS[next]}`);
+  }, [view, navigate]);
+
+  // Handle hardware back button (mobile)
+  useEffect(() => {
+    const handleBackButton = () => {
+      const idx = VIEWS.indexOf(view);
+      if (idx > 0) {
+        navigate(`/${VIEWS[idx - 1]}`);
+      }
+    };
+
+    document.addEventListener("backbutton", handleBackButton);
+    return () => document.removeEventListener("backbutton", handleBackButton);
+  }, [view, navigate]);
 
   // D-pad / keyboard navigation for non-touch phones
   useEffect(() => {
@@ -104,16 +133,16 @@ function CalendarApp() {
           handleToday();
           break;
         case "1":
-          setView("day");
+          navigate("/day");
           break;
         case "2":
-          setView("week");
+          navigate("/week");
           break;
         case "3":
-          setView("month");
+          navigate("/month");
           break;
         case "9":
-          setView("year");
+          navigate("/year");
           break;
         default:
           break;
@@ -125,30 +154,44 @@ function CalendarApp() {
   }, [handleNavigate, handleToday, cycleView]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background safe-area-inset-top pb-16 md:pb-0">
       <DailyBanner />
       {showStatusBar && <StatusBar />}
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
         <CalendarHeader
           currentDate={currentDate}
           view={view}
-          onViewChange={setView}
+          onViewChange={(v) => navigate(`/${v}`)}
           onNavigate={handleNavigate}
           onToday={handleToday}
         />
 
         <div className="mt-2">
-          {view === "day" && <DayView date={currentDate} />}
-          {view === "week" && <WeekView date={currentDate} onDateSelect={handleDateSelect} />}
-          {view === "month" && <MonthView date={currentDate} onDateSelect={handleDateSelect} />}
-          {view === "year" && <YearView date={currentDate} onDateSelect={handleDateSelect} />}
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={view}
+              custom={direction}
+              variants={VIEW_VARIANTS}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              {view === "day" && <DayView date={currentDate} />}
+              {view === "week" && <WeekView date={currentDate} onDateSelect={handleDateSelect} />}
+              {view === "month" && <MonthView date={currentDate} onDateSelect={handleDateSelect} />}
+              {view === "year" && <YearView date={currentDate} onDateSelect={handleDateSelect} />}
+            </motion.div>
+          </AnimatePresence>
         </div>
 
         {/* Keyboard shortcut hint */}
-        <div className="mt-6 text-center text-[10px] text-muted-foreground font-body opacity-40">
+        <div className="mt-6 text-center text-[10px] text-muted-foreground font-body opacity-40 hidden md:block">
           ← → Navigate · ↑ ↓ Change view · Enter = Today · 1=Day 3=Month 9=Year
         </div>
       </div>
+
+      <BottomNav />
     </div>
   );
 }
