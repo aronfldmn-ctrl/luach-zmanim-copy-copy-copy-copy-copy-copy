@@ -39,7 +39,7 @@ function loadFromStorage(key, fallback) {
     if (typeof window === 'undefined' || !window.localStorage) {
       return fallback;
     }
-    const raw = localStorage.getItem(key);
+    const raw = window.localStorage.getItem(key);
     return raw ? JSON.parse(raw) : fallback;
   } catch (e) {
     console.error(`Failed to load ${key} from storage:`, e);
