@@ -42,10 +42,13 @@ const AuthenticatedApp = () => {
 
   // Render the main app
   return (
-    <Routes>
-      <Route path="/" element={<><PermissionRequester /><Calendar /></>} />
-      <Route path="/*" element={<><PermissionRequester /><Calendar /></>} />
-    </Routes>
+    <SettingsProvider>
+      <OfflineIndicator />
+      <Routes>
+        <Route path="/" element={<><PermissionRequester /><Calendar /></>} />
+        <Route path="/*" element={<><PermissionRequester /><Calendar /></>} />
+      </Routes>
+    </SettingsProvider>
   );
 };
 
@@ -56,10 +59,7 @@ function App() {
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
         <Router>
-          <SettingsProvider>
-            <OfflineIndicator />
-            <AuthenticatedApp />
-          </SettingsProvider>
+          <AuthenticatedApp />
         </Router>
         <Toaster />
       </QueryClientProvider>
