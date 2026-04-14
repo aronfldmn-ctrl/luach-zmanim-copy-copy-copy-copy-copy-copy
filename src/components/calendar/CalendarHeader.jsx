@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
 import { format } from "date-fns";
 import { getHebrewDate } from "@/lib/hebrewDateUtils";
 import { useSettings, HEB_UI } from "@/lib/settingsContext";
-import SettingsPanel from "./SettingsPanel";
+import SettingsPanel from "@/components/calendar/SettingsPanel";
 import WeatherWidget from "./WeatherWidget";
 
 const VIEW_OPTIONS = [
