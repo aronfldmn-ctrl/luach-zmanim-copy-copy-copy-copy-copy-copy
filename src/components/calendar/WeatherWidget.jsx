@@ -59,18 +59,16 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
     const tempUnit = celsiusMode ? "celsius" : "fahrenheit";
     const cacheKey = `weather_full_${location.lat}_${location.lng}_${tempUnit}`;
     
-    // Clear invalid cache entries (old Date serialization)
+    // Clear all weather caches to force fresh fetch
     try {
-      const raw = localStorage.getItem(cacheKey);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (parsed.data?.daily && typeof parsed.data.daily[0]?.date === 'object' && !(parsed.data.daily[0].date instanceof Date)) {
-          localStorage.removeItem(cacheKey);
+      const keys = Object.keys(localStorage);
+      keys.forEach(k => {
+        if (k.startsWith('weather_full_')) {
+          localStorage.removeItem(k);
         }
-      }
+      });
     } catch (e) {
-      // If cache is invalid, remove it
-      localStorage.removeItem(cacheKey);
+      // Ignore cache clearing errors
     }
     
     // Try cache first
