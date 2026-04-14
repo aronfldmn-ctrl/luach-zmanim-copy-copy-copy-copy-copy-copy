@@ -208,7 +208,7 @@ export function getJewishHolidays(date) {
   if (m === 7 && d >= 17 && d <= 20) holidays.push("Chol HaMoed Sukkot");
   if (m === 7 && d === 22) holidays.push("Shemini Atzeret");
   if (m === 7 && d === 23) holidays.push("Simchat Torah");
-  if (m === 7 && d === 23) holidays.push("Isru Chag");
+  if (m === 7 && d === 24) holidays.push("Isru Chag Sukkot");
   if (m === 9 && d >= 25) holidays.push("Chanukah");
   if (m === 10 && d <= 2) holidays.push("Chanukah");
   if (m === 10 && d === 10) holidays.push("Asara B'Tevet");
@@ -222,7 +222,7 @@ export function getJewishHolidays(date) {
   if (m === 1 && d >= 17 && d <= 20) holidays.push("Chol HaMoed Pesach");
   if (m === 1 && d === 21) holidays.push("שביעי של פסח");
   if (m === 1 && d === 22) holidays.push("אחרון של פסח");
-  if (m === 1 && d === 22) holidays.push("Isru Chag");
+  if (m === 1 && d === 23) holidays.push("Isru Chag Pesach");
   if (m === 2 && d === 18) holidays.push("Lag B'Omer");
   if ((m === 1 && d >= 16) || (m === 2) || (m === 3 && d <= 6)) {
     let dayOfOmer;
@@ -234,7 +234,7 @@ export function getJewishHolidays(date) {
   if (m === 3 && d === 5) holidays.push("Erev Shavuot");
   if (m === 3 && d === 6) holidays.push("Shavuot");
   if (m === 3 && d === 7) holidays.push("Shavuot (2nd day)");
-  if (m === 3 && d === 7) holidays.push("Isru Chag");
+  if (m === 3 && d === 8) holidays.push("Isru Chag Shavuot");
   if (m === 5 && d === 9) holidays.push("Tisha B'Av");
   if (m === 5 && d === 15) holidays.push("Tu B'Av");
   
