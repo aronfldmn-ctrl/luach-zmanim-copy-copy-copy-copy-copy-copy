@@ -36,9 +36,13 @@ const SettingsContext = createContext(null);
 
 function loadFromStorage(key, fallback) {
   try {
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return fallback;
+    }
     const raw = localStorage.getItem(key);
     return raw ? JSON.parse(raw) : fallback;
-  } catch {
+  } catch (e) {
+    console.error(`Failed to load ${key} from storage:`, e);
     return fallback;
   }
 }
