@@ -23,6 +23,7 @@ export default function SettingsPanel() {
     celsiusMode, setCelsiusMode,
     showZmanimSeconds, setShowZmanimSeconds,
     showStatusBar, setShowStatusBar,
+    showDafYomi, setShowDafYomi,
   } = useSettings();
 
   const t = (en, heb) => hebrewMode ? heb : en;
@@ -251,29 +252,42 @@ export default function SettingsPanel() {
           </section>
 
           {/* Weather toggle */}
-          <section>
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <h3 className="font-body font-semibold text-sm text-muted-foreground uppercase tracking-wider">
-                  {t("Show Weather", HEB_UI.show_weather)}
-                </h3>
-                <p className="text-xs text-muted-foreground font-body mt-0.5">{t("Display local weather info", "הצג מזג אוויר מקומי")}</p>
-              </div>
-              <Switch checked={showWeather} onCheckedChange={setShowWeather} />
-            </div>
-            {showWeather && (
-              <div className="flex items-center justify-between px-3 py-2.5 bg-muted rounded-lg">
-                <p className="text-sm font-body font-medium">{t("Temperature Unit", "יחידת טמפרטורה")}</p>
-                <div className="flex items-center gap-2">
-                  <span className={`text-xs font-body ${!celsiusMode ? "font-semibold text-foreground" : "text-muted-foreground"}`}>°F</span>
-                  <Switch checked={celsiusMode} onCheckedChange={setCelsiusMode} />
-                  <span className={`text-xs font-body ${celsiusMode ? "font-semibold text-foreground" : "text-muted-foreground"}`}>°C</span>
-                </div>
-              </div>
-            )}
-          </section>
+           <section>
+             <div className="flex items-center justify-between mb-3">
+               <div>
+                 <h3 className="font-body font-semibold text-sm text-muted-foreground uppercase tracking-wider">
+                   {t("Show Weather", HEB_UI.show_weather)}
+                 </h3>
+                 <p className="text-xs text-muted-foreground font-body mt-0.5">{t("Display local weather info", "הצג מזג אוויר מקומי")}</p>
+               </div>
+               <Switch checked={showWeather} onCheckedChange={setShowWeather} />
+             </div>
+             {showWeather && (
+               <div className="flex items-center justify-between px-3 py-2.5 bg-muted rounded-lg">
+                 <p className="text-sm font-body font-medium">{t("Temperature Unit", "יחידת טמפרטורה")}</p>
+                 <div className="flex items-center gap-2">
+                   <span className={`text-xs font-body ${!celsiusMode ? "font-semibold text-foreground" : "text-muted-foreground"}`}>°F</span>
+                   <Switch checked={celsiusMode} onCheckedChange={setCelsiusMode} />
+                   <span className={`text-xs font-body ${celsiusMode ? "font-semibold text-foreground" : "text-muted-foreground"}`}>°C</span>
+                 </div>
+               </div>
+             )}
+           </section>
 
-          </div>
+           {/* Daf Yomi toggle */}
+           <section>
+             <div className="flex items-center justify-between">
+               <div>
+                 <h3 className="font-body font-semibold text-sm text-muted-foreground uppercase tracking-wider">
+                   {t("Daf Yomi", HEB_UI.daf_yomi)}
+                 </h3>
+                 <p className="text-xs text-muted-foreground font-body mt-0.5">{t("Daily Talmud page", "דף גמרא יומי")}</p>
+               </div>
+               <Switch checked={showDafYomi} onCheckedChange={setShowDafYomi} />
+             </div>
+           </section>
+
+           </div>
       </div>
     </div>
   );

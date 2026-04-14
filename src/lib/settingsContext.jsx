@@ -44,6 +44,7 @@ export function SettingsProvider({ children }) {
   const [celsiusMode, setCelsiusModeState] = useState(() => loadFromStorage("jcal_celsius_mode", false));
   const [showZmanimSeconds, setShowZmanimSecondsState] = useState(() => loadFromStorage("jcal_zmanim_seconds", false));
   const [showStatusBar, setShowStatusBarState] = useState(() => loadFromStorage("jcal_status_bar", true));
+  const [showDafYomi, setShowDafYomiState] = useState(() => loadFromStorage("jcal_show_daf_yomi", true));
 
   const setLocation = (loc) => {
     setLocationState(loc);
@@ -81,6 +82,10 @@ export function SettingsProvider({ children }) {
     setShowStatusBarState(v);
     localStorage.setItem("jcal_status_bar", JSON.stringify(v));
   };
+  const setShowDafYomi = (v) => {
+    setShowDafYomiState(v);
+    localStorage.setItem("jcal_show_daf_yomi", JSON.stringify(v));
+  };
 
   return (
     <SettingsContext.Provider value={{
@@ -93,6 +98,7 @@ export function SettingsProvider({ children }) {
       celsiusMode, setCelsiusMode,
       showZmanimSeconds, setShowZmanimSeconds,
       showStatusBar, setShowStatusBar,
+      showDafYomi, setShowDafYomi,
     }}>
       {children}
     </SettingsContext.Provider>
@@ -162,7 +168,10 @@ export const HEB_UI = {
   // Month holidays
   min_before_sunset: "דק' לפני שקיעה",
   // Weather views
-  daily: "יומי",
-  hourly: "שעתי",
-  weekly: "שבועי",
-};
+   daily: "יומי",
+   hourly: "שעתי",
+   weekly: "שבועי",
+   // Daf Yomi
+   daf_yomi: "דף היומי",
+   show_daf_yomi: "הצג דף היומי",
+  };
