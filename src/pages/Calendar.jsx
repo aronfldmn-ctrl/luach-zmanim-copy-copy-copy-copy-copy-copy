@@ -31,7 +31,6 @@ function CalendarApp() {
   const { view = "month" } = useParams();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [direction, setDirection] = useState(0);
-  const { showStatusBar } = useSettings();
 
   // Initialize push notifications and request permissions on startup
   useEffect(() => {
@@ -55,26 +54,6 @@ function CalendarApp() {
       minute: 0,
     });
   }, []);
-
-  const handleNavigate = useCallback((dir) => {
-    setDirection(dir);
-    setCurrentDate((prev) => {
-      if (view === "day") return addDays(prev, dir);
-      if (view === "week") return addWeeks(prev, dir);
-      if (view === "month") return addMonths(prev, dir);
-      if (view === "year") return addYears(prev, dir);
-      return prev;
-    });
-  }, [view]);
-
-  const handleToday = useCallback(() => setCurrentDate(new Date()), []);
-
-  const handleDateSelect = (date) => {
-    setCurrentDate(date);
-    if (view === "year") navigate("/month");
-    else if (view === "month") navigate("/day");
-    else if (view === "week") navigate("/day");
-  };
 
   const cycleView = useCallback((dir) => {
     const idx = VIEWS.indexOf(view);
@@ -152,6 +131,44 @@ function CalendarApp() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleNavigate, handleToday, cycleView, navigate]);
+
+  const handleNavigate = useCallback((dir) => {
+    setDirection(dir);
+    setCurrentDate((prev) => {
+      if (view === "day") return addDays(prev, dir);
+      if (view === "week") return addWeeks(prev, dir);
+      if (view === "month") return addMonths(prev, dir);
+      if (view === "year") return addYears(prev, dir);
+      return prev;
+    });
+  }, [view]);
+
+  const handleToday = useCallback(() => setCurrentDate(new Date()), []);
+
+  const handleDateSelect = (date) => {
+    setCurrentDate(date);
+    if (view === "year") navigate("/month");
+    else if (view === "month") navigate("/day");
+    else if (view === "week") navigate("/day");
+  };
+
+  return (
+    <CalendarContent 
+      currentDate={currentDate} 
+      setCurrentDate={setCurrentDate} 
+      direction={direction} 
+      setDirection={setDirection} 
+      navigate={navigate} 
+      view={view}
+      handleNavigate={handleNavigate}
+      handleToday={handleToday}
+      handleDateSelect={handleDateSelect}
+    />
+  );
+}
+
+function CalendarContent({ currentDate, setCurrentDate, direction, setDirection, navigate, view, handleNavigate, handleToday, handleDateSelect }) {
+  const { showStatusBar } = useSettings();
 
   return (
     <div className="min-h-screen bg-background safe-area-inset-top pb-16 md:pb-0">
