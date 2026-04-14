@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
-import { SettingsProvider } from '@/lib/settingsContext';
+import { SettingsProvider } from '@/lib/settingsContext.jsx';
 import OfflineIndicator from '@/components/OfflineIndicator';
 import PermissionRequester from '@/components/PermissionRequester.jsx';
 import { registerServiceWorker } from '@/lib/offline';
