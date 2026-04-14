@@ -4,7 +4,7 @@ import { getJewishHoliday, isShabbat, getHebrewDate } from "@/lib/hebrewDateUtil
 import { useSettings } from "@/lib/settingsContext";
 import { cn } from "@/lib/utils";
 
-function MiniMonth({ monthDate, selectedDate, onDateSelect, hebrewMode }) {
+function MiniMonth({ monthDate, selectedDate, onDateSelect, onMonthSelect, hebrewMode }) {
   const monthStart = startOfMonth(monthDate);
   const monthEnd = endOfMonth(monthDate);
   const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 });
@@ -29,14 +29,17 @@ function MiniMonth({ monthDate, selectedDate, onDateSelect, hebrewMode }) {
 
   return (
     <div className="bg-card border border-border rounded-lg p-3 hover:shadow-md transition-shadow">
-      <div className="text-center mb-2">
+      <button
+        onClick={() => onMonthSelect(monthDate)}
+        className="w-full text-center mb-2 hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-primary rounded px-2 py-1"
+      >
         <h3 className="font-heading font-semibold text-sm text-foreground leading-tight">
           {engName}
         </h3>
         <p className="text-[10px] text-muted-foreground font-body" dir="rtl">
           {hebrewMode ? hebMonthsHeb : hebMonthsEn}
         </p>
-      </div>
+      </button>
       <div className="grid grid-cols-7 gap-0">
         {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
           <div key={i} className="text-center text-[9px] font-body text-muted-foreground py-0.5">
@@ -76,6 +79,10 @@ export default function YearView({ date, onDateSelect }) {
   const months = Array.from({ length: 12 }, (_, i) => new Date(year, i, 1));
   const { hebrewMode } = useSettings();
 
+  const handleMonthClick = (monthDate) => {
+    onDateSelect(monthDate);
+  };
+
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {months.map((monthDate) => (
@@ -84,6 +91,7 @@ export default function YearView({ date, onDateSelect }) {
           monthDate={monthDate}
           selectedDate={date}
           onDateSelect={onDateSelect}
+          onMonthSelect={handleMonthClick}
           hebrewMode={hebrewMode}
         />
       ))}
