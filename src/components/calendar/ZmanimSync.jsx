@@ -13,8 +13,85 @@ export default function ZmanimSync() {
   const { location, syncZmanimDays, setSyncZmanimDays, hebrewMode, zmanimVisible, showZmanimSeconds } = useSettings();
   const [syncing, setSyncing] = useState(false);
   const [syncMode, setSyncMode] = useState("export"); // "export" or "import"
+  const [importedEvents, setImportedEvents] = useState([]);
+  const [selectedEvents, setSelectedEvents] = useState(new Set());
 
   const t = (en, heb) => hebrewMode ? heb : en;
+
+  const parseICS = (content) => {
+    const events = [];
+    const lines = content.split("\n");
+    let currentEvent = null;
+
+    lines.forEach((line) => {
+      if (line.startsWith("BEGIN:VEVENT")) {
+        currentEvent = { title: "", date: "", description: "" };
+      } else if (line.startsWith("END:VEVENT")) {
+        if (currentEvent) events.push(currentEvent);
+        currentEvent = null;
+      } else if (currentEvent) {
+        if (line.startsWith("SUMMARY:")) {
+          currentEvent.title = line.replace("SUMMARY:", "");
+        } else if (line.startsWith("DTSTART")) {
+          const dateMatch = line.match(/:\d+/);
+          if (dateMatch) {
+            const dateStr = dateMatch[0].substring(1);
+            currentEvent.date = dateStr.substring(0, 4) + "-" + dateStr.substring(4, 6) + "-" + dateStr.substring(6, 8);
+          }
+        } else if (line.startsWith("DESCRIPTION:")) {
+          currentEvent.description = line.replace("DESCRIPTION:", "").replace(/\\n/g, "\n");
+        }
+      }
+    });
+
+    return events;
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result;
+      if (typeof content === "string") {
+        const events = parseICS(content);
+        setImportedEvents(events);
+        setSelectedEvents(new Set(events.map((_, i) => i)));
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const toggleEventSelection = (index) => {
+    const newSelected = new Set(selectedEvents);
+    if (newSelected.has(index)) {
+      newSelected.delete(index);
+    } else {
+      newSelected.add(index);
+    }
+    setSelectedEvents(newSelected);
+  };
+
+  const clearEvent = (index) => {
+    const newEvents = importedEvents.filter((_, i) => i !== index);
+    setImportedEvents(newEvents);
+    const newSelected = new Set(selectedEvents);
+    newSelected.delete(index);
+    setSelectedEvents(newSelected);
+  };
+
+  const clearAllEvents = () => {
+    setImportedEvents([]);
+    setSelectedEvents(new Set());
+  };
+
+  const importEvents = () => {
+    const eventsToImport = importedEvents.filter((_, i) => selectedEvents.has(i));
+    localStorage.setItem("imported_zmanim_events", JSON.stringify(eventsToImport));
+    alert(t(`Imported ${eventsToImport.length} events`, `ייובאו ${eventsToImport.length} אירועים`));
+    clearAllEvents();
+  };
 
   const handleSync = async () => {
     setSyncing(true);
@@ -182,15 +259,69 @@ END:VEVENT\n`;
       )}
 
       {syncMode === "import" && (
-        <div className="p-4 bg-muted rounded-lg text-center">
-          <p className="text-sm text-muted-foreground font-body mb-3">
-            {t("Import ICS calendar file", "ייבא קובץ ליומן ICS")}
-          </p>
-          <input
-            type="file"
-            accept=".ics"
-            className="w-full text-sm font-body"
-          />
+        <div className="space-y-3">
+          <div className="p-4 bg-muted rounded-lg">
+            <label className="text-sm text-muted-foreground font-body block mb-2">
+              {t("Select ICS file", "בחר קובץ ICS")}
+            </label>
+            <input
+              type="file"
+              accept=".ics"
+              onChange={handleFileUpload}
+              className="w-full text-sm font-body"
+            />
+          </div>
+
+          {importedEvents.length > 0 && (
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <p className="text-sm font-body font-medium text-foreground">
+                  {t(`${importedEvents.length} events found`, `${importedEvents.length} אירועים נמצאו`)}
+                </p>
+                <button
+                  onClick={clearAllEvents}
+                  className="text-xs text-destructive hover:text-destructive/80 font-body"
+                >
+                  {t("Clear All", "מחק הכל")}
+                </button>
+              </div>
+
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {importedEvents.map((event, index) => (
+                  <div key={index} className="flex items-start gap-2 p-2 bg-card border border-border rounded">
+                    <input
+                      type="checkbox"
+                      checked={selectedEvents.has(index)}
+                      onChange={() => toggleEventSelection(index)}
+                      className="mt-1 cursor-pointer"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-body font-medium text-foreground truncate">
+                        {event.title}
+                      </p>
+                      <p className="text-xs text-muted-foreground font-body">
+                        {event.date}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => clearEvent(index)}
+                      className="text-xs text-muted-foreground hover:text-destructive font-body flex-shrink-0"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <Button
+                onClick={importEvents}
+                disabled={selectedEvents.size === 0}
+                className="w-full font-body"
+              >
+                {t(`Import ${selectedEvents.size} events`, `ייבא ${selectedEvents.size} אירועים`)}
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </div>
