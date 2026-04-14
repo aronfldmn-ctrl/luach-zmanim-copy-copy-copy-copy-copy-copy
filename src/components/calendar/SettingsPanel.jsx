@@ -21,6 +21,7 @@ export default function SettingsPanel() {
     hebrewMode, setHebrewMode,
     celsiusMode, setCelsiusMode,
     showZmanimSeconds, setShowZmanimSeconds,
+    showStatusBar, setShowStatusBar,
   } = useSettings();
 
   const t = (en, heb) => hebrewMode ? heb : en;
@@ -231,6 +232,21 @@ export default function SettingsPanel() {
                 ))}
               </div>
             )}
+          </section>
+
+          {/* Status Bar toggle */}
+          <section>
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-body font-semibold text-sm text-muted-foreground uppercase tracking-wider">
+                  {t("Top Status Bar", "סרגל עליון")}
+                </h3>
+                <p className="text-xs text-muted-foreground font-body mt-0.5">
+                  {t("Hebrew date & weather at top", "תאריך עברי ומזג אוויר בראש")}
+                </p>
+              </div>
+              <Switch checked={showStatusBar} onCheckedChange={setShowStatusBar} />
+            </div>
           </section>
 
           {/* Weather toggle */}

@@ -43,6 +43,7 @@ export function SettingsProvider({ children }) {
   const [hebrewMode, setHebrewModeState] = useState(() => loadFromStorage("jcal_hebrew_mode", false));
   const [celsiusMode, setCelsiusModeState] = useState(() => loadFromStorage("jcal_celsius_mode", false));
   const [showZmanimSeconds, setShowZmanimSecondsState] = useState(() => loadFromStorage("jcal_zmanim_seconds", false));
+  const [showStatusBar, setShowStatusBarState] = useState(() => loadFromStorage("jcal_status_bar", true));
 
   const setLocation = (loc) => {
     setLocationState(loc);
@@ -76,6 +77,10 @@ export function SettingsProvider({ children }) {
     setShowZmanimSecondsState(v);
     localStorage.setItem("jcal_zmanim_seconds", JSON.stringify(v));
   };
+  const setShowStatusBar = (v) => {
+    setShowStatusBarState(v);
+    localStorage.setItem("jcal_status_bar", JSON.stringify(v));
+  };
 
   return (
     <SettingsContext.Provider value={{
@@ -87,6 +92,7 @@ export function SettingsProvider({ children }) {
       hebrewMode, setHebrewMode,
       celsiusMode, setCelsiusMode,
       showZmanimSeconds, setShowZmanimSeconds,
+      showStatusBar, setShowStatusBar,
     }}>
       {children}
     </SettingsContext.Provider>

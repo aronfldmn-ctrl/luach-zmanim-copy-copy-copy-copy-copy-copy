@@ -1,17 +1,19 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { addDays, addWeeks, addMonths, addYears } from "date-fns";
-import { SettingsProvider } from "@/lib/settingsContext";
+import { SettingsProvider, useSettings } from "@/lib/settingsContext";
 import CalendarHeader from "@/components/calendar/CalendarHeader";
 import DayView from "@/components/calendar/DayView";
 import WeekView from "@/components/calendar/WeekView";
 import MonthView from "@/components/calendar/MonthView";
 import YearView from "@/components/calendar/YearView";
+import StatusBar from "@/components/calendar/StatusBar.jsx";
 
 const VIEWS = ["day", "week", "month", "year"];
 
 function CalendarApp() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState("month");
+  const { showStatusBar } = useSettings();
 
   const handleNavigate = useCallback((direction) => {
     setCurrentDate((prev) => {
@@ -99,6 +101,7 @@ function CalendarApp() {
 
   return (
     <div className="min-h-screen bg-background">
+      {showStatusBar && <StatusBar />}
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
         <CalendarHeader
           currentDate={currentDate}
