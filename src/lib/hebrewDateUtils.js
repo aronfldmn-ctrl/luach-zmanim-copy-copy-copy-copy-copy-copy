@@ -197,8 +197,10 @@ export function getJewishHolidays(date) {
   if (d === 1 && m !== 7) holidays.push("Rosh Chodesh");
   if (d === 30 && hebrewMonthDays(heb.year, m) === 30) holidays.push("Rosh Chodesh");
   
+  if (m === 6 && d === 29) holidays.push("Erev Rosh Hashanah");
   if (m === 7 && (d === 1 || d === 2)) holidays.push("Rosh Hashanah");
   if (m === 7 && d === 3) holidays.push("Tzom Gedaliah");
+  if (m === 7 && d === 9) holidays.push("Erev Yom Kippur");
   if (m === 7 && d === 10) holidays.push("Yom Kippur");
   if (m === 7 && d >= 15 && d <= 21) holidays.push("Sukkot");
   if (m === 7 && d === 22) holidays.push("Shemini Atzeret");
@@ -210,6 +212,7 @@ export function getJewishHolidays(date) {
   if (m === 12 && d === 13) holidays.push("Ta'anit Esther");
   if (m === 12 && d === 14) holidays.push("Purim");
   if (m === 12 && d === 15) holidays.push("Shushan Purim");
+  if (m === 1 && d === 14) holidays.push("Erev Pesach");
   if (m === 1 && d >= 15 && d <= 21) holidays.push("Pesach");
   if (m === 1 && d === 22) holidays.push("Pesach (8th day)");
   if (m === 2 && d === 18) holidays.push("Lag B'Omer");
@@ -220,6 +223,7 @@ export function getJewishHolidays(date) {
     else dayOfOmer = 15 + hebrewMonthDays(heb.year, 2) + d;
     if (dayOfOmer <= 49) holidays.push(`Sefirat HaOmer - Day ${dayOfOmer}`);
   }
+  if (m === 3 && d === 5) holidays.push("Erev Shavuot");
   if (m === 3 && d === 6) holidays.push("Shavuot");
   if (m === 3 && d === 7) holidays.push("Shavuot (2nd day)");
   if (m === 5 && d === 9) holidays.push("Tisha B'Av");

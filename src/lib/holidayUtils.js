@@ -6,12 +6,16 @@ export const HOLIDAY_CATEGORIES = {
 };
 
 export const HOLIDAY_NAMES = {
+  'Erev Pesach': { en: 'Erev Pesach', heb: 'ערב פסח' },
   'Pesach': { en: 'Pesach', heb: 'פסח' },
   'Pesach (8th day)': { en: 'Pesach (8th day)', heb: 'פסח (יום ח׳)' },
   'Chol HaMoed Pesach': { en: 'Chol HaMoed Pesach', heb: 'חול המועד פסח' },
+  'Erev Shavuot': { en: 'Erev Shavuot', heb: 'ערב שבועות' },
   'Shavuot': { en: 'Shavuot', heb: 'שבועות' },
 
+  'Erev Rosh Hashanah': { en: 'Erev Rosh Hashanah', heb: 'ערב ראש השנה' },
   'Rosh Hashanah': { en: 'Rosh Hashanah', heb: 'ראש השנה' },
+  'Erev Yom Kippur': { en: 'Erev Yom Kippur', heb: 'ערב יום הכיפורים' },
 
   'Yom Kippur': { en: 'Yom Kippur', heb: 'יום הכיפורים' },
 
@@ -41,16 +45,21 @@ export const HOLIDAY_NAMES = {
 
 export const HOLIDAY_DESCRIPTIONS = {
   // Passover
+  'Erev Pesach': 'Evening before Passover - preparation day',
   'Pesach': 'Passover - Festival of Freedom (7 days)',
   'Chol HaMoed Pesach': 'Intermediate days of Passover',
   
   // Shavuot
+  'Erev Shavuot': 'Evening before Shavuot',
   'Shavuot': 'Feast of Weeks (2 days)',
   
   // Rosh Hashanah
+  'Erev Rosh Hashanah': 'Evening before Rosh Hashanah - preparation day',
   'Rosh Hashana': 'Jewish New Year (2 days)',
+  'Rosh Hashanah': 'Jewish New Year (2 days)',
   
   // Yom Kippur
+  'Erev Yom Kippur': 'Evening before Yom Kippur - Day of Preparation',
   'Yom Kippur': 'Day of Atonement - Major fast day',
   
   // Sukkot
@@ -90,9 +99,13 @@ export const HOLIDAY_DESCRIPTIONS = {
 
 export const HOLIDAY_CATEGORIES_MAP = {
   // Yom Tov (major holidays)
+  'Erev Pesach': HOLIDAY_CATEGORIES.YOM_TOV,
   'Pesach': HOLIDAY_CATEGORIES.YOM_TOV,
+  'Erev Shavuot': HOLIDAY_CATEGORIES.YOM_TOV,
   'Shavuot': HOLIDAY_CATEGORIES.YOM_TOV,
+  'Erev Rosh Hashanah': HOLIDAY_CATEGORIES.YOM_TOV,
   'Rosh Hashana': HOLIDAY_CATEGORIES.YOM_TOV,
+  'Erev Yom Kippur': HOLIDAY_CATEGORIES.YOM_TOV,
   'Yom Kippur': HOLIDAY_CATEGORIES.YOM_TOV,
   'Sukkot': HOLIDAY_CATEGORIES.YOM_TOV,
   'Shemini Atzeret': HOLIDAY_CATEGORIES.YOM_TOV,
