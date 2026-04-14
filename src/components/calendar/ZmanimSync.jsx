@@ -9,6 +9,12 @@ import { addDays, format } from "date-fns";
 
 const SYNC_DURATION_OPTIONS = [7, 14, 30, 60];
 
+export const getImportedEventsForDate = (date) => {
+  const dateStr = date.toISOString().split("T")[0];
+  const events = JSON.parse(localStorage.getItem("imported_zmanim_events") || "[]");
+  return events.filter(event => event.date === dateStr);
+};
+
 export default function ZmanimSync() {
   const { location, syncZmanimDays, setSyncZmanimDays, hebrewMode, zmanimVisible, showZmanimSeconds } = useSettings();
   const [syncing, setSyncing] = useState(false);
@@ -88,7 +94,9 @@ export default function ZmanimSync() {
 
   const importEvents = () => {
     const eventsToImport = importedEvents.filter((_, i) => selectedEvents.has(i));
-    localStorage.setItem("imported_zmanim_events", JSON.stringify(eventsToImport));
+    const existingEvents = JSON.parse(localStorage.getItem("imported_zmanim_events") || "[]");
+    const mergedEvents = [...existingEvents, ...eventsToImport];
+    localStorage.setItem("imported_zmanim_events", JSON.stringify(mergedEvents));
     alert(t(`Imported ${eventsToImport.length} events`, `ייובאו ${eventsToImport.length} אירועים`));
     clearAllEvents();
   };
