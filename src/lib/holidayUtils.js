@@ -136,17 +136,14 @@ export const HOLIDAY_CATEGORIES_MAP = {
   'Purim': HOLIDAY_CATEGORIES.MINOR,
   'Shushan Purim': HOLIDAY_CATEGORIES.MINOR,
   'Lag B\'Omer': HOLIDAY_CATEGORIES.MINOR,
-  'Yom HaShoah': HOLIDAY_CATEGORIES.OBSERVANCE,
-  'Yom HaZikaron': HOLIDAY_CATEGORIES.OBSERVANCE,
-  'Israel Independence Day': HOLIDAY_CATEGORIES.OBSERVANCE,
-  'Rosh Chodesh': HOLIDAY_CATEGORIES.OBSERVANCE,
+  'Rosh Chodesh': HOLIDAY_CATEGORIES.MINOR,
   'Lulav & Etrog': HOLIDAY_CATEGORIES.MINOR,
 };
 
 // Handle dynamic Sefirat HaOmer day names
 export function getHolidayCategoryDynamic(holidayName) {
   if (holidayName && holidayName.startsWith('Sefirat HaOmer')) {
-    return HOLIDAY_CATEGORIES.OBSERVANCE;
+    return HOLIDAY_CATEGORIES.MINOR;
   }
   return getHolidayCategory(holidayName);
 }
