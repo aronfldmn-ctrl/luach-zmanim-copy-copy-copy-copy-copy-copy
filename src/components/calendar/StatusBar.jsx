@@ -48,7 +48,7 @@ export default function StatusBar() {
     : `${hebrewDate.day} ${hebrewDate.monthName} ${hebrewDate.year}`;
 
   return (
-    <div className="w-full bg-primary text-primary-foreground px-4 py-1.5 flex items-center justify-between text-xs font-body">
+    <div className="w-full bg-primary text-primary-foreground px-4 py-1.5 flex items-center justify-between text-xs font-body pt-[env(safe-area-inset-top)]">
       <span className="opacity-80">{location.name}</span>
       <span className="font-medium">{hebrewLabel}</span>
       {showWeather && (

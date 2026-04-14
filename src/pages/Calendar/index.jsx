@@ -1,6 +1,7 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { addDays, addWeeks, addMonths, addYears } from "date-fns";
 import { useLocation, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import CalendarHeader from "@/components/calendar/CalendarHeader";
 import DayView from "@/components/calendar/DayView";
 import WeekView from "@/components/calendar/WeekView";
@@ -17,10 +18,33 @@ function Calendar() {
   const location = useLocation();
   const navigate = useNavigate();
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [pullRefresh, setPullRefresh] = useState(0);
+  const scrollContainerRef = useRef(null);
+  const touchStartRef = useRef(0);
 
   const view = location.pathname.slice(1) || "month";
   const isValidView = VIEWS.includes(view);
   const activeView = isValidView ? view : "month";
+
+  const handleTouchStart = (e) => {
+    if (scrollContainerRef.current?.scrollTop === 0) {
+      touchStartRef.current = e.touches[0].clientY;
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (scrollContainerRef.current?.scrollTop === 0 && touchStartRef.current) {
+      const delta = e.touches[0].clientY - touchStartRef.current;
+      if (delta > 0) {
+        setPullRefresh(Math.min(delta / 100, 1));
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setPullRefresh(0);
+    touchStartRef.current = 0;
+  };
 
   const handleNavigate = useCallback(
     (direction) => {
@@ -80,7 +104,28 @@ function Calendar() {
       <StatusBar />
       <DailyBanner />
 
-      <main className="flex-1 p-4 md:p-6 pb-20 overflow-auto">
+      <main
+        ref={scrollContainerRef}
+        className="flex-1 p-4 md:p-6 pb-20 overflow-auto relative"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        {pullRefresh > 0 && (
+          <motion.div
+            className="absolute top-0 left-1/2 -translate-x-1/2 z-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: pullRefresh }}
+          >
+            <div className="w-8 h-8 border-2 border-primary rounded-full"
+              style={{
+                borderTopColor: "transparent",
+                transform: `rotate(${pullRefresh * 360}deg)`
+              }}
+            />
+          </motion.div>
+        )}
+
         <div className="max-w-7xl mx-auto">
           <CalendarHeader
             currentDate={currentDate}
@@ -90,16 +135,24 @@ function Calendar() {
             onToday={handleToday}
           />
 
-          {activeView === "day" && <DayView date={currentDate} />}
-          {activeView === "week" && (
-            <WeekView date={currentDate} onDateSelect={handleDateSelect} />
-          )}
-          {activeView === "month" && (
-            <MonthView date={currentDate} onDateSelect={handleDateSelect} onWeekSelect={handleWeekSelect} />
-          )}
-          {activeView === "year" && (
-            <YearView date={currentDate} onDateSelect={handleDateSelect} onMonthSelect={handleMonthSelect} />
-          )}
+          <motion.div
+            key={activeView}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            {activeView === "day" && <DayView date={currentDate} />}
+            {activeView === "week" && (
+              <WeekView date={currentDate} onDateSelect={handleDateSelect} />
+            )}
+            {activeView === "month" && (
+              <MonthView date={currentDate} onDateSelect={handleDateSelect} onWeekSelect={handleWeekSelect} />
+            )}
+            {activeView === "year" && (
+              <YearView date={currentDate} onDateSelect={handleDateSelect} onMonthSelect={handleMonthSelect} />
+            )}
+          </motion.div>
         </div>
       </main>
 
