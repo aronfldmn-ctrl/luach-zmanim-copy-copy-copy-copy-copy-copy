@@ -155,7 +155,6 @@ function CalendarApp() {
 
   return (
     <div className="min-h-screen bg-background safe-area-inset-top pb-16 md:pb-0">
-      <DailyBanner />
       {showStatusBar && <StatusBar />}
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
         <CalendarHeader
