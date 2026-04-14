@@ -219,7 +219,7 @@ export function getJewishHolidays(date) {
   if (m === 1 && d === 16) holidays.push("Pesach");
   if (m === 1 && d >= 17 && d <= 20) holidays.push("Chol HaMoed Pesach");
   if (m === 1 && d === 21) holidays.push("Pesach");
-  if (m === 1 && d === 22) holidays.push("Pesach (8th day)");
+  if (m === 1 && d === 22) holidays.push("שביעי של פסח");
   if (m === 2 && d === 18) holidays.push("Lag B'Omer");
   if ((m === 1 && d >= 16) || (m === 2) || (m === 3 && d <= 6)) {
     let dayOfOmer;
