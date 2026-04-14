@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@base44/sdk": "^0.8.25",
-    "@base44/vite-plugin": "^1.0.6",
+    "@base44/vite-plugin": "^1.0.7",
     "@hebcal/core": "^6.3.0",
     "@hebcal/hdate": "^0.22.0",
     "@hebcal/learning": "^6.8.0",
