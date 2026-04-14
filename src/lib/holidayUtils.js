@@ -1,7 +1,6 @@
 // Holiday categorization and descriptions
 export const HOLIDAY_CATEGORIES = {
   YOM_TOV: 'yom_tov',           // Major holidays
-  INTERMEDIATE: 'intermediate',  // Chol HaMoed
   FAST: 'fast',                 // Fasting days
   MINOR: 'minor',               // Minor holidays/commemorations
 };
@@ -9,17 +8,16 @@ export const HOLIDAY_CATEGORIES = {
 export const HOLIDAY_NAMES = {
   'Pesach': { en: 'Pesach', heb: 'פסח' },
   'Pesach (8th day)': { en: 'Pesach (8th day)', heb: 'פסח (יום ח׳)' },
-  'Erev Pesach': { en: 'Erev Pesach', heb: 'ערב פסח' },
   'Chol HaMoed Pesach': { en: 'Chol HaMoed Pesach', heb: 'חול המועד פסח' },
   'Shavuot': { en: 'Shavuot', heb: 'שבועות' },
-  'Erev Shavuot': { en: 'Erev Shavuot', heb: 'ערב שבועות' },
+
   'Rosh Hashanah': { en: 'Rosh Hashanah', heb: 'ראש השנה' },
-  'Erev Rosh Hashana': { en: 'Erev Rosh Hashanah', heb: 'ערב ראש השנה' },
+
   'Yom Kippur': { en: 'Yom Kippur', heb: 'יום הכיפורים' },
-  'Erev Yom Kippur': { en: 'Erev Yom Kippur', heb: 'ערב יום הכיפורים' },
+
   'Sukkot': { en: 'Sukkot', heb: 'סוכות' },
-  'Chol HaMoed Sukkot': { en: 'Chol HaMoed Sukkot', heb: 'חול המועד סוכות' },
-  'Erev Sukkot': { en: 'Erev Sukkot', heb: 'ערב סוכות' },
+
+
   'Shemini Atzeret': { en: 'Shemini Atzeret', heb: 'שמיני עצרת' },
   'Simchat Torah': { en: 'Simchat Torah', heb: 'שמחת תורה' },
   'Hanukkah': { en: 'Hanukkah', heb: 'חנוכה' },
@@ -44,25 +42,20 @@ export const HOLIDAY_NAMES = {
 export const HOLIDAY_DESCRIPTIONS = {
   // Passover
   'Pesach': 'Passover - Festival of Freedom (7 days)',
-  'Erev Pesach': 'Eve of Passover',
   'Chol HaMoed Pesach': 'Intermediate days of Passover',
   
   // Shavuot
   'Shavuot': 'Feast of Weeks (2 days)',
-  'Erev Shavuot': 'Eve of Shavuot',
   
   // Rosh Hashanah
   'Rosh Hashana': 'Jewish New Year (2 days)',
-  'Erev Rosh Hashana': 'Eve of Rosh Hashanah',
   
   // Yom Kippur
   'Yom Kippur': 'Day of Atonement - Major fast day',
-  'Erev Yom Kippur': 'Eve of Yom Kippur',
   
   // Sukkot
   'Sukkot': 'Feast of Tabernacles (7 days)',
   'Chol HaMoed Sukkot': 'Intermediate days of Sukkot',
-  'Erev Sukkot': 'Eve of Sukkot',
   'Lulav & Etrog': 'Sukkot celebration day',
   'Shemini Atzeret': 'Eighth day of assembly',
   'Simchat Torah': 'Rejoicing of the Torah',
@@ -105,16 +98,7 @@ export const HOLIDAY_CATEGORIES_MAP = {
   'Shemini Atzeret': HOLIDAY_CATEGORIES.YOM_TOV,
   'Simchat Torah': HOLIDAY_CATEGORIES.YOM_TOV,
   
-  // Intermediate days
-  'Chol HaMoed Pesach': HOLIDAY_CATEGORIES.INTERMEDIATE,
-  'Chol HaMoed Sukkot': HOLIDAY_CATEGORIES.INTERMEDIATE,
-  
-  // Eves
-  'Erev Pesach': HOLIDAY_CATEGORIES.INTERMEDIATE,
-  'Erev Shavuot': HOLIDAY_CATEGORIES.INTERMEDIATE,
-  'Erev Rosh Hashana': HOLIDAY_CATEGORIES.INTERMEDIATE,
-  'Erev Yom Kippur': HOLIDAY_CATEGORIES.INTERMEDIATE,
-  'Erev Sukkot': HOLIDAY_CATEGORIES.INTERMEDIATE,
+  // Minor
   'Erev Purim': HOLIDAY_CATEGORIES.MINOR,
   
   // Fasts
@@ -172,7 +156,6 @@ export function getHolidayNameLocalized(holidayName, hebrewMode) {
 
 export const HOLIDAY_COLORS = {
   [HOLIDAY_CATEGORIES.YOM_TOV]: { bg: 'bg-red-100 dark:bg-red-950', border: 'border-red-300 dark:border-red-700', text: 'text-red-700 dark:text-red-300' },
-  [HOLIDAY_CATEGORIES.INTERMEDIATE]: { bg: 'bg-orange-100 dark:bg-orange-950', border: 'border-orange-300 dark:border-orange-700', text: 'text-orange-700 dark:text-orange-300' },
   [HOLIDAY_CATEGORIES.FAST]: { bg: 'bg-slate-200 dark:bg-slate-800', border: 'border-slate-400 dark:border-slate-600', text: 'text-slate-700 dark:text-slate-300' },
   [HOLIDAY_CATEGORIES.MINOR]: { bg: 'bg-blue-100 dark:bg-blue-950', border: 'border-blue-300 dark:border-blue-700', text: 'text-blue-700 dark:text-blue-300' },
 };

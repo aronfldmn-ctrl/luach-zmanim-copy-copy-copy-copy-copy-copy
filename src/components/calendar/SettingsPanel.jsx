@@ -333,7 +333,6 @@ export default function SettingsPanel() {
               <div className="space-y-2 border border-border rounded-lg overflow-hidden">
                 {Object.entries({
                     [HOLIDAY_CATEGORIES.YOM_TOV]: { en: "Yom Tov (Major Holidays)", heb: "יום טוב (חגים גדולים)" },
-                    [HOLIDAY_CATEGORIES.INTERMEDIATE]: { en: "Intermediate Days", heb: "ימי חול המועד" },
                     [HOLIDAY_CATEGORIES.FAST]: { en: "Fast Days", heb: "ימי צום" },
                     [HOLIDAY_CATEGORIES.MINOR]: { en: "Minor Holidays", heb: "חגים קטנים" },
                   }).map(([key, label]) => {
