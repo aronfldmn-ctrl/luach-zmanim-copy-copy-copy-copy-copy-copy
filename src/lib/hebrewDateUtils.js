@@ -191,6 +191,11 @@ export function getJewishHoliday(date) {
   const heb = gregorianToHebrew(date.getFullYear(), date.getMonth() + 1, date.getDate());
   const m = heb.month;
   const d = heb.day;
+  
+  // Rosh Chodesh: 1st of every month, or 30th if the month has 30 days
+  if (d === 1) return "Rosh Chodesh";
+  if (d === 30 && hebrewMonthDays(heb.year, m) === 30) return "Rosh Chodesh";
+  
   if (m === 7 && (d === 1 || d === 2)) return "Rosh Hashanah";
   if (m === 7 && d === 3) return "Tzom Gedaliah";
   if (m === 7 && d === 10) return "Yom Kippur";
