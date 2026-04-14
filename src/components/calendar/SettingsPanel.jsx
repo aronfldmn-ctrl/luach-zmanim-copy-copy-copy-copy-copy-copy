@@ -20,6 +20,7 @@ export default function SettingsPanel() {
     candleLightingMinutes, setCandleLightingMinutes,
     hebrewMode, setHebrewMode,
     celsiusMode, setCelsiusMode,
+    showZmanimSeconds, setShowZmanimSeconds,
   } = useSettings();
 
   const t = (en, heb) => hebrewMode ? heb : en;
@@ -203,6 +204,13 @@ export default function SettingsPanel() {
               </h3>
               <Switch checked={showZmanim} onCheckedChange={setShowZmanim} />
             </div>
+
+            {showZmanim && (
+              <div className="flex items-center justify-between px-3 py-2.5 bg-muted rounded-lg mb-3">
+                <p className="text-sm font-body font-medium">{t("Show Seconds", "הצג שניות")}</p>
+                <Switch checked={showZmanimSeconds} onCheckedChange={setShowZmanimSeconds} />
+              </div>
+            )}
 
             {showZmanim && (
               <div className="space-y-1 border border-border rounded-lg overflow-hidden">

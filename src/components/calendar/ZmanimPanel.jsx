@@ -1,6 +1,6 @@
 import React from "react";
 import { Sunrise, Sun, Sunset, Flame, Moon, Star, Clock, Loader2 } from "lucide-react";
-import { isFriday, isShabbat, getJewishHoliday, getHebrewDate } from "@/lib/hebrewDateUtils";
+import { isFriday, isShabbat, getJewishHoliday, getHebrewDate, formatZmanTime } from "@/lib/hebrewDateUtils";
 import { useSettings, ALL_ZMANIM, HEB_UI } from "@/lib/settingsContext";
 import { useZmanim } from "@/lib/useZmanim";
 import { format } from "date-fns";
@@ -23,7 +23,7 @@ const ZMAN_COLORS = {
 };
 
 export default function ZmanimPanel({ date }) {
-  const { zmanimVisible, showZmanim, hebrewMode, candleLightingMinutes } = useSettings();
+  const { zmanimVisible, showZmanim, hebrewMode, candleLightingMinutes, showZmanimSeconds } = useSettings();
   const { zmanim, loading } = useZmanim(date);
   const holiday = getJewishHoliday(date);
   const hebrewDate = getHebrewDate(date);
@@ -88,7 +88,7 @@ export default function ZmanimPanel({ date }) {
                   </div>
                 </div>
                 <span className={`font-body font-semibold text-sm tabular-nums ${loading ? "text-muted-foreground" : "text-foreground"}`}>
-                  {zmanim[z.key]}
+                  {formatZmanTime(zmanim[z.key], showZmanimSeconds)}
                 </span>
               </div>
             );
@@ -103,7 +103,7 @@ export default function ZmanimPanel({ date }) {
             <span className="font-body text-sm font-medium text-accent">{t("Shabbat Shalom!", HEB_UI.shabbat_shalom)}</span>
           </div>
           <p className="text-xs text-muted-foreground font-body mt-1">
-            {t("Light candles at", HEB_UI.light_candles_at)} <strong className="text-foreground">{zmanim.candleLighting}</strong>
+            {t("Light candles at", HEB_UI.light_candles_at)} <strong className="text-foreground">{formatZmanTime(zmanim.candleLighting, showZmanimSeconds)}</strong>
             <span className="ml-1 text-[10px]">({candleLightingMinutes} {t("min before sunset", `${HEB_UI.min_before_sunset}`)})</span>
           </p>
         </div>
@@ -113,7 +113,7 @@ export default function ZmanimPanel({ date }) {
         <div className="mt-4 p-3 rounded-md bg-primary/10 border border-primary/20">
           <span className="font-body text-sm font-medium text-primary">{t("Shabbat Shalom!", HEB_UI.shabbat_shalom)}</span>
           <p className="text-xs text-muted-foreground font-body mt-1">
-            {t("Havdalah after", HEB_UI.havdalah_after)} {zmanim.tzeitKochavim}
+            {t("Havdalah after", HEB_UI.havdalah_after)} {formatZmanTime(zmanim.tzeitKochavim, showZmanimSeconds)}
           </p>
         </div>
       )}

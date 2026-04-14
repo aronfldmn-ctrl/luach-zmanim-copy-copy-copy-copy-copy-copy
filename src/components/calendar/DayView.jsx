@@ -1,6 +1,6 @@
 import React from "react";
 import { format } from "date-fns";
-import { getHebrewDate, getJewishHoliday, isShabbat, isFriday } from "@/lib/hebrewDateUtils";
+import { getHebrewDate, getJewishHoliday, isShabbat, isFriday, formatZmanTime } from "@/lib/hebrewDateUtils";
 import { useSettings, ALL_ZMANIM, HEB_UI } from "@/lib/settingsContext";
 import { useZmanim } from "@/lib/useZmanim";
 import { Sunrise, Sun, Sunset, Flame, Moon, Star, Clock } from "lucide-react";
@@ -33,7 +33,7 @@ const HOURS = Array.from({ length: 24 }, (_, i) => i);
 
 function timeToMinutes(timeStr) {
   if (!timeStr || timeStr === "...") return -1;
-  const match = timeStr.match(/^(\d+):(\d+)\s(AM|PM)$/);
+  const match = timeStr.match(/^(\d+):(\d+)(?::\d+)?\s(AM|PM)$/);
   if (!match) return -1;
   let h = parseInt(match[1]);
   const m = parseInt(match[2]);
@@ -49,7 +49,7 @@ function timeToHour(timeStr) {
 }
 
 export default function DayView({ date }) {
-  const { showZmanim, zmanimVisible, hebrewMode } = useSettings();
+  const { showZmanim, zmanimVisible, hebrewMode, showZmanimSeconds } = useSettings();
   const { zmanim } = useZmanim(date);
   const hebrewDate = getHebrewDate(date);
   const holiday = getJewishHoliday(date);
@@ -109,7 +109,7 @@ export default function DayView({ date }) {
                         <Icon className="h-3 w-3 flex-shrink-0" />
                         {/* Show Hebrew label when in Hebrew mode */}
                         <span className="font-medium">{t(z.labelEn, z.labelHeb)}</span>
-                        <span className="ml-auto tabular-nums opacity-80">{zmanim[z.key]}</span>
+                        <span className="ml-auto tabular-nums opacity-80">{formatZmanTime(zmanim[z.key], showZmanimSeconds)}</span>
                       </div>
                     );
                   })}

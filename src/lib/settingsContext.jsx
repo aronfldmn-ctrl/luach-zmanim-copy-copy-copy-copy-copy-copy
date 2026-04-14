@@ -42,6 +42,7 @@ export function SettingsProvider({ children }) {
   const [candleLightingMinutes, setCandleLightingMinutesState] = useState(() => loadFromStorage("jcal_candle_minutes", 18));
   const [hebrewMode, setHebrewModeState] = useState(() => loadFromStorage("jcal_hebrew_mode", false));
   const [celsiusMode, setCelsiusModeState] = useState(() => loadFromStorage("jcal_celsius_mode", false));
+  const [showZmanimSeconds, setShowZmanimSecondsState] = useState(() => loadFromStorage("jcal_zmanim_seconds", false));
 
   const setLocation = (loc) => {
     setLocationState(loc);
@@ -71,6 +72,10 @@ export function SettingsProvider({ children }) {
     setCelsiusModeState(v);
     localStorage.setItem("jcal_celsius_mode", JSON.stringify(v));
   };
+  const setShowZmanimSeconds = (v) => {
+    setShowZmanimSecondsState(v);
+    localStorage.setItem("jcal_zmanim_seconds", JSON.stringify(v));
+  };
 
   return (
     <SettingsContext.Provider value={{
@@ -81,6 +86,7 @@ export function SettingsProvider({ children }) {
       candleLightingMinutes, setCandleLightingMinutes,
       hebrewMode, setHebrewMode,
       celsiusMode, setCelsiusMode,
+      showZmanimSeconds, setShowZmanimSeconds,
     }}>
       {children}
     </SettingsContext.Provider>

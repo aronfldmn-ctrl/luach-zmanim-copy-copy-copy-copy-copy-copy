@@ -98,16 +98,28 @@ export function getHebrewDate(date) {
   };
 }
 
-// Format an ISO datetime string to 12-hour time
+// Format an ISO datetime string to 12-hour time (always stores seconds)
 export function isoToTime(isoStr) {
   if (!isoStr) return "—";
   const d = new Date(isoStr);
   if (isNaN(d)) return "—";
   let h = d.getHours();
   const m = d.getMinutes();
+  const s = d.getSeconds();
   const ampm = h >= 12 ? 'PM' : 'AM';
   h = h % 12 || 12;
-  return `${h}:${m.toString().padStart(2, '0')} ${ampm}`;
+  return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')} ${ampm}`;
+}
+
+// Strip seconds from a time string like "6:32:18 PM" → "6:32 PM"
+export function stripSeconds(timeStr) {
+  if (!timeStr || timeStr === "..." || timeStr === "—") return timeStr;
+  return timeStr.replace(/:\d{2}(\s[AP]M)$/, '$1');
+}
+
+// Format a zman time based on showSeconds preference
+export function formatZmanTime(timeStr, showSeconds) {
+  return showSeconds ? timeStr : stripSeconds(timeStr);
 }
 
 // Compute candle lighting time: X minutes before sunset ISO string
@@ -123,7 +135,7 @@ const zmanimCache = {};
 
 export async function fetchZmanim(date, lat, lng, tzid, candleMinutes = 18) {
   const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-  const cacheKey = `${dateStr}_${lat}_${lng}_${candleMinutes}`;
+  const cacheKey = `v2_${dateStr}_${lat}_${lng}_${candleMinutes}`;
   if (zmanimCache[cacheKey]) return zmanimCache[cacheKey];
 
   const tz = tzid || Intl.DateTimeFormat().resolvedOptions().timeZone || "America/New_York";
