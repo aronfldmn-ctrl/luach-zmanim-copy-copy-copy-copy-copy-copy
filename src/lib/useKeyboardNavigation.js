@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 
 export function useKeyboardNavigation(handlers) {
   useEffect(() => {
-    if (!handlers) return;
+    if (!handlers || typeof window === 'undefined') return;
     
     const handleKeyDown = (e) => {
       // D-pad arrow keys for navigation
