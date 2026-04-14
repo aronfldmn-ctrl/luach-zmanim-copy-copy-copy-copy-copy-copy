@@ -47,8 +47,7 @@ const AuthenticatedApp = () => {
       <PermissionRequester />
       <Routes>
         <Route path="/" element={<Calendar />} />
-        <Route path="/:view" element={<Calendar />} />
-        <Route path="*" element={<PageNotFound />} />
+        <Route path="/*" element={<Calendar />} />
       </Routes>
     </SettingsProvider>
   );
