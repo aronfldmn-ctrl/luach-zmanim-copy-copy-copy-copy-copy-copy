@@ -20,8 +20,6 @@ export function SettingsProvider({ children }) {
     hebrewMode: false,
     celsiusMode: false,
     showWeather: true,
-    syncZmanimDays,
-    setSyncZmanimDays,
     zmanimVisible: { sunrise: true, sunset: true },
     showZmanimSeconds: false,
     holidayFilters: { yom_tov: true, fast: true, minor: true },
