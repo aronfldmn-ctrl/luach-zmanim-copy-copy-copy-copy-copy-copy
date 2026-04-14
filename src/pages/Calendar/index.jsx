@@ -73,11 +73,6 @@ function Calendar() {
     left: () => handleNavigate(-1),
     right: () => handleNavigate(1),
     select: () => handleDateSelect(currentDate),
-    today: handleToday,
-    dayView: () => handleViewChange("day"),
-    weekView: () => handleViewChange("week"),
-    monthView: () => handleViewChange("month"),
-    yearView: () => handleViewChange("year"),
   });
 
   return (
