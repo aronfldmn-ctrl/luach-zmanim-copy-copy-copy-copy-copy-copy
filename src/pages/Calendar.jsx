@@ -161,17 +161,20 @@ function CalendarApp() {
   }, [handleNavigate, handleToday, cycleView, navigate]);
 
   return (
-    <CalendarContent 
-      currentDate={currentDate} 
-      setCurrentDate={setCurrentDate} 
-      direction={direction} 
-      setDirection={setDirection} 
-      navigate={navigate} 
-      view={view}
-      handleNavigate={handleNavigate}
-      handleToday={handleToday}
-      handleDateSelect={handleDateSelect}
-    />
+    <>
+      <DailyBanner />
+      <CalendarContent 
+        currentDate={currentDate} 
+        setCurrentDate={setCurrentDate} 
+        direction={direction} 
+        setDirection={setDirection} 
+        navigate={navigate} 
+        view={view}
+        handleNavigate={handleNavigate}
+        handleToday={handleToday}
+        handleDateSelect={handleDateSelect}
+      />
+    </>
   );
 }
 
