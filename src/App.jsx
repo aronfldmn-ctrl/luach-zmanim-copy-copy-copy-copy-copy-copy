@@ -17,6 +17,20 @@ if (typeof window !== 'undefined') {
   registerServiceWorker();
 }
 
+const AppContent = () => {
+  return (
+    <>
+      <OfflineIndicator />
+      <PermissionRequester />
+      <Routes>
+        <Route path="/" element={<Calendar />} />
+        <Route path="/*" element={<Calendar />} />
+      </Routes>
+      <Toaster />
+    </>
+  );
+};
+
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
@@ -40,33 +54,22 @@ const AuthenticatedApp = () => {
     }
   }
 
-  // Render the main app
-  return (
-    <>
-      <OfflineIndicator />
-      <PermissionRequester />
-      <Routes>
-        <Route path="/" element={<Calendar />} />
-        <Route path="/*" element={<Calendar />} />
-      </Routes>
-      <Toaster />
-    </>
-  );
+  return <AppContent />;
 };
 
 
 function App() {
 
   return (
-    <Router>
-      <QueryClientProvider client={queryClientInstance}>
+    <QueryClientProvider client={queryClientInstance}>
+      <Router>
         <AuthProvider>
           <SettingsProvider>
             <AuthenticatedApp />
           </SettingsProvider>
         </AuthProvider>
-      </QueryClientProvider>
-    </Router>
+      </Router>
+    </QueryClientProvider>
   )
 }
 
