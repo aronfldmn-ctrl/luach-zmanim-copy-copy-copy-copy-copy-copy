@@ -46,6 +46,7 @@ export function SettingsProvider({ children }) {
   const [showStatusBar, setShowStatusBarState] = useState(() => loadFromStorage("jcal_status_bar", true));
   const [showDafYomi, setShowDafYomiState] = useState(() => loadFromStorage("jcal_show_daf_yomi", true));
   const [enableNotifications, setEnableNotificationsState] = useState(() => loadFromStorage("jcal_notifications", false));
+  const [syncZmanimDays, setSyncZmanimDaysState] = useState(() => loadFromStorage("jcal_sync_zmanim_days", 7));
 
   const setLocation = (loc) => {
     setLocationState(loc);
@@ -91,6 +92,10 @@ export function SettingsProvider({ children }) {
     setEnableNotificationsState(v);
     localStorage.setItem("jcal_notifications", JSON.stringify(v));
   };
+  const setSyncZmanimDays = (v) => {
+    setSyncZmanimDaysState(v);
+    localStorage.setItem("jcal_sync_zmanim_days", JSON.stringify(v));
+  };
 
   return (
     <SettingsContext.Provider value={{
@@ -105,6 +110,7 @@ export function SettingsProvider({ children }) {
       showStatusBar, setShowStatusBar,
       showDafYomi, setShowDafYomi,
       enableNotifications, setEnableNotifications,
+      syncZmanimDays, setSyncZmanimDays,
     }}>
       {children}
     </SettingsContext.Provider>
@@ -182,4 +188,7 @@ export const HEB_UI = {
     show_daf_yomi: "הצג דף היומי",
     notifications: "התראות",
     enable_notifications: "הפעל התראות למזג אוויר והתאריך העברי",
+    sync_zmanim: "סנכרן זמנים לליומן",
+    sync_zmanim_description: "סנכרן זמני תפילה לליומן הטלפון שלך",
+    sync_duration_days: "מספר ימים",
    };

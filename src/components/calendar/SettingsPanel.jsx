@@ -5,6 +5,7 @@ import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { useSettings, ALL_ZMANIM, HEB_UI } from "@/lib/settingsContext";
 import { base44 } from "@/api/base44Client";
+import ZmanimSync from "./ZmanimSync";
 
 export default function SettingsPanel() {
   const [open, setOpen] = useState(false);
@@ -299,6 +300,11 @@ export default function SettingsPanel() {
                 </div>
                 <Switch checked={enableNotifications} onCheckedChange={setEnableNotifications} />
               </div>
+            </section>
+
+            {/* Zmanim Calendar Sync */}
+            <section>
+              <ZmanimSync />
             </section>
 
             </div>
