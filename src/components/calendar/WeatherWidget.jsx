@@ -59,6 +59,20 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
     const tempUnit = celsiusMode ? "celsius" : "fahrenheit";
     const cacheKey = `weather_full_${location.lat}_${location.lng}_${tempUnit}`;
     
+    // Clear invalid cache entries (old Date serialization)
+    try {
+      const raw = localStorage.getItem(cacheKey);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed.data?.daily && typeof parsed.data.daily[0]?.date === 'object' && !(parsed.data.daily[0].date instanceof Date)) {
+          localStorage.removeItem(cacheKey);
+        }
+      }
+    } catch (e) {
+      // If cache is invalid, remove it
+      localStorage.removeItem(cacheKey);
+    }
+    
     // Try cache first
     const cached = getFromCache(cacheKey);
     if (cached) {
