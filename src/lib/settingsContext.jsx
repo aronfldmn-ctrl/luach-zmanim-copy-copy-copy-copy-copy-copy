@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import { HOLIDAY_CATEGORIES } from "./holidayUtils";
 
 const DEFAULT_LOCATION = {
