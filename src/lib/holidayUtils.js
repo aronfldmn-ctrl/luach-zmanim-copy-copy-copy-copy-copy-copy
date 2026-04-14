@@ -102,6 +102,7 @@ export const HOLIDAY_CATEGORIES_MAP = {
   // Yom Tov (major holidays)
   'Erev Pesach': HOLIDAY_CATEGORIES.YOM_TOV,
   'Pesach': HOLIDAY_CATEGORIES.YOM_TOV,
+  'Chol HaMoed Pesach': HOLIDAY_CATEGORIES.YOM_TOV,
   'Erev Shavuot': HOLIDAY_CATEGORIES.YOM_TOV,
   'Shavuot': HOLIDAY_CATEGORIES.YOM_TOV,
   'Erev Rosh Hashanah': HOLIDAY_CATEGORIES.YOM_TOV,
@@ -110,6 +111,7 @@ export const HOLIDAY_CATEGORIES_MAP = {
   'Yom Kippur': HOLIDAY_CATEGORIES.YOM_TOV,
   'Erev Sukkot': HOLIDAY_CATEGORIES.YOM_TOV,
   'Sukkot': HOLIDAY_CATEGORIES.YOM_TOV,
+  'Chol HaMoed Sukkot': HOLIDAY_CATEGORIES.YOM_TOV,
   'Shemini Atzeret': HOLIDAY_CATEGORIES.YOM_TOV,
   'Simchat Torah': HOLIDAY_CATEGORIES.YOM_TOV,
   
