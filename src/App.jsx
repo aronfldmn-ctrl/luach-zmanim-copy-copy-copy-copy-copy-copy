@@ -9,7 +9,7 @@ import { SettingsProvider } from '@/lib/settingsContext';
 import PermissionRequester from '@/components/PermissionRequester';
 import OfflineIndicator from '@/components/OfflineIndicator';
 import { registerServiceWorker } from '@/lib/offline';
-import Calendar from '@/pages/Calendar';
+import Calendar from '@/pages/Calendar/index.jsx';
 // Add page imports here
 
 // Register Service Worker on app load
