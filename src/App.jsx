@@ -4,10 +4,10 @@ import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
-import UserNotRegisteredError from '@/components/UserNotRegisteredError.jsx';
-import { SettingsProvider } from '@/lib/settingsContext.jsx';
-import OfflineIndicator from '@/components/OfflineIndicator.jsx';
-import PermissionRequester from '@/components/PermissionRequester.jsx';
+import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import { SettingsProvider } from '@/lib/settingsContext';
+import OfflineIndicator from '@/components/OfflineIndicator';
+import PermissionRequester from '@/components/PermissionRequester';
 import { registerServiceWorker } from '@/lib/offline';
 import Calendar from '@/pages/Calendar';
 // Add page imports here
@@ -17,7 +17,7 @@ if (typeof window !== 'undefined') {
   registerServiceWorker();
 }
 
-const AppContent = () => {
+const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
   // Show loading spinner while checking app public settings or auth
@@ -53,24 +53,21 @@ const AppContent = () => {
   );
 };
 
-const RouterContent = () => {
+
+function App() {
+
   return (
     <Router>
       <QueryClientProvider client={queryClientInstance}>
         <AuthProvider>
           <SettingsProvider>
-            <AppContent />
+            <AuthenticatedApp />
             <Toaster />
           </SettingsProvider>
         </AuthProvider>
       </QueryClientProvider>
     </Router>
-  );
-};
-
-
-function App() {
-  return <RouterContent />;
+  )
 }
 
 export default App
