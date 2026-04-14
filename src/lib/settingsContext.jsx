@@ -45,6 +45,7 @@ export function SettingsProvider({ children }) {
   const [showZmanimSeconds, setShowZmanimSecondsState] = useState(() => loadFromStorage("jcal_zmanim_seconds", false));
   const [showStatusBar, setShowStatusBarState] = useState(() => loadFromStorage("jcal_status_bar", true));
   const [showDafYomi, setShowDafYomiState] = useState(() => loadFromStorage("jcal_show_daf_yomi", true));
+  const [enableNotifications, setEnableNotificationsState] = useState(() => loadFromStorage("jcal_notifications", false));
 
   const setLocation = (loc) => {
     setLocationState(loc);
@@ -86,6 +87,10 @@ export function SettingsProvider({ children }) {
     setShowDafYomiState(v);
     localStorage.setItem("jcal_show_daf_yomi", JSON.stringify(v));
   };
+  const setEnableNotifications = (v) => {
+    setEnableNotificationsState(v);
+    localStorage.setItem("jcal_notifications", JSON.stringify(v));
+  };
 
   return (
     <SettingsContext.Provider value={{
@@ -99,6 +104,7 @@ export function SettingsProvider({ children }) {
       showZmanimSeconds, setShowZmanimSeconds,
       showStatusBar, setShowStatusBar,
       showDafYomi, setShowDafYomi,
+      enableNotifications, setEnableNotifications,
     }}>
       {children}
     </SettingsContext.Provider>
@@ -173,5 +179,7 @@ export const HEB_UI = {
    weekly: "שבועי",
    // Daf Yomi
    daf_yomi: "דף היומי",
-   show_daf_yomi: "הצג דף היומי",
-  };
+    show_daf_yomi: "הצג דף היומי",
+    notifications: "התראות",
+    enable_notifications: "הפעל התראות למזג אוויר והתאריך העברי",
+   };

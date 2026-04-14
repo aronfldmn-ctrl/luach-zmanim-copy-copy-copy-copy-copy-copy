@@ -24,6 +24,7 @@ export default function SettingsPanel() {
     showZmanimSeconds, setShowZmanimSeconds,
     showStatusBar, setShowStatusBar,
     showDafYomi, setShowDafYomi,
+    enableNotifications, setEnableNotifications,
   } = useSettings();
 
   const t = (en, heb) => hebrewMode ? heb : en;
@@ -285,9 +286,22 @@ export default function SettingsPanel() {
                </div>
                <Switch checked={showDafYomi} onCheckedChange={setShowDafYomi} />
              </div>
-           </section>
+            </section>
 
-           </div>
+            {/* Notifications toggle */}
+            <section>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-body font-semibold text-sm text-muted-foreground uppercase tracking-wider">
+                    {t("Notifications", HEB_UI.notifications)}
+                  </h3>
+                  <p className="text-xs text-muted-foreground font-body mt-0.5">{t("Weather and Hebrew date alerts", HEB_UI.enable_notifications)}</p>
+                </div>
+                <Switch checked={enableNotifications} onCheckedChange={setEnableNotifications} />
+              </div>
+            </section>
+
+            </div>
       </div>
     </div>
   );
