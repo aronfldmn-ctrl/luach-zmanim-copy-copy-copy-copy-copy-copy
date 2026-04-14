@@ -99,13 +99,24 @@ export function getHebrewDate(date) {
 }
 
 // Format an ISO datetime string to 12-hour time (always stores seconds)
+// Parses the time component directly from the ISO string to avoid timezone shifts
 export function isoToTime(isoStr) {
   if (!isoStr) return "—";
-  const d = new Date(isoStr);
-  if (isNaN(d)) return "—";
-  let h = d.getHours();
-  const m = d.getMinutes();
-  const s = d.getSeconds();
+  // Match "T HH:MM:SS" from ISO string, ignoring timezone offset
+  const match = isoStr.match(/T(\d{2}):(\d{2}):(\d{2})/);
+  if (!match) {
+    // fallback for strings without seconds
+    const match2 = isoStr.match(/T(\d{2}):(\d{2})/);
+    if (!match2) return "—";
+    let h = parseInt(match2[1]);
+    const m = parseInt(match2[2]);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    return `${h}:${m.toString().padStart(2, '0')}:00 ${ampm}`;
+  }
+  let h = parseInt(match[1]);
+  const m = parseInt(match[2]);
+  const s = parseInt(match[3]);
   const ampm = h >= 12 ? 'PM' : 'AM';
   h = h % 12 || 12;
   return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')} ${ampm}`;
@@ -123,11 +134,19 @@ export function formatZmanTime(timeStr, showSeconds) {
 }
 
 // Compute candle lighting time: X minutes before sunset ISO string
+// Preserves the original timezone offset from the sunset ISO string
 export function computeCandleLighting(sunsetIso, minutesBefore) {
   if (!sunsetIso) return null;
   const d = new Date(sunsetIso);
   if (isNaN(d)) return null;
-  return new Date(d.getTime() - minutesBefore * 60000).toISOString();
+  const adjusted = new Date(d.getTime() - minutesBefore * 60000);
+  // Reconstruct ISO with original offset so isoToTime parses correctly
+  const offsetMatch = sunsetIso.match(/([+-]\d{2}:\d{2})$/);
+  if (offsetMatch) {
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${adjusted.getUTCFullYear()}-${pad(adjusted.getUTCMonth()+1)}-${pad(adjusted.getUTCDate())}T${pad(adjusted.getUTCHours())}:${pad(adjusted.getUTCMinutes())}:${pad(adjusted.getUTCSeconds())}${offsetMatch[1]}`;
+  }
+  return adjusted.toISOString();
 }
 
 // Fetch accurate zmanim from Hebcal API
@@ -135,7 +154,7 @@ const zmanimCache = {};
 
 export async function fetchZmanim(date, lat, lng, tzid, candleMinutes = 18) {
   const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-  const cacheKey = `v2_${dateStr}_${lat}_${lng}_${candleMinutes}`;
+  const cacheKey = `v3_${dateStr}_${lat}_${lng}_${candleMinutes}`;
   if (zmanimCache[cacheKey]) return zmanimCache[cacheKey];
 
   const tz = tzid || Intl.DateTimeFormat().resolvedOptions().timeZone || "America/New_York";
