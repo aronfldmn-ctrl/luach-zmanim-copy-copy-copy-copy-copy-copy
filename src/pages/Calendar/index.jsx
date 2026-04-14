@@ -9,7 +9,7 @@ import MonthView from "@/components/calendar/MonthView";
 import YearView from "@/components/calendar/YearView";
 import StatusBar from "@/components/calendar/StatusBar";
 import DailyBanner from "@/components/calendar/DailyBanner";
-import BottomNav from "@/components/calendar/BottomNav";
+import BottomNav from "@/components/calendar/BottomNav.jsx";
 import { useKeyboardNavigation } from "@/lib/useKeyboardNavigation";
 import { useSettings } from "@/lib/settingsContext";
 

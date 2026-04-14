@@ -7,7 +7,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import { SettingsProvider } from '@/lib/settingsContext';
 import OfflineIndicator from '@/components/OfflineIndicator';
-import PermissionRequester from '@/components/PermissionRequester';
+import PermissionRequester from '@/components/PermissionRequester.jsx';
 import { registerServiceWorker } from '@/lib/offline';
 import Calendar from '@/pages/Calendar/index';
 // Add page imports here
