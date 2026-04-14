@@ -8,7 +8,8 @@ export const HOLIDAY_CATEGORIES = {
 export const HOLIDAY_NAMES = {
   'Erev Pesach': { en: 'Erev Pesach', heb: 'ערב פסח' },
   'Pesach': { en: 'Pesach', heb: 'פסח' },
-  'Pesach (8th day)': { en: 'Pesach (8th day)', heb: 'פסח (יום ח׳)' },
+  'Pesach (7th day)': { en: 'Pesach (7th day)', heb: 'שביעי של פסח' },
+  'Pesach (8th day)': { en: 'Pesach (8th day)', heb: 'אחרון של פסח' },
   'Chol HaMoed Pesach': { en: 'Chol HaMoed Pesach', heb: 'חול המועד פסח' },
    'Chol HaMoed Sukkot': { en: 'Chol HaMoed Sukkot', heb: 'חול המועד סוכות' },
    'Erev Shavuot': { en: 'Erev Shavuot', heb: 'ערב שבועות' },
@@ -101,6 +102,7 @@ export const HOLIDAY_CATEGORIES_MAP = {
   // Yom Tov (major holidays)
   'Erev Pesach': HOLIDAY_CATEGORIES.YOM_TOV,
   'Pesach': HOLIDAY_CATEGORIES.YOM_TOV,
+  'Pesach (7th day)': HOLIDAY_CATEGORIES.YOM_TOV,
   'Pesach (8th day)': HOLIDAY_CATEGORIES.YOM_TOV,
   'Chol HaMoed Pesach': HOLIDAY_CATEGORIES.YOM_TOV,
   'Erev Shavuot': HOLIDAY_CATEGORIES.YOM_TOV,
