@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 
 export function useKeyboardNavigation(handlers) {
   useEffect(() => {
+    if (!handlers) return;
+    
     const handleKeyDown = (e) => {
       // D-pad arrow keys for navigation
       if (e.key === 'ArrowUp' && handlers.up) {
