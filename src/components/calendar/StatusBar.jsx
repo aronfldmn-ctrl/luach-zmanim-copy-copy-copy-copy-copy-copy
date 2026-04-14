@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Cloud, Sun, CloudRain, CloudSnow, Loader2 } from "lucide-react";
 import { useSettings } from "@/lib/settingsContext";
 import { getHebrewDate } from "@/lib/hebrewDateUtils";
+import { getFromCache, setInCache } from "@/lib/cacheUtils";
 
 const WMO_ICONS = {
   0: { icon: Sun, color: "text-yellow-500" },
@@ -30,16 +31,33 @@ export default function StatusBar() {
   useEffect(() => {
     if (!showWeather) { setLoading(false); return; }
     const tempUnit = celsiusMode ? "celsius" : "fahrenheit";
+    const cacheKey = `weather_${location.lat}_${location.lng}_${tempUnit}`;
+    
+    // Try cache first
+    const cached = getFromCache(cacheKey);
+    if (cached) {
+      setWeather(cached);
+      setLoading(false);
+      return;
+    }
+    
     fetch(`https://api.open-meteo.com/v1/forecast?latitude=${location.lat}&longitude=${location.lng}&current=temperature_2m,weathercode&temperature_unit=${tempUnit}&timezone=auto`)
       .then(r => r.json())
       .then(data => {
-        setWeather({
+        const weatherData = {
           temp: Math.round(data.current.temperature_2m),
           code: data.current.weathercode,
-        });
+        };
+        setWeather(weatherData);
+        setInCache(cacheKey, weatherData, 60 * 60 * 1000); // Cache for 1 hour
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => {
+        // Fallback to cache if fetch fails
+        const fallback = getFromCache(cacheKey);
+        if (fallback) setWeather(fallback);
+        setLoading(false);
+      });
   }, [location.lat, location.lng, celsiusMode, showWeather]);
 
   const unit = celsiusMode ? "°C" : "°F";

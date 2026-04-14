@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { Cloud, Sun, CloudRain, CloudSnow, Wind, Thermometer, Loader2, CloudLightning, CloudDrizzle, Droplets } from "lucide-react";
 import { useSettings, HEB_UI } from "@/lib/settingsContext";
 import { format } from "date-fns";
+import { getFromCache, setInCache } from "@/lib/cacheUtils";
 
 const WMO_CODES = {
   0: { label: "Clear sky", labelHeb: "שמיים בהירים", icon: Sun, color: "text-yellow-500" },
@@ -50,6 +51,16 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
     setLoading(true);
     setError(null);
     const tempUnit = celsiusMode ? "celsius" : "fahrenheit";
+    const cacheKey = `weather_full_${location.lat}_${location.lng}_${tempUnit}`;
+    
+    // Try cache first
+    const cached = getFromCache(cacheKey);
+    if (cached) {
+      setWeather(cached);
+      setLoading(false);
+      return;
+    }
+    
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${location.lat}&longitude=${location.lng}&current=temperature_2m,weathercode,windspeed_10m,apparent_temperature&daily=weathercode,temperature_2m_max,temperature_2m_min&hourly=temperature_2m,weathercode,precipitation_probability,windspeed_10m&temperature_unit=${tempUnit}&windspeed_unit=mph&timezone=auto&forecast_days=7`;
 
     fetch(url)
@@ -68,11 +79,19 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
           high: Math.round(data.daily.temperature_2m_max[i]),
           low: Math.round(data.daily.temperature_2m_min[i]),
         }));
-        setWeather({ current, daily, hourlyAll: data.hourly });
+        const weatherData = { current, daily, hourlyAll: data.hourly };
+        setWeather(weatherData);
+        setInCache(cacheKey, weatherData, 60 * 60 * 1000); // Cache for 1 hour
         setLoading(false);
       })
       .catch(() => {
-        setError("Unable to load weather");
+        // Fallback to cache on error
+        const fallback = getFromCache(cacheKey);
+        if (fallback) {
+          setWeather(fallback);
+        } else {
+          setError("Unable to load weather");
+        }
         setLoading(false);
       });
   }, [location.lat, location.lng, celsiusMode]);
