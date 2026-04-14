@@ -24,6 +24,7 @@ export const HOLIDAY_NAMES = {
   'Shemini Atzeret': { en: 'Shemini Atzeret', heb: 'שמיני עצרת' },
   'Simchat Torah': { en: 'Simchat Torah', heb: 'שמחת תורה' },
   'Hanukkah': { en: 'Hanukkah', heb: 'חנוכה' },
+  'Chanukah': { en: 'Chanukah', heb: 'חנוכה' },
   'Tu B\'Shevat': { en: 'Tu B\'Shevat', heb: 'ט״ו בשבט' },
   'Purim': { en: 'Purim', heb: 'פורים' },
   'Shushan Purim': { en: 'Shushan Purim', heb: 'פורים שושן' },
