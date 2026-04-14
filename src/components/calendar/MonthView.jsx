@@ -10,7 +10,7 @@ import SidePanel from "./SidePanel";
 const DAY_LABELS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Shabbat"];
 const DAY_LABELS_HEB = [HEB_UI.sun, HEB_UI.mon, HEB_UI.tue, HEB_UI.wed, HEB_UI.thu, HEB_UI.fri, HEB_UI.shabbat];
 
-export default function MonthView({ date, onDateSelect }) {
+export default function MonthView({ date, onDateSelect, onWeekSelect }) {
   const { location, hebrewMode, candleLightingMinutes } = useSettings();
   const [zmanimMap, setZmanimMap] = useState({});
   const [parashaMap, setParashaMap] = useState({});
@@ -79,13 +79,16 @@ export default function MonthView({ date, onDateSelect }) {
             <div key={wi} className="border-b border-border last:border-0">
               {/* Parasha label row */}
               {weekParasha && (
-                <div className="flex items-center gap-1.5 px-2 py-1 bg-primary/5 border-b border-primary/10">
+                <button
+                  onClick={() => onWeekSelect && onWeekSelect(shabbatDay)}
+                  className="w-full flex items-center gap-1.5 px-2 py-1 bg-primary/5 border-b border-primary/10 hover:bg-primary/10 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset"
+                >
                   <BookOpen className="h-3 w-3 text-primary flex-shrink-0" />
                   <span className="text-[10px] font-body text-primary font-semibold">
                     {t(weekParasha.en, weekParasha.heb)}
                   </span>
                   {!hebrewMode && <span className="text-[10px] text-muted-foreground font-body" dir="rtl">{weekParasha.heb}</span>}
-                </div>
+                </button>
               )}
               <div className="grid grid-cols-7">
               {week.map((day) => {

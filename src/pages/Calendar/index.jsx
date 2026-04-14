@@ -61,6 +61,11 @@ function Calendar() {
     navigate("/month");
   }, [navigate]);
 
+  const handleWeekSelect = useCallback((date) => {
+    setCurrentDate(date);
+    navigate("/week");
+  }, [navigate]);
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <StatusBar />
@@ -81,7 +86,7 @@ function Calendar() {
             <WeekView date={currentDate} onDateSelect={handleDateSelect} />
           )}
           {activeView === "month" && (
-            <MonthView date={currentDate} onDateSelect={handleDateSelect} />
+            <MonthView date={currentDate} onDateSelect={handleDateSelect} onWeekSelect={handleWeekSelect} />
           )}
           {activeView === "year" && (
             <YearView date={currentDate} onDateSelect={handleDateSelect} onMonthSelect={handleMonthSelect} />
