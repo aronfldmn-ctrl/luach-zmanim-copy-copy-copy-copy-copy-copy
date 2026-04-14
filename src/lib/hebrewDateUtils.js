@@ -154,13 +154,8 @@ export async function fetchZmanim(date, lat, lng, tzid, candleMinutes = 18) {
     complexZmanim: true,
   });
 
-  // Flatten: the library may return { BasicZmanim: {...}, ComplexZmanim: {...} } or a flat object
-  const z = (zRaw.BasicZmanim || zRaw.ComplexZmanim)
-    ? { ...(zRaw.BasicZmanim || {}), ...(zRaw.ComplexZmanim || {}) }
-    : zRaw;
-
-  console.log("[KosherZmanim] keys:", Object.keys(z).slice(0, 20));
-  console.log("[KosherZmanim] Sunrise:", z.Sunrise, "SofZmanShmaGRA:", z.SofZmanShmaGRA);
+  // The library returns { metadata: {...}, Zmanim: { Sunrise: DateTime, ... } }
+  const z = zRaw.Zmanim || zRaw.BasicZmanim || zRaw.ComplexZmanim || zRaw;
 
   const t = (iso) => dtToTime(iso, tz);
 
