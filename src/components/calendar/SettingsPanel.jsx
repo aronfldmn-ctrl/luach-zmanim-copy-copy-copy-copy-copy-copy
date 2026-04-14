@@ -26,6 +26,7 @@ export default function SettingsPanel() {
     showStatusBar, setShowStatusBar,
     showDafYomi, setShowDafYomi,
     enableNotifications, setEnableNotifications,
+    autoSyncLocation, setAutoSyncLocation,
   } = useSettings();
 
   const t = (en, heb) => hebrewMode ? heb : en;
@@ -299,6 +300,21 @@ export default function SettingsPanel() {
                   <p className="text-xs text-muted-foreground font-body mt-0.5">{t("Weather and Hebrew date alerts", HEB_UI.enable_notifications)}</p>
                 </div>
                 <Switch checked={enableNotifications} onCheckedChange={setEnableNotifications} />
+              </div>
+            </section>
+
+            {/* Auto-sync Location */}
+            <section>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-body font-semibold text-sm text-muted-foreground uppercase tracking-wider">
+                    {t("Auto-sync Location", HEB_UI.auto_sync_location)}
+                  </h3>
+                  <p className="text-xs text-muted-foreground font-body mt-0.5">
+                    {t("Automatically detect and update your location", HEB_UI.auto_sync_location_desc)}
+                  </p>
+                </div>
+                <Switch checked={autoSyncLocation} onCheckedChange={setAutoSyncLocation} />
               </div>
             </section>
 

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import { addDays, addWeeks, addMonths, addYears } from "date-fns";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -11,6 +11,7 @@ import StatusBar from "@/components/calendar/StatusBar";
 import DailyBanner from "@/components/calendar/DailyBanner";
 import BottomNav from "@/components/calendar/BottomNav";
 import { useKeyboardNavigation } from "@/lib/useKeyboardNavigation";
+import { useSettings } from "@/lib/settingsContext";
 
 const VIEWS = ["day", "week", "month", "year"];
 
@@ -21,6 +22,7 @@ function Calendar() {
   const [pullRefresh, setPullRefresh] = useState(0);
   const scrollContainerRef = useRef(null);
   const touchStartRef = useRef(0);
+  const { autoSyncLocation, setLocation } = useSettings();
 
   const view = location.pathname.slice(1) || "month";
   const isValidView = VIEWS.includes(view);
@@ -90,6 +92,31 @@ function Calendar() {
     setCurrentDate(date);
     navigate("/week");
   }, [navigate]);
+
+  useEffect(() => {
+    if (autoSyncLocation && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        const { latitude: lat, longitude: lng } = pos.coords;
+        try {
+          const tzRes = await fetch(
+            `https://timezonefinder.michelfe.it/api/0?lat=${lat}&lng=${lng}`
+          );
+          const tzData = await tzRes.json();
+          const tzid = tzData.timezone_id || Intl.DateTimeFormat().resolvedOptions().timeZone;
+          
+          const nameRes = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+          );
+          const nameData = await nameRes.json();
+          const name = nameData.address?.city || nameData.address?.town || "Current Location";
+          
+          setLocation({ name, lat, lng, tzid });
+        } catch (err) {
+          console.error("Error syncing location:", err);
+        }
+      });
+    }
+  }, [autoSyncLocation, setLocation]);
 
   useKeyboardNavigation({
     up: () => handleNavigate(-1),

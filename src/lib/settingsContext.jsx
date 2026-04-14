@@ -47,6 +47,7 @@ export function SettingsProvider({ children }) {
   const [showDafYomi, setShowDafYomiState] = useState(() => loadFromStorage("jcal_show_daf_yomi", true));
   const [enableNotifications, setEnableNotificationsState] = useState(() => loadFromStorage("jcal_notifications", false));
   const [syncZmanimDays, setSyncZmanimDaysState] = useState(() => loadFromStorage("jcal_sync_zmanim_days", 7));
+  const [autoSyncLocation, setAutoSyncLocationState] = useState(() => loadFromStorage("jcal_auto_sync_location", false));
 
   const setLocation = (loc) => {
     setLocationState(loc);
@@ -96,6 +97,10 @@ export function SettingsProvider({ children }) {
     setSyncZmanimDaysState(v);
     localStorage.setItem("jcal_sync_zmanim_days", JSON.stringify(v));
   };
+  const setAutoSyncLocation = (v) => {
+    setAutoSyncLocationState(v);
+    localStorage.setItem("jcal_auto_sync_location", JSON.stringify(v));
+  };
 
   return (
     <SettingsContext.Provider value={{
@@ -111,6 +116,7 @@ export function SettingsProvider({ children }) {
       showDafYomi, setShowDafYomi,
       enableNotifications, setEnableNotifications,
       syncZmanimDays, setSyncZmanimDays,
+      autoSyncLocation, setAutoSyncLocation,
     }}>
       {children}
     </SettingsContext.Provider>
@@ -191,4 +197,6 @@ export const HEB_UI = {
     sync_zmanim: "סנכרן זמנים לליומן",
     sync_zmanim_description: "סנכרן זמני תפילה לליומן הטלפון שלך",
     sync_duration_days: "מספר ימים",
+    auto_sync_location: "Auto-sync location",
+    auto_sync_location_desc: "Automatically detect and update your location",
    };
