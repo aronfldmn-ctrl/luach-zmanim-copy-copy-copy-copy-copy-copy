@@ -1,5 +1,5 @@
 // Hebrew date conversion utilities (zmanim via kosher-zmanim — local KosherJava JS port)
-import { ComplexZmanimCalendar, GeoLocation, DateTime } from "kosher-zmanim";
+import { getZmanimJson } from "kosher-zmanim";
 
 const HEBREW_MONTHS = [
   "Nisan", "Iyar", "Sivan", "Tammuz", "Av", "Elul",
@@ -99,30 +99,6 @@ export function getHebrewDate(date) {
   };
 }
 
-// Format an ISO datetime string to 12-hour time (always stores seconds)
-// Parses the time component directly from the ISO string to avoid timezone shifts
-export function isoToTime(isoStr) {
-  if (!isoStr) return "—";
-  // Match "T HH:MM:SS" from ISO string, ignoring timezone offset
-  const match = isoStr.match(/T(\d{2}):(\d{2}):(\d{2})/);
-  if (!match) {
-    // fallback for strings without seconds
-    const match2 = isoStr.match(/T(\d{2}):(\d{2})/);
-    if (!match2) return "—";
-    let h = parseInt(match2[1]);
-    const m = parseInt(match2[2]);
-    const ampm = h >= 12 ? 'PM' : 'AM';
-    h = h % 12 || 12;
-    return `${h}:${m.toString().padStart(2, '0')}:00 ${ampm}`;
-  }
-  let h = parseInt(match[1]);
-  const m = parseInt(match[2]);
-  const s = parseInt(match[3]);
-  const ampm = h >= 12 ? 'PM' : 'AM';
-  h = h % 12 || 12;
-  return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')} ${ampm}`;
-}
-
 // Strip seconds from a time string like "6:32:18 PM" → "6:32 PM"
 export function stripSeconds(timeStr) {
   if (!timeStr || timeStr === "..." || timeStr === "—") return timeStr;
@@ -134,84 +110,68 @@ export function formatZmanTime(timeStr, showSeconds) {
   return showSeconds ? timeStr : stripSeconds(timeStr);
 }
 
-// Compute candle lighting time: X minutes before sunset ISO string
-// Preserves the original timezone offset from the sunset ISO string
-export function computeCandleLighting(sunsetIso, minutesBefore) {
-  if (!sunsetIso) return null;
-  const d = new Date(sunsetIso);
-  if (isNaN(d)) return null;
-  const adjusted = new Date(d.getTime() - minutesBefore * 60000);
-  // Reconstruct ISO with original offset so isoToTime parses correctly
-  const offsetMatch = sunsetIso.match(/([+-]\d{2}:\d{2})$/);
-  if (offsetMatch) {
-    const pad = (n) => String(n).padStart(2, '0');
-    return `${adjusted.getUTCFullYear()}-${pad(adjusted.getUTCMonth()+1)}-${pad(adjusted.getUTCDate())}T${pad(adjusted.getUTCHours())}:${pad(adjusted.getUTCMinutes())}:${pad(adjusted.getUTCSeconds())}${offsetMatch[1]}`;
-  }
-  return adjusted.toISOString();
-}
-
 // Calculate zmanim locally using kosher-zmanim (KosherJava JS port) — full second precision
 
 const zmanimCache = {};
 
-// Convert a Luxon DateTime (in local tz) to "h:mm:ss AM/PM"
-function dtToTime(dt) {
-  if (!dt || !dt.isValid) return "—";
-  // dt is in UTC from the library; convert to local tz
-  const h24 = dt.hour;
-  const m = dt.minute;
-  const s = dt.second;
-  const ampm = h24 >= 12 ? 'PM' : 'AM';
-  const h = h24 % 12 || 12;
-  return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')} ${ampm}`;
+// Convert a Luxon DateTime (UTC) to "h:mm:ss AM/PM" in the given tz
+function dtToTime(isoStr, tz) {
+  if (!isoStr) return "—";
+  // isoStr from getZmanimJson is an ISO string in UTC; convert to local tz
+  const d = new Date(isoStr);
+  if (isNaN(d)) return "—";
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: tz,
+    hour: 'numeric',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true,
+  });
+  return formatter.format(d);
 }
 
 export async function fetchZmanim(date, lat, lng, tzid, candleMinutes = 18) {
   const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
   const tz = tzid || Intl.DateTimeFormat().resolvedOptions().timeZone || "America/New_York";
-  const cacheKey = `kj3_${dateStr}_${lat}_${lng}_${tz}_${candleMinutes}`;
+  const cacheKey = `kj4_${dateStr}_${lat}_${lng}_${tz}_${candleMinutes}`;
   if (zmanimCache[cacheKey]) return zmanimCache[cacheKey];
 
-  const geoLocation = new GeoLocation(null, lat, lng, 0, tz);
-  const cal = new ComplexZmanimCalendar(geoLocation);
-  // Set the date on the calendar (Luxon DateTime)
-  const luxonDate = DateTime.fromObject(
-    { year: date.getFullYear(), month: date.getMonth() + 1, day: date.getDate() },
-    { zone: tz }
-  );
-  cal.setDate(luxonDate);
+  const zJson = getZmanimJson({
+    date: new Date(date.getFullYear(), date.getMonth(), date.getDate()),
+    timeZoneId: tz,
+    latitude: lat,
+    longitude: lng,
+    elevation: 0,
+    complexZmanim: true,
+  });
 
-  // Helper: get local DateTime from zman
-  const get = (fn) => {
-    try {
-      const dt = fn();
-      if (!dt || !dt.isValid) return "—";
-      return dtToTime(dt.setZone(tz));
-    } catch { return "—"; }
-  };
+  const z = zJson.BasicZmanim || {};
+  const cz = zJson.ComplexZmanim || {};
+
+  const t = (iso) => dtToTime(iso, tz);
 
   // Compute candle lighting from sunset
-  const sunsetDt = cal.getSunset();
   let candleLightingStr = "—";
-  if (sunsetDt && sunsetDt.isValid) {
-    const candleDt = sunsetDt.minus({ minutes: candleMinutes });
-    candleLightingStr = dtToTime(candleDt.setZone(tz));
+  if (z.Sunset) {
+    const sunsetMs = new Date(z.Sunset).getTime();
+    const candleMs = sunsetMs - candleMinutes * 60000;
+    candleLightingStr = dtToTime(new Date(candleMs).toISOString(), tz);
   }
 
   const result = {
-    alotHaShachar: get(() => cal.getAlosHashachar()),
-    zmanTzitzit: get(() => cal.getMisheyakir11Point5Degrees()),
-    sunrise: get(() => cal.getSunrise()),
-    sofShmaGRA: get(() => cal.getSofZmanShmaGRA()),
-    sofShmaMA: get(() => cal.getSofZmanShmaMGA()),
-    sofTfila: get(() => cal.getSofZmanTfillaGRA()),
-    midday: get(() => cal.getSunTransit()),
-    minchaGedolah: get(() => cal.getMinchaGedola()),
-    plagHaMincha: get(() => cal.getPlagHamincha()),
-    sunset: get(() => sunsetDt),
+    alotHaShachar: t(cz.AlosHashachar || cz.Alos72),
+    zmanTzitzit: t(cz.Misheyakir11Point5Degrees || cz.Misheyakir),
+    sunrise: t(z.Sunrise),
+    sofShmaGRA: t(z.SofZmanShmaGRA),
+    sofShmaMA: t(z.SofZmanShmaMGA),
+    sofTfila: t(z.SofZmanTfilaGRA || z.SofZmanTfillaGRA),
+    midday: t(z.Chatzos || z.SunTransit),
+    minchaGedolah: t(z.MinchaGedola),
+    plagHaMincha: t(z.PlagHamincha),
+    sunset: t(z.Sunset),
     candleLighting: candleLightingStr,
-    tzeitKochavim: get(() => cal.getTzaisGeonim8Point5Degrees()),
-    rabbeinuTam: get(() => cal.getTzais72()),
+    tzeitKochavim: t(cz.TzaisGeonim8Point5Degrees || z.Tzais72),
+    rabbeinuTam: t(cz.Tzais72 || cz.TzaisRabbeinuTam),
   };
 
   zmanimCache[cacheKey] = result;
