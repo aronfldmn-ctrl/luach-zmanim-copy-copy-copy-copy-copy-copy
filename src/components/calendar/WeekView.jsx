@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { format, startOfWeek, addDays, isSameDay } from "date-fns";
-import { getHebrewDate, getJewishHoliday, isShabbat, isFriday } from "@/lib/hebrewDateUtils";
+import { getHebrewDate, getJewishHoliday, getJewishHolidays, isShabbat, isFriday } from "@/lib/hebrewDateUtils";
 import { useWeekZmanim } from "@/lib/useWeekZmanim";
 import { useSettings, HEB_UI } from "@/lib/settingsContext";
 import { fetchParasha } from "@/lib/parasha";
@@ -60,7 +60,7 @@ export default function WeekView({ date, onDateSelect }) {
         <div className="grid grid-cols-7 gap-2">
           {days.map((day) => {
             const heb = getHebrewDate(day);
-            const holiday = getJewishHoliday(day);
+            const holidays = getJewishHolidays(day);
             const shabbat = isShabbat(day);
             const friday = isFriday(day);
             const isToday = isSameDay(day, today);
@@ -89,9 +89,13 @@ export default function WeekView({ date, onDateSelect }) {
                   {heb.monthName} {heb.day}
                 </p>
 
-                {holiday && holidayFilters[getHolidayCategoryDynamic(holiday)] && (
-                   <div className="mb-2">
-                     <HolidayBadge holiday={holiday} compact={true} />
+                {holidays.length > 0 && (
+                   <div className="mb-2 space-y-1">
+                     {holidays.map((holiday, idx) => 
+                       holidayFilters[getHolidayCategoryDynamic(holiday)] && (
+                         <HolidayBadge key={idx} holiday={holiday} compact={true} />
+                       )
+                     )}
                    </div>
                  )}
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameMonth, isSameDay } from "date-fns";
-import { getHebrewDate, getJewishHoliday, isShabbat, isFriday, fetchZmanim } from "@/lib/hebrewDateUtils";
+import { getHebrewDate, getJewishHoliday, getJewishHolidays, isShabbat, isFriday, fetchZmanim } from "@/lib/hebrewDateUtils";
 import { useSettings, HEB_UI } from "@/lib/settingsContext";
 import { fetchParasha } from "@/lib/parasha";
 import { getHolidayCategoryDynamic } from "@/lib/holidayUtils";
@@ -99,7 +99,7 @@ export default function MonthView({ date, onDateSelect, onWeekSelect }) {
                 const isToday = isSameDay(day, today);
                 const isSelected = isSameDay(day, date);
                 const heb = getHebrewDate(day);
-                const holiday = getJewishHoliday(day);
+                const holidays = getJewishHolidays(day);
                 const shabbat = isShabbat(day);
                 const friday = isFriday(day);
                 const zmanim = zmanimMap[day.toDateString()];
@@ -128,11 +128,15 @@ export default function MonthView({ date, onDateSelect, onWeekSelect }) {
                       <span className="text-[10px] font-body text-accent">{heb.dayHeb}</span>
                     </div>
 
-                    {holiday && holidayFilters[getHolidayCategoryDynamic(holiday)] && (
-                       <div className="mt-1">
-                         <div className="inline-block">
-                           <HolidayBadge holiday={holiday} compact={true} />
-                         </div>
+                    {holidays.length > 0 && (
+                       <div className="mt-1 space-y-1">
+                         {holidays.map((holiday, idx) => 
+                           holidayFilters[getHolidayCategoryDynamic(holiday)] && (
+                             <div key={idx} className="inline-block">
+                               <HolidayBadge holiday={holiday} compact={true} />
+                             </div>
+                           )
+                         )}
                        </div>
                      )}
 

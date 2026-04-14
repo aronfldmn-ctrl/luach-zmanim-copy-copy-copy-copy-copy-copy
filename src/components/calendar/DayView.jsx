@@ -1,7 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { getHebrewDate, getJewishHoliday, isShabbat, isFriday, formatZmanTime } from "@/lib/hebrewDateUtils";
+import { getHebrewDate, getJewishHoliday, getJewishHolidays, isShabbat, isFriday, formatZmanTime } from "@/lib/hebrewDateUtils";
 import { useSettings, ALL_ZMANIM, HEB_UI } from "@/lib/settingsContext";
 import { useZmanim } from "@/lib/useZmanim";
 import { getHolidayCategoryDynamic } from "@/lib/holidayUtils";
@@ -56,7 +56,7 @@ export default function DayView({ date }) {
   const { showZmanim, zmanimVisible, hebrewMode, showZmanimSeconds, holidayFilters } = useSettings();
   const { zmanim } = useZmanim(date);
   const hebrewDate = getHebrewDate(date);
-  const holiday = getJewishHoliday(date);
+  const holidays = getJewishHolidays(date);
   const shabbat = isShabbat(date);
   const friday = isFriday(date);
   const [importedEvents, setImportedEvents] = useState([]);
@@ -97,12 +97,16 @@ export default function DayView({ date }) {
               <p className="text-sm text-muted-foreground font-body">{hebrewDate.monthNameHeb} {hebrewDate.year}</p>
             </div>
           </div>
-          {holiday && holidayFilters[getHolidayCategoryDynamic(holiday)] && (
-            <div className="mt-3">
-              <HolidayBadge holiday={holiday} compact={false} />
+          {holidays.length > 0 && (
+            <div className="mt-3 space-y-2">
+              {holidays.map((holiday, idx) => 
+                holidayFilters[getHolidayCategoryDynamic(holiday)] && (
+                  <HolidayBadge key={idx} holiday={holiday} compact={false} />
+                )
+              )}
             </div>
           )}
-          {shabbat && !holiday && (
+          {shabbat && holidays.length === 0 && (
             <div className="mt-3 px-3 py-2 rounded-lg bg-secondary text-secondary-foreground">
               <p className="text-sm font-body font-semibold">{t("Shabbat Kodesh", "שבת קודש")}</p>
             </div>

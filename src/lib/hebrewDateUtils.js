@@ -187,43 +187,50 @@ export async function fetchZmanim(date, lat, lng, tzid, candleMinutes = 18) {
   return result;
 }
 
-export function getJewishHoliday(date) {
+export function getJewishHolidays(date) {
+  const holidays = [];
   const heb = gregorianToHebrew(date.getFullYear(), date.getMonth() + 1, date.getDate());
   const m = heb.month;
   const d = heb.day;
   
   // Rosh Chodesh: 1st of every month, or 30th if the month has 30 days
-  if (d === 1) return "Rosh Chodesh";
-  if (d === 30 && hebrewMonthDays(heb.year, m) === 30) return "Rosh Chodesh";
+  if (d === 1) holidays.push("Rosh Chodesh");
+  if (d === 30 && hebrewMonthDays(heb.year, m) === 30) holidays.push("Rosh Chodesh");
   
-  if (m === 7 && (d === 1 || d === 2)) return "Rosh Hashanah";
-  if (m === 7 && d === 3) return "Tzom Gedaliah";
-  if (m === 7 && d === 10) return "Yom Kippur";
-  if (m === 7 && d >= 15 && d <= 21) return "Sukkot";
-  if (m === 7 && d === 22) return "Shemini Atzeret";
-  if (m === 7 && d === 23) return "Simchat Torah";
-  if (m === 9 && d >= 25) return "Chanukah";
-  if (m === 10 && d <= 2) return "Chanukah";
-  if (m === 10 && d === 10) return "Asara B'Tevet";
-  if (m === 11 && d === 15) return "Tu B'Shevat";
-  if (m === 12 && d === 13) return "Ta'anit Esther";
-  if (m === 12 && d === 14) return "Purim";
-  if (m === 12 && d === 15) return "Shushan Purim";
-  if (m === 1 && d >= 15 && d <= 21) return "Pesach";
-  if (m === 1 && d === 22) return "Pesach (8th day)";
-  if (m === 2 && d === 18) return "Lag B'Omer";
+  if (m === 7 && (d === 1 || d === 2)) holidays.push("Rosh Hashanah");
+  if (m === 7 && d === 3) holidays.push("Tzom Gedaliah");
+  if (m === 7 && d === 10) holidays.push("Yom Kippur");
+  if (m === 7 && d >= 15 && d <= 21) holidays.push("Sukkot");
+  if (m === 7 && d === 22) holidays.push("Shemini Atzeret");
+  if (m === 7 && d === 23) holidays.push("Simchat Torah");
+  if (m === 9 && d >= 25) holidays.push("Chanukah");
+  if (m === 10 && d <= 2) holidays.push("Chanukah");
+  if (m === 10 && d === 10) holidays.push("Asara B'Tevet");
+  if (m === 11 && d === 15) holidays.push("Tu B'Shevat");
+  if (m === 12 && d === 13) holidays.push("Ta'anit Esther");
+  if (m === 12 && d === 14) holidays.push("Purim");
+  if (m === 12 && d === 15) holidays.push("Shushan Purim");
+  if (m === 1 && d >= 15 && d <= 21) holidays.push("Pesach");
+  if (m === 1 && d === 22) holidays.push("Pesach (8th day)");
+  if (m === 2 && d === 18) holidays.push("Lag B'Omer");
   if ((m === 1 && d >= 16) || (m === 2) || (m === 3 && d <= 6)) {
     let dayOfOmer;
     if (m === 1) dayOfOmer = d - 15;
     else if (m === 2) dayOfOmer = 15 + d;
     else dayOfOmer = 15 + hebrewMonthDays(heb.year, 2) + d;
-    if (dayOfOmer <= 49) return `Sefirat HaOmer - Day ${dayOfOmer}`;
+    if (dayOfOmer <= 49) holidays.push(`Sefirat HaOmer - Day ${dayOfOmer}`);
   }
-  if (m === 3 && d === 6) return "Shavuot";
-  if (m === 3 && d === 7) return "Shavuot (2nd day)";
-  if (m === 5 && d === 9) return "Tisha B'Av";
-  if (m === 5 && d === 15) return "Tu B'Av";
-  return null;
+  if (m === 3 && d === 6) holidays.push("Shavuot");
+  if (m === 3 && d === 7) holidays.push("Shavuot (2nd day)");
+  if (m === 5 && d === 9) holidays.push("Tisha B'Av");
+  if (m === 5 && d === 15) holidays.push("Tu B'Av");
+  
+  return holidays;
+}
+
+export function getJewishHoliday(date) {
+  const holidays = getJewishHolidays(date);
+  return holidays.length > 0 ? holidays[0] : null;
 }
 
 export function isShabbat(date) { return date.getDay() === 6; }
