@@ -46,55 +46,55 @@ export const HOLIDAY_NAMES = {
 
 export const HOLIDAY_DESCRIPTIONS = {
   // Passover
-   'Erev Pesach': 'Evening before Passover - preparation day',
-   'Pesach': 'Passover - Festival of Freedom (7 days)',
+   'Erev Pesach': 'Erev Pesach',
+   'Pesach': 'Pesach',
 
    // Shavuot
-  'Erev Shavuot': 'Evening before Shavuot',
-  'Shavuot': 'Feast of Weeks (2 days)',
+  'Erev Shavuot': 'Erev Shavuot',
+  'Shavuot': 'Shavuot',
   
   // Rosh Hashanah
-  'Erev Rosh Hashanah': 'Evening before Rosh Hashanah - preparation day',
-  'Rosh Hashana': 'Jewish New Year (2 days)',
-  'Rosh Hashanah': 'Jewish New Year (2 days)',
+  'Erev Rosh Hashanah': 'Erev Rosh Hashanah',
+  'Rosh Hashana': 'Rosh Hashana',
+  'Rosh Hashanah': 'Rosh Hashanah',
   
   // Yom Kippur
-  'Erev Yom Kippur': 'Evening before Yom Kippur - Day of Preparation',
-  'Yom Kippur': 'Day of Atonement - Major fast day',
+  'Erev Yom Kippur': 'Erev Yom Kippur',
+  'Yom Kippur': 'Yom Kippur',
   
   // Sukkot
-  'Erev Sukkot': 'Evening before Sukkot - preparation day',
-  'Sukkot': 'Feast of Tabernacles (7 days)',
-  'Lulav & Etrog': 'Sukkot celebration day',
-  'Shemini Atzeret': 'Eighth day of assembly',
-  'Simchat Torah': 'Rejoicing of the Torah',
+  'Erev Sukkot': 'Erev Sukkot',
+  'Sukkot': 'Sukkot',
+  'Lulav & Etrog': 'Lulav & Etrog',
+  'Shemini Atzeret': 'Shemini Atzeret',
+  'Simchat Torah': 'Simchat Torah',
   
   // Hanukkah
-  'Hanukkah': 'Festival of Lights (8 days)',
+  'Hanukkah': 'Hanukkah',
   
   // Tu B\'Shevat
-  'Tu B\'Shevat': 'New Year for Trees',
+  'Tu B\'Shevat': 'Tu B\'Shevat',
   
   // Purim
-  'Purim': 'Festival of Lots',
-  'Shushan Purim': 'Purim in Jerusalem',
-  'Erev Purim': 'Eve of Purim',
+  'Purim': 'Purim',
+  'Shushan Purim': 'Shushan Purim',
+  'Erev Purim': 'Erev Purim',
   
   // Fasts
-  'Tisha B\'Av': 'Ninth of Av - Major fast day (destruction of Temple)',
-  'Fast of Gedaliah': 'Fast commemorating assassination of Gedaliah',
-  'Yom HaShoah': 'Holocaust Remembrance Day',
-  '17 of Tammuz': 'Fast of the 17th of Tammuz',
-  '10 of Tevet': 'Fast of 10th of Tevet',
+  'Tisha B\'Av': 'Tisha B\'Av',
+  'Fast of Gedaliah': 'Fast of Gedaliah',
+  'Yom HaShoah': 'Yom HaShoah',
+  '17 of Tammuz': '17 of Tammuz',
+  '10 of Tevet': '10 of Tevet',
   
   // Other celebrations
-  'Lag B\'Omer': 'Spring holiday and Jewish pride',
+  'Lag B\'Omer': 'Lag B\'Omer',
   
   // Sefirat HaOmer (dynamically named with day count)
-  'Sefirat HaOmer': 'Counting of the Omer - 49 days from Passover to Shavuot',
+  'Sefirat HaOmer': 'Sefirat HaOmer',
   
   // Other
-  'Rosh Chodesh': 'Beginning of Hebrew month',
+  'Rosh Chodesh': 'Rosh Chodesh',
 };
 
 export const HOLIDAY_CATEGORIES_MAP = {
