@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Cloud, Sun, CloudRain, CloudSnow, Wind, Thermometer, Loader2, CloudLightning, CloudDrizzle, Droplets } from "lucide-react";
 import { useSettings, HEB_UI } from "@/lib/settingsContext";
 import { format } from "date-fns";
@@ -75,7 +75,7 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
         setError("Unable to load weather");
         setLoading(false);
       });
-  }, [location.lat, location.lng, celsiusMode, date]);
+  }, [location.lat, location.lng, celsiusMode]);
 
   if (loading) {
     return (
@@ -185,8 +185,8 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
     const DAY_LABELS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const DAY_LABELS_HEB = [HEB_UI.sun, HEB_UI.mon, HEB_UI.tue, HEB_UI.wed, HEB_UI.thu, HEB_UI.fri, HEB_UI.shabbat];
 
-    // Determine which date's hourly to show: selectedHourlyDate > calendar date > today
-    const hourlyTarget = selectedHourlyDate || (date ? new Date(date) : new Date());
+    // Determine which date's hourly to show: selectedHourlyDate or today
+    const hourlyTarget = selectedHourlyDate || new Date();
     const hourlyIsToday = hourlyTarget.toDateString() === todayDate.toDateString();
     const nowHour = hourlyIsToday ? new Date().getHours() : 0;
 
