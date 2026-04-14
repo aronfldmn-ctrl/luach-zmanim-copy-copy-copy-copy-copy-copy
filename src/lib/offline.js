@@ -1,5 +1,5 @@
 // Offline state management and detection
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 let isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true;
 
