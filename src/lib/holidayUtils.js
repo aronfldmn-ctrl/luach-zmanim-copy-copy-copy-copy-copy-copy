@@ -10,7 +10,8 @@ export const HOLIDAY_NAMES = {
   'Pesach': { en: 'Pesach', heb: 'פסח' },
   'Pesach (8th day)': { en: 'Pesach (8th day)', heb: 'פסח (יום ח׳)' },
   'Chol HaMoed Pesach': { en: 'Chol HaMoed Pesach', heb: 'חול המועד פסח' },
-  'Erev Shavuot': { en: 'Erev Shavuot', heb: 'ערב שבועות' },
+   'Chol HaMoed Sukkot': { en: 'Chol HaMoed Sukkot', heb: 'חול המועד סוכות' },
+   'Erev Shavuot': { en: 'Erev Shavuot', heb: 'ערב שבועות' },
   'Shavuot': { en: 'Shavuot', heb: 'שבועות' },
 
   'Erev Rosh Hashanah': { en: 'Erev Rosh Hashanah', heb: 'ערב ראש השנה' },
@@ -45,11 +46,10 @@ export const HOLIDAY_NAMES = {
 
 export const HOLIDAY_DESCRIPTIONS = {
   // Passover
-  'Erev Pesach': 'Evening before Passover - preparation day',
-  'Pesach': 'Passover - Festival of Freedom (7 days)',
-  'Chol HaMoed Pesach': 'Intermediate days of Passover',
-  
-  // Shavuot
+   'Erev Pesach': 'Evening before Passover - preparation day',
+   'Pesach': 'Passover - Festival of Freedom (7 days)',
+
+   // Shavuot
   'Erev Shavuot': 'Evening before Shavuot',
   'Shavuot': 'Feast of Weeks (2 days)',
   
@@ -65,7 +65,6 @@ export const HOLIDAY_DESCRIPTIONS = {
   // Sukkot
   'Erev Sukkot': 'Evening before Sukkot - preparation day',
   'Sukkot': 'Feast of Tabernacles (7 days)',
-  'Chol HaMoed Sukkot': 'Intermediate days of Sukkot',
   'Lulav & Etrog': 'Sukkot celebration day',
   'Shemini Atzeret': 'Eighth day of assembly',
   'Simchat Torah': 'Rejoicing of the Torah',
