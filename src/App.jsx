@@ -44,9 +44,10 @@ const AuthenticatedApp = () => {
   return (
     <>
       <OfflineIndicator />
+      <PermissionRequester />
       <Routes>
-        <Route path="/" element={<><PermissionRequester /><Calendar /></>} />
-        <Route path="/*" element={<><PermissionRequester /><Calendar /></>} />
+        <Route path="/" element={<Calendar />} />
+        <Route path="/*" element={<Calendar />} />
       </Routes>
     </>
   );
