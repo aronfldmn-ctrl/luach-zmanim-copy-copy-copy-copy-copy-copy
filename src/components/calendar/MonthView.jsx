@@ -130,8 +130,8 @@ export default function MonthView({ date, onDateSelect, onWeekSelect }) {
 
                     {holidays.length > 0 && (
                        <div className="mt-1 space-y-1">
-                         {holidays.map((holiday, idx) => 
-                           holidayFilters[getHolidayCategoryDynamic(holiday)] && (
+                         {holidays.filter(Boolean).map((holiday, idx) => 
+                           holiday && holidayFilters[getHolidayCategoryDynamic(holiday)] && (
                              <div key={idx} className="inline-block">
                                <HolidayBadge holiday={holiday} compact={true} />
                              </div>
