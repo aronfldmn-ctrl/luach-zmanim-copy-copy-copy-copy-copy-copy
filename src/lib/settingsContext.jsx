@@ -3,22 +3,27 @@ import React, { createContext, useContext, useState } from 'react';
 const SettingsContext = createContext(null);
 
 export const HEB_UI = {
-  sync_zmanim: "סנכרון זמנים",
-  sync_zmanim_description: "סנכרן זמני תפילה לליומן הטלפון שלך",
-  sync_duration_days: "משך (ימים)",
-  settings: "הגדרות",
-  language: "שפה",
-  location: "מיקום",
-  search_city: "חיפוש עיר",
-  candle_lighting_minutes: "הדלקת נרות",
-  show_zmanim: "הצג זמנים",
-  show_weather: "הצג מזג אוויר",
-  daf_yomi: "דף יומי",
-  notifications: "הודעות",
-  enable_notifications: "הודעות מזג אוויר וגיליון עברי",
-  auto_sync_location: "סנכרון אוטומטי של מיקום",
-  auto_sync_location_desc: "גלה ועדכן אוטומטית את המיקום שלך",
-};
+   day: "יום",
+   week: "שבוע",
+   month: "חודש",
+   year: "שנה",
+   today: "היום",
+   sync_zmanim: "סנכרון זמנים",
+   sync_zmanim_description: "סנכרן זמני תפילה לליומן הטלפון שלך",
+   sync_duration_days: "משך (ימים)",
+   settings: "הגדרות",
+   language: "שפה",
+   location: "מיקום",
+   search_city: "חיפוש עיר",
+   candle_lighting_minutes: "הדלקת נרות",
+   show_zmanim: "הצג זמנים",
+   show_weather: "הצג מזג אוויר",
+   daf_yomi: "דף יומי",
+   notifications: "הודעות",
+   enable_notifications: "הודעות מזג אוויר וגיליון עברי",
+   auto_sync_location: "סנכרון אוטומטי של מיקום",
+   auto_sync_location_desc: "גלה ועדכן אוטומטית את המיקום שלך",
+ };
 
 export const ALL_ZMANIM = [
   { key: 'alotHaShachar', labelEn: 'Alot HaShachar', labelHeb: 'עלות השחר' },
