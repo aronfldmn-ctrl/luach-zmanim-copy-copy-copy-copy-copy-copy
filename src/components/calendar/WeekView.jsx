@@ -4,7 +4,7 @@ import { getHebrewDate, getJewishHoliday, isShabbat, isFriday } from "@/lib/hebr
 import { useWeekZmanim } from "@/lib/useWeekZmanim";
 import { useSettings, HEB_UI } from "@/lib/settingsContext";
 import { fetchParasha } from "@/lib/parasha";
-import { getHolidayCategory } from "@/lib/holidayUtils";
+import { getHolidayCategoryDynamic } from "@/lib/holidayUtils";
 import HolidayBadge from "./HolidayBadge";
 import { Flame, Sunrise, Sunset, BookOpen, Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -89,7 +89,7 @@ export default function WeekView({ date, onDateSelect }) {
                   {heb.monthName} {heb.day}
                 </p>
 
-                {holiday && holidayFilters[getHolidayCategory(holiday)] && (
+                {holiday && holidayFilters[getHolidayCategoryDynamic(holiday)] && (
                    <div className="mb-2">
                      <HolidayBadge holiday={holiday} compact={true} />
                    </div>

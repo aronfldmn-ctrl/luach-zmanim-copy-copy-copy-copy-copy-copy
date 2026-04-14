@@ -3,7 +3,7 @@ import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSa
 import { getHebrewDate, getJewishHoliday, isShabbat, isFriday, fetchZmanim } from "@/lib/hebrewDateUtils";
 import { useSettings, HEB_UI } from "@/lib/settingsContext";
 import { fetchParasha } from "@/lib/parasha";
-import { getHolidayCategory } from "@/lib/holidayUtils";
+import { getHolidayCategoryDynamic } from "@/lib/holidayUtils";
 import HolidayBadge from "./HolidayBadge";
 import { Flame, BookOpen, Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -128,7 +128,7 @@ export default function MonthView({ date, onDateSelect, onWeekSelect }) {
                       <span className="text-[10px] font-body text-accent">{heb.dayHeb}</span>
                     </div>
 
-                    {holiday && holidayFilters[getHolidayCategory(holiday)] && (
+                    {holiday && holidayFilters[getHolidayCategoryDynamic(holiday)] && (
                        <div className="mt-1">
                          <div className="inline-block">
                            <HolidayBadge holiday={holiday} compact={true} />

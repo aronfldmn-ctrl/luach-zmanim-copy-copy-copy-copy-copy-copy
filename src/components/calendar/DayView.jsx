@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import { getHebrewDate, getJewishHoliday, isShabbat, isFriday, formatZmanTime } from "@/lib/hebrewDateUtils";
 import { useSettings, ALL_ZMANIM, HEB_UI } from "@/lib/settingsContext";
 import { useZmanim } from "@/lib/useZmanim";
-import { getHolidayCategory } from "@/lib/holidayUtils";
+import { getHolidayCategoryDynamic } from "@/lib/holidayUtils";
 import { getImportedEventsForDate } from "@/components/calendar/ZmanimSync";
 import HolidayBadge from "./HolidayBadge";
 import { Sunrise, Sun, Sunset, Flame, Moon, Star, Clock, Calendar as CalendarIcon, X } from "lucide-react";
@@ -97,7 +97,7 @@ export default function DayView({ date }) {
               <p className="text-sm text-muted-foreground font-body">{hebrewDate.monthNameHeb} {hebrewDate.year}</p>
             </div>
           </div>
-          {holiday && holidayFilters[getHolidayCategory(holiday)] && (
+          {holiday && holidayFilters[getHolidayCategoryDynamic(holiday)] && (
             <div className="mt-3">
               <HolidayBadge holiday={holiday} compact={false} />
             </div>

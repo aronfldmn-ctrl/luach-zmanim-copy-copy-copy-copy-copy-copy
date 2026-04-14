@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
-import { getHolidayCategory, getHolidayDescription, getHolidayColor } from '@/lib/holidayUtils';
+import { getHolidayDescription, getHolidayColorDynamic } from '@/lib/holidayUtils';
 import { useSettings } from '@/lib/settingsContext';
 
 export default function HolidayBadge({ holiday, compact = false }) {
   const [showTooltip, setShowTooltip] = useState(false);
   const { hebrewMode } = useSettings();
   
-  const category = getHolidayCategory(holiday);
   const description = getHolidayDescription(holiday);
-  const colors = getHolidayColor(holiday);
+  const colors = getHolidayColorDynamic(holiday);
 
   if (compact) {
     return (
