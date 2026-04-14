@@ -56,7 +56,15 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
     // Try cache first
     const cached = getFromCache(cacheKey);
     if (cached) {
-      setWeather(cached);
+      // Restore dates from cached strings
+      const restored = {
+        ...cached,
+        daily: (cached.daily || []).map(day => ({
+          ...day,
+          date: day.dateStr ? new Date(day.dateStr + "T12:00:00") : new Date(),
+        })),
+      };
+      setWeather(restored);
       setLoading(false);
       return;
     }
@@ -75,6 +83,7 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
         };
         const daily = (data.daily?.time || []).map((dateStr, i) => ({
           date: new Date(dateStr + "T12:00:00"),
+          dateStr: dateStr, // Store string for caching
           code: data.daily.weathercode[i],
           high: Math.round(data.daily.temperature_2m_max[i]),
           low: Math.round(data.daily.temperature_2m_min[i]),
@@ -88,7 +97,15 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
         // Fallback to cache on error
         const fallback = getFromCache(cacheKey);
         if (fallback) {
-          setWeather(fallback);
+          // Restore dates from cached strings
+          const restored = {
+            ...fallback,
+            daily: (fallback.daily || []).map(day => ({
+              ...day,
+              date: day.dateStr ? new Date(day.dateStr + "T12:00:00") : new Date(),
+            })),
+          };
+          setWeather(restored);
         } else {
           setError("Unable to load weather");
         }
