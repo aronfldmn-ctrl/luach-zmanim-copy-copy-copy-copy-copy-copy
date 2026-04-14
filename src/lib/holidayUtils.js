@@ -33,12 +33,9 @@ export const HOLIDAY_NAMES = {
   'Fast of Gedaliah': { en: 'Fast of Gedaliah', heb: 'צום גדליה' },
   'Tzom Gedaliah': { en: 'Tzom Gedaliah', heb: 'צום גדליה' },
   'Asara B\'Tevet': { en: 'Asara B\'Tevet', heb: 'עשרה בטבת' },
-  'Yom HaShoah': { en: 'Yom HaShoah', heb: 'יום השואה' },
   '17 of Tammuz': { en: '17 of Tammuz', heb: 'י״ז בתמוז' },
   '10 of Tevet': { en: '10 of Tevet', heb: 'עשרה בטבת' },
-  'Israel Independence Day': { en: 'Israel Independence Day', heb: 'יום העצמאות' },
   'Lag B\'Omer': { en: 'Lag B\'Omer', heb: 'ל״ג בעומר' },
-  'Yom HaZikaron': { en: 'Yom HaZikaron', heb: 'יום הזיכרון' },
   'Tu B\'Av': { en: 'Tu B\'Av', heb: 'ט״ו באב' },
   'Rosh Chodesh': { en: 'Rosh Chodesh', heb: 'ראש חודש' },
   'Sefirat HaOmer': { en: 'Sefirat HaOmer', heb: 'ספירת העומר' },
@@ -88,10 +85,8 @@ export const HOLIDAY_DESCRIPTIONS = {
   '17 of Tammuz': 'Fast of the 17th of Tammuz',
   '10 of Tevet': 'Fast of 10th of Tevet',
   
-  // Independence & Remembrance
-  'Israel Independence Day': 'Yom Ha\'atzmaut - Israeli independence',
+  // Other celebrations
   'Lag B\'Omer': 'Spring holiday and Jewish pride',
-  'Yom HaZikaron': 'Israeli Fallen Soldiers and Victims of Terror Remembrance Day',
   
   // Sefirat HaOmer (dynamically named with day count)
   'Sefirat HaOmer': 'Counting of the Omer - 49 days from Passover to Shavuot',
@@ -129,7 +124,7 @@ export const HOLIDAY_CATEGORIES_MAP = {
   '17 of Tammuz': HOLIDAY_CATEGORIES.FAST,
   '10 of Tevet': HOLIDAY_CATEGORIES.FAST,
   
-  // Minor/Observances
+  // Minor
   'Hanukkah': HOLIDAY_CATEGORIES.MINOR,
   'Tu B\'Shevat': HOLIDAY_CATEGORIES.MINOR,
   'Purim': HOLIDAY_CATEGORIES.MINOR,

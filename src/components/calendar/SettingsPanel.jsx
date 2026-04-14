@@ -332,12 +332,11 @@ export default function SettingsPanel() {
               </h3>
               <div className="space-y-2 border border-border rounded-lg overflow-hidden">
                 {Object.entries({
-                  [HOLIDAY_CATEGORIES.YOM_TOV]: { en: "Yom Tov (Major Holidays)", heb: "יום טוב (חגים גדולים)" },
-                  [HOLIDAY_CATEGORIES.INTERMEDIATE]: { en: "Intermediate Days", heb: "ימי חול המועד" },
-                  [HOLIDAY_CATEGORIES.FAST]: { en: "Fast Days", heb: "ימי צום" },
-                  [HOLIDAY_CATEGORIES.MINOR]: { en: "Minor Holidays", heb: "חגים קטנים" },
-                  [HOLIDAY_CATEGORIES.OBSERVANCE]: { en: "Observances", heb: "ימים מיוחדים" },
-                }).map(([key, label]) => {
+                    [HOLIDAY_CATEGORIES.YOM_TOV]: { en: "Yom Tov (Major Holidays)", heb: "יום טוב (חגים גדולים)" },
+                    [HOLIDAY_CATEGORIES.INTERMEDIATE]: { en: "Intermediate Days", heb: "ימי חול המועד" },
+                    [HOLIDAY_CATEGORIES.FAST]: { en: "Fast Days", heb: "ימי צום" },
+                    [HOLIDAY_CATEGORIES.MINOR]: { en: "Minor Holidays", heb: "חגים קטנים" },
+                  }).map(([key, label]) => {
                   const colors = HOLIDAY_COLORS[key];
                   return (
                     <div key={key} className="flex items-center justify-between px-3 py-2.5 border-b border-border/50 last:border-0 hover:bg-muted/50 transition-colors">
