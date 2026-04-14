@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { addDays, addWeeks, addMonths, addYears } from "date-fns";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { SettingsProvider, useSettings } from "@/lib/settingsContext";
+import { SettingsProvider } from "@/lib/settingsContext";
 import CalendarHeader from "@/components/calendar/CalendarHeader";
 import DayView from "@/components/calendar/DayView";
 import WeekView from "@/components/calendar/WeekView";
@@ -26,7 +26,7 @@ const VIEW_VARIANTS = {
   }),
 };
 
-function CalendarContent() {
+export default function Calendar() {
   const navigate = useNavigate();
   const { view = "month" } = useParams();
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -59,7 +59,6 @@ function CalendarContent() {
     navigate(`/${VIEWS[next]}`);
   }, [view, navigate]);
 
-  // Initialize push notifications and request permissions on startup
   useEffect(() => {
     const initPermissions = async () => {
       await initPushNotifications();
@@ -81,7 +80,6 @@ function CalendarContent() {
     });
   }, []);
 
-  // Handle hardware back button (mobile)
   useEffect(() => {
     const handleBackButton = () => {
       const idx = VIEWS.indexOf(view);
@@ -94,7 +92,6 @@ function CalendarContent() {
     return () => document.removeEventListener("backbutton", handleBackButton);
   }, [view, navigate]);
 
-  // D-pad / keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
@@ -151,53 +148,47 @@ function CalendarContent() {
   }, [handleNavigate, handleToday, cycleView, navigate]);
 
   return (
-    <>
-      <DailyBanner />
-      <div className="min-h-screen bg-background safe-area-inset-top pb-16 md:pb-0">
-        <StatusBar />
-        <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
-          <CalendarHeader
-            currentDate={currentDate}
-            view={view}
-            onViewChange={(v) => navigate(`/${v}`)}
-            onNavigate={handleNavigate}
-            onToday={handleToday}
-          />
-
-          <div className="mt-2">
-            <AnimatePresence mode="wait" custom={direction}>
-              <motion.div
-                key={view}
-                custom={direction}
-                variants={VIEW_VARIANTS}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              >
-                {view === "day" && <DayView date={currentDate} />}
-                {view === "week" && <WeekView date={currentDate} onDateSelect={handleDateSelect} />}
-                {view === "month" && <MonthView date={currentDate} onDateSelect={handleDateSelect} />}
-                {view === "year" && <YearView date={currentDate} onDateSelect={handleDateSelect} />}
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-          <div className="mt-6 text-center text-[10px] text-muted-foreground font-body opacity-40 hidden md:block">
-            ← → Navigate · ↑ ↓ Change view · Enter = Today · 1=Day 3=Month 9=Year
-          </div>
-        </div>
-
-        <BottomNav />
-      </div>
-    </>
-  );
-}
-
-export default function Calendar() {
-  return (
     <SettingsProvider>
-      <CalendarContent />
+      <>
+        <DailyBanner />
+        <div className="min-h-screen bg-background safe-area-inset-top pb-16 md:pb-0">
+          <StatusBar />
+          <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
+            <CalendarHeader
+              currentDate={currentDate}
+              view={view}
+              onViewChange={(v) => navigate(`/${v}`)}
+              onNavigate={handleNavigate}
+              onToday={handleToday}
+            />
+
+            <div className="mt-2">
+              <AnimatePresence mode="wait" custom={direction}>
+                <motion.div
+                  key={view}
+                  custom={direction}
+                  variants={VIEW_VARIANTS}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                >
+                  {view === "day" && <DayView date={currentDate} />}
+                  {view === "week" && <WeekView date={currentDate} onDateSelect={handleDateSelect} />}
+                  {view === "month" && <MonthView date={currentDate} onDateSelect={handleDateSelect} />}
+                  {view === "year" && <YearView date={currentDate} onDateSelect={handleDateSelect} />}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            <div className="mt-6 text-center text-[10px] text-muted-foreground font-body opacity-40 hidden md:block">
+              ← → Navigate · ↑ ↓ Change view · Enter = Today · 1=Day 3=Month 9=Year
+            </div>
+          </div>
+
+          <BottomNav />
+        </div>
+      </>
     </SettingsProvider>
   );
 }
