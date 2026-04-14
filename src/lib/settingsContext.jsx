@@ -23,6 +23,13 @@ export const HEB_UI = {
    enable_notifications: "הודעות מזג אוויר וגיליון עברי",
    auto_sync_location: "סנכרון אוטומטי של מיקום",
    auto_sync_location_desc: "גלה ועדכן אוטומטית את המיקום שלך",
+   sun: "יום ראשון",
+   mon: "יום שני",
+   tue: "יום שלישי",
+   wed: "יום רביעי",
+   thu: "יום חמישי",
+   fri: "יום שישי",
+   shabbat: "שבת קודש",
  };
 
 export const ALL_ZMANIM = [
