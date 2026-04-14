@@ -99,23 +99,21 @@ function Calendar() {
     if (autoSyncLocation && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(async (pos) => {
         const { latitude: lat, longitude: lng } = pos.coords;
+        const tzid = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        let name = "Current Location";
+        
         try {
-          const tzRes = await fetch(
-            `https://timezonefinder.michelfe.it/api/0?lat=${lat}&lng=${lng}`
-          );
-          const tzData = await tzRes.json();
-          const tzid = tzData.timezone_id || Intl.DateTimeFormat().resolvedOptions().timeZone;
-          
           const nameRes = await fetch(
             `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
           );
           const nameData = await nameRes.json();
-          const name = nameData.address?.city || nameData.address?.town || "Current Location";
-          
-          setLocation({ name, lat, lng, tzid });
+          name = nameData.address?.city || nameData.address?.town || "Current Location";
         } catch (err) {
-          console.error("Error syncing location:", err);
+          // Offline or API unavailable - use default location name
+          console.log("Location name lookup unavailable, using default");
         }
+        
+        setLocation({ name, lat, lng, tzid });
       });
     }
   }, [autoSyncLocation, setLocation]);
