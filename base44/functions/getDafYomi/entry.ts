@@ -42,10 +42,18 @@ Deno.serve(async (req) => {
       'Nida': 'נידה'
     };
 
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth() + 1;
-    const day = today.getDate();
+    // Get user's local date in America/New_York timezone
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/New_York',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+    
+    const parts = formatter.formatToParts(new Date());
+    const year = parts.find(p => p.type === 'year').value;
+    const month = parts.find(p => p.type === 'month').value;
+    const day = parts.find(p => p.type === 'day').value;
     
     const res = await fetch(`https://www.sefaria.org/api/calendars?year=${year}&month=${month}&day=${day}&timezone=America/New_York&diaspora=1`);
     const json = await res.json();
