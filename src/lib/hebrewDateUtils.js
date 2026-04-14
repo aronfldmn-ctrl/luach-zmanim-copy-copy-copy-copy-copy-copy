@@ -193,8 +193,8 @@ export function getJewishHolidays(date) {
   const m = heb.month;
   const d = heb.day;
   
-  // Rosh Chodesh: 1st of every month, or 30th if the month has 30 days
-  if (d === 1) holidays.push("Rosh Chodesh");
+  // Rosh Chodesh: 1st of every month, or 30th if the month has 30 days (but not Tishrei 1st which is Rosh Hashanah)
+  if (d === 1 && m !== 7) holidays.push("Rosh Chodesh");
   if (d === 30 && hebrewMonthDays(heb.year, m) === 30) holidays.push("Rosh Chodesh");
   
   if (m === 7 && (d === 1 || d === 2)) holidays.push("Rosh Hashanah");
