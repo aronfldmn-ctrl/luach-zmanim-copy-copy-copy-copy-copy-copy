@@ -7,6 +7,7 @@ import WeekView from "@/components/calendar/WeekView";
 import MonthView from "@/components/calendar/MonthView";
 import YearView from "@/components/calendar/YearView";
 import StatusBar from "@/components/calendar/StatusBar.jsx";
+import DailyBanner from "@/components/calendar/DailyBanner.jsx";
 
 const VIEWS = ["day", "week", "month", "year"];
 
@@ -101,6 +102,7 @@ function CalendarApp() {
 
   return (
     <div className="min-h-screen bg-background">
+      <DailyBanner />
       {showStatusBar && <StatusBar />}
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
         <CalendarHeader
