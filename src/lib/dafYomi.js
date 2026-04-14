@@ -6,16 +6,19 @@ export async function fetchDafYomi(date) {
     const dateStr = `${year}-${month}-${day}`;
 
     const res = await fetch(`https://www.sefaria.org/api/daf-yomi/${dateStr}`);
-    if (!res.ok) return null;
-
     const data = await res.json();
-    if (!data.ref) return null;
-
-    return {
-      ref: data.ref,
-      display: data.ref.replace(/\s+/g, '\u00A0'), // non-breaking spaces for readability
-    };
-  } catch {
+    
+    // Sefaria returns ref in the response
+    if (data && data.ref) {
+      return {
+        ref: data.ref,
+        display: data.ref.replace(/\s+/g, '\u00A0'),
+      };
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Daf Yomi fetch error:', error);
     return null;
   }
 }
