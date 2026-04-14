@@ -1,99 +1,82 @@
-// Simple Daf Yomi calculation
-// Daf Yomi cycle started on Rosh Hashanah 5714 (September 23, 1953)
-// Each masechta and daf page is fixed by order
-
-const masechtas = [
-  { name: 'Brachot', nameHeb: 'ברכות', dafim: 64 },
-  { name: 'Shabbat', nameHeb: 'שבת', dafim: 157 },
-  { name: 'Eruvin', nameHeb: 'עירובין', dafim: 105 },
-  { name: 'Pesachim', nameHeb: 'פסחים', dafim: 121 },
-  { name: 'Rosh Hashanah', nameHeb: 'ראש השנה', dafim: 35 },
-  { name: 'Yoma', nameHeb: 'יומא', dafim: 88 },
-  { name: 'Sukkah', nameHeb: 'סוכה', dafim: 56 },
-  { name: 'Beitzah', nameHeb: 'ביצה', dafim: 40 },
-  { name: 'Taanit', nameHeb: 'תעניות', dafim: 31 },
-  { name: 'Megillah', nameHeb: 'מגילה', dafim: 32 },
-  { name: 'Moed Katan', nameHeb: 'מועד קטן', dafim: 29 },
-  { name: 'Chagigah', nameHeb: 'חגיגה', dafim: 27 },
-  { name: 'Yevamot', nameHeb: 'יבמות', dafim: 122 },
-  { name: 'Ketubot', nameHeb: 'כתובות', dafim: 112 },
-  { name: 'Nedarim', nameHeb: 'נדרים', dafim: 91 },
-  { name: 'Nazir', nameHeb: 'נזיר', dafim: 66 },
-  { name: 'Sotah', nameHeb: 'סוטה', dafim: 49 },
-  { name: 'Gittin', nameHeb: 'גיטין', dafim: 90 },
-  { name: 'Kiddushin', nameHeb: 'קידושין', dafim: 82 },
-  { name: 'Bava Kamma', nameHeb: 'בבא קמא', dafim: 119 },
-  { name: 'Bava Metzia', nameHeb: 'בבא מציעא', dafim: 119 },
-  { name: 'Bava Batra', nameHeb: 'בבא בתרא', dafim: 176 },
-  { name: 'Sanhedrin', nameHeb: 'סנהדרין', dafim: 113 },
-  { name: 'Makkot', nameHeb: 'מכות', dafim: 24 },
-  { name: 'Shevuot', nameHeb: 'שבועות', dafim: 49 },
-  { name: 'Avodah Zarah', nameHeb: 'עבודה זרה', dafim: 76 },
-  { name: 'Horayot', nameHeb: 'הוריות', dafim: 14 },
-  { name: 'Zevaim', nameHeb: 'זבחים', dafim: 120 },
-  { name: 'Menachot', nameHeb: 'מנחות', dafim: 110 },
-  { name: 'Chullin', nameHeb: 'חולין', dafim: 142 },
-  { name: 'Bekhorot', nameHeb: 'בכורות', dafim: 61 },
-  { name: 'Arachin', nameHeb: 'ערכין', dafim: 34 },
-  { name: 'Temurah', nameHeb: 'תמורה', dafim: 34 },
-  { name: 'Keritot', nameHeb: 'כריתות', dafim: 28 },
-  { name: 'Meilah', nameHeb: 'מעילה', dafim: 22 },
-  { name: 'Kinnim', nameHeb: 'קינים', dafim: 4 },
-  { name: 'Tamid', nameHeb: 'תמיד', dafim: 9 },
-  { name: 'Midot', nameHeb: 'מדות', dafim: 3 },
-  { name: 'Nida', nameHeb: 'נידה', dafim: 73 }
-];
-
-function calculateDafYomi(date) {
-  // Start date: September 23, 1953 (Hebrew date: 23 Elul 5713 / 1 Tishrei 5714)
-  const startDate = new Date(1953, 8, 23);
-  const daysSinceStart = Math.floor((date - startDate) / (1000 * 60 * 60 * 24));
-  
-  if (daysSinceStart < 0) {
-    return null;
-  }
-  
-  // Each "seder" (section) represents studying both sides (amud) of a page per day
-  let cumulativeDays = 0;
-  let totalDafim = masechtas.reduce((sum, m) => sum + m.dafim * 2, 0);
-  let dayInCycle = daysSinceStart % totalDafim;
-  
-  for (let i = 0; i < masechtas.length; i++) {
-    const dafCount = masechtas[i].dafim * 2;
-    if (dayInCycle < dafCount) {
-      const daf = Math.floor(dayInCycle / 2) + 1;
-      const amud = dayInCycle % 2 === 0 ? 'a' : 'b';
-      return {
-        masechta: masechtas[i].name,
-        masechetaHeb: masechtas[i].nameHeb,
-        daf: daf,
-        amud: amud,
-        title: `${masechtas[i].name} ${daf}${amud}`,
-        titleHeb: `${masechtas[i].nameHeb} ${daf}${amud}`
-      };
-    }
-    dayInCycle -= dafCount;
-  }
-  
-  return null;
-}
-
 Deno.serve(async (req) => {
   try {
+    const hebNames = {
+      'Brachot': 'ברכות',
+      'Shabbat': 'שבת',
+      'Eruvin': 'עירובין',
+      'Pesachim': 'פסחים',
+      'Rosh Hashanah': 'ראש השנה',
+      'Yoma': 'יומא',
+      'Sukkah': 'סוכה',
+      'Beitzah': 'ביצה',
+      'Taanit': 'תעניות',
+      'Megillah': 'מגילה',
+      'Moed Katan': 'מועד קטן',
+      'Chagigah': 'חגיגה',
+      'Yevamot': 'יבמות',
+      'Ketubot': 'כתובות',
+      'Nedarim': 'נדרים',
+      'Nazir': 'נזיר',
+      'Sotah': 'סוטה',
+      'Gittin': 'גיטין',
+      'Kiddushin': 'קידושין',
+      'Bava Kamma': 'בבא קמא',
+      'Bava Metzia': 'בבא מציעא',
+      'Bava Batra': 'בבא בתרא',
+      'Sanhedrin': 'סנהדרין',
+      'Makkot': 'מכות',
+      'Shevuot': 'שבועות',
+      'Avodah Zarah': 'עבודה זרה',
+      'Horayot': 'הוריות',
+      'Zevaim': 'זבחים',
+      'Menachot': 'מנחות',
+      'Chullin': 'חולין',
+      'Bekhorot': 'בכורות',
+      'Arachin': 'ערכין',
+      'Temurah': 'תמורה',
+      'Keritot': 'כריתות',
+      'Meilah': 'מעילה',
+      'Kinnim': 'קינים',
+      'Tamid': 'תמיד',
+      'Midot': 'מדות',
+      'Nida': 'נידה'
+    };
+
     const today = new Date();
-    const dafYomi = calculateDafYomi(today);
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1;
+    const day = today.getDate();
     
-    if (dafYomi) {
-      return Response.json({
-        data: {
-          masechta: dafYomi.masechta,
-          masechetaHeb: dafYomi.masechetaHeb,
-          daf: String(dafYomi.daf),
-          amud: dafYomi.amud,
-          title: dafYomi.title,
-          titleHeb: dafYomi.titleHeb
+    const res = await fetch(`https://www.sefaria.org/api/calendars?year=${year}&month=${month}&day=${day}&timezone=America/New_York&diaspora=1`);
+    const json = await res.json();
+    
+    if (json.calendar_items) {
+      // Find the Daf Yomi item
+      const dafYomiItem = json.calendar_items.find(item => 
+        item.title?.en === 'Daf Yomi'
+      );
+      
+      if (dafYomiItem && dafYomiItem.displayValue) {
+        const displayEn = dafYomiItem.displayValue.en;
+        
+        // Parse "Menachot 93" format - daf number may include 'a' or 'b' at the end
+        const match = displayEn.match(/^(.*?)\s+(\d+)([ab]?)$/);
+        if (match) {
+          const [, masechta, daf, amud] = match;
+          const masechetaHeb = hebNames[masechta] || masechta;
+          
+          return Response.json({
+            data: {
+              masechta: masechta,
+              masechetaHeb: masechetaHeb,
+              daf: daf,
+              amud: amud || 'a', // Default to 'a' if not specified
+              title: `${masechta} ${daf}${amud || 'a'}`,
+              titleHeb: `${masechetaHeb} ${daf}${amud || 'a'}`
+            }
+          });
         }
-      });
+      }
     }
     
     return Response.json({ data: null });
