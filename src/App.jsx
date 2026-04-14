@@ -4,10 +4,10 @@ import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
-import UserNotRegisteredError from '@/components/UserNotRegisteredError';
-import { SettingsProvider } from '@/lib/settingsContext';
-import OfflineIndicator from '@/components/OfflineIndicator';
-import PermissionRequester from '@/components/PermissionRequester';
+import UserNotRegisteredError from '@/components/UserNotRegisteredError.jsx';
+import { SettingsProvider } from '@/lib/settingsContext.jsx';
+import OfflineIndicator from '@/components/OfflineIndicator.jsx';
+import PermissionRequester from '@/components/PermissionRequester.jsx';
 import { registerServiceWorker } from '@/lib/offline';
 import Calendar from '@/pages/Calendar';
 // Add page imports here
@@ -53,9 +53,7 @@ const AppContent = () => {
   );
 };
 
-
-function App() {
-
+const RouterContent = () => {
   return (
     <Router>
       <QueryClientProvider client={queryClientInstance}>
@@ -67,7 +65,12 @@ function App() {
         </AuthProvider>
       </QueryClientProvider>
     </Router>
-  )
+  );
+};
+
+
+function App() {
+  return <RouterContent />;
 }
 
 export default App
