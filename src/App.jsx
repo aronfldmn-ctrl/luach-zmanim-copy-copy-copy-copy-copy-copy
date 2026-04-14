@@ -7,8 +7,15 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import { SettingsProvider } from '@/lib/settingsContext';
 import PermissionRequester from '@/components/PermissionRequester';
+import OfflineIndicator from '@/components/OfflineIndicator';
+import { registerServiceWorker } from '@/lib/offline';
 import Calendar from '@/pages/Calendar';
 // Add page imports here
+
+// Register Service Worker on app load
+if (typeof window !== 'undefined') {
+  registerServiceWorker();
+}
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -36,6 +43,7 @@ const AuthenticatedApp = () => {
   // Render the main app
   return (
     <SettingsProvider>
+      <OfflineIndicator />
       <PermissionRequester />
       <Routes>
         <Route path="/" element={<Calendar />} />
