@@ -10,7 +10,7 @@ const ZMANIM_MARKER = "[ZMANIM_SYNC]";
 const SYNC_DURATION_OPTIONS = [7, 14, 30, 60];
 
 export default function ZmanimSync() {
-  const { location, syncZmanimDays, setSyncZmanimDays, hebrewMode, zmanimVisible } = useSettings();
+  const { location, syncZmanimDays, setSyncZmanimDays, hebrewMode, zmanimVisible, showZmanimSeconds } = useSettings();
   const [syncing, setSyncing] = useState(false);
 
   const t = (en, heb) => hebrewMode ? heb : en;
@@ -34,7 +34,11 @@ export default function ZmanimSync() {
             .filter(z => zmanimVisible[z.key])
             .map(z => {
               const zmanimLabel = hebrewMode ? z.labelHeb : z.labelEn;
-              const zmanimTime = zmanim[z.key];
+              let zmanimTime = zmanim[z.key];
+              // Remove seconds if setting is disabled
+              if (zmanimTime && !showZmanimSeconds) {
+                zmanimTime = zmanimTime.split(":").slice(0, 2).join(":");
+              }
               return zmanimTime ? `${zmanimLabel}: ${zmanimTime}` : null;
             })
             .filter(Boolean)
