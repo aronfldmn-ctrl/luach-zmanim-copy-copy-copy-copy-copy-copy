@@ -5,13 +5,14 @@ import { useSettings, HEB_UI, ALL_ZMANIM } from "@/lib/settingsContext";
 import { fetchZmanim, getHebrewDate } from "@/lib/hebrewDateUtils";
 import { addDays, format } from "date-fns";
 
-const ZMANIM_MARKER = "[ZMANIM_SYNC]";
+
 
 const SYNC_DURATION_OPTIONS = [7, 14, 30, 60];
 
 export default function ZmanimSync() {
   const { location, syncZmanimDays, setSyncZmanimDays, hebrewMode, zmanimVisible, showZmanimSeconds } = useSettings();
   const [syncing, setSyncing] = useState(false);
+  const [syncMode, setSyncMode] = useState("export"); // "export" or "import"
 
   const t = (en, heb) => hebrewMode ? heb : en;
 
@@ -44,7 +45,7 @@ export default function ZmanimSync() {
             .filter(Boolean)
             .join("\n");
 
-          const description = `${ZMANIM_MARKER}\n${heb.displayHeb}\n${location.name}\n\n${enabledZmanim}`;
+          const description = `${heb.displayHeb}\n${location.name}\n\n${enabledZmanim}`;
 
           events.push({
             title: `${format(date, "MMM d")} - ${heb.dayHeb}`,
@@ -118,40 +119,80 @@ END:VEVENT\n`;
         </p>
       </div>
 
-      <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-        <label className="text-sm font-body font-medium flex-1">
-          {t("Duration (days)", HEB_UI.sync_duration_days)}
-        </label>
-        <select
-          value={syncZmanimDays}
-          onChange={(e) => setSyncZmanimDays(parseInt(e.target.value))}
-          className="px-2 py-1.5 bg-card border border-border rounded text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary"
+      <div className="flex gap-2 mb-3">
+        <button
+          onClick={() => setSyncMode("export")}
+          className={`flex-1 px-3 py-2 rounded text-sm font-body transition-colors ${
+            syncMode === "export"
+              ? "bg-primary text-primary-foreground"
+              : "bg-muted text-muted-foreground hover:bg-muted/80"
+          }`}
         >
-          {SYNC_DURATION_OPTIONS.map((days) => (
-            <option key={days} value={days}>
-              {days} {t("days", "ימים")}
-            </option>
-          ))}
-        </select>
+          {t("Export", "ייצוא")}
+        </button>
+        <button
+          onClick={() => setSyncMode("import")}
+          className={`flex-1 px-3 py-2 rounded text-sm font-body transition-colors ${
+            syncMode === "import"
+              ? "bg-primary text-primary-foreground"
+              : "bg-muted text-muted-foreground hover:bg-muted/80"
+          }`}
+        >
+          {t("Import", "ייבוא")}
+        </button>
       </div>
 
-      <Button
-        onClick={handleSync}
-        disabled={syncing}
-        className="w-full font-body"
-      >
-        {syncing ? (
-          <>
-            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            {t("Syncing...", "סנכרון...")}
-          </>
-        ) : (
-          <>
-            <CalendarIcon className="h-4 w-4 mr-2" />
-            {t("Export to Calendar", "ייצוא לליומן")}
-          </>
-        )}
-      </Button>
+      {syncMode === "export" && (
+        <>
+          <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+            <label className="text-sm font-body font-medium flex-1">
+              {t("Duration (days)", HEB_UI.sync_duration_days)}
+            </label>
+            <select
+              value={syncZmanimDays}
+              onChange={(e) => setSyncZmanimDays(parseInt(e.target.value))}
+              className="px-2 py-1.5 bg-card border border-border rounded text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              {SYNC_DURATION_OPTIONS.map((days) => (
+                <option key={days} value={days}>
+                  {days} {t("days", "ימים")}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <Button
+            onClick={handleSync}
+            disabled={syncing}
+            className="w-full font-body"
+          >
+            {syncing ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                {t("Syncing...", "סנכרון...")}
+              </>
+            ) : (
+              <>
+                <CalendarIcon className="h-4 w-4 mr-2" />
+                {t("Export to Calendar", "ייצוא לליומן")}
+              </>
+            )}
+          </Button>
+        </>
+      )}
+
+      {syncMode === "import" && (
+        <div className="p-4 bg-muted rounded-lg text-center">
+          <p className="text-sm text-muted-foreground font-body mb-3">
+            {t("Import ICS calendar file", "ייבא קובץ ליומן ICS")}
+          </p>
+          <input
+            type="file"
+            accept=".ics"
+            className="w-full text-sm font-body"
+          />
+        </div>
+      )}
     </div>
   );
 }
