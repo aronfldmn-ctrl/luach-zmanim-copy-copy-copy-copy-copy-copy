@@ -114,12 +114,20 @@ export function formatZmanTime(timeStr, showSeconds) {
 
 const zmanimCache = {};
 
-// Convert a Luxon DateTime (UTC) to "h:mm:ss AM/PM" in the given tz
-function dtToTime(isoStr, tz) {
-  if (!isoStr) return "—";
-  // isoStr from getZmanimJson is an ISO string in UTC; convert to local tz
-  const d = new Date(isoStr);
-  if (isNaN(d)) return "—";
+// Convert a Luxon DateTime (or ISO string or JS Date) to "h:mm:ss AM/PM" in the given tz
+function dtToTime(val, tz) {
+  if (!val) return "—";
+  let ms;
+  // Luxon DateTime objects have a .toMillis() method
+  if (typeof val === 'object' && typeof val.toMillis === 'function') {
+    ms = val.toMillis();
+  } else if (typeof val === 'object' && val instanceof Date) {
+    ms = val.getTime();
+  } else {
+    // ISO string or number
+    ms = new Date(val).getTime();
+  }
+  if (!ms || isNaN(ms)) return "—";
   const formatter = new Intl.DateTimeFormat('en-US', {
     timeZone: tz,
     hour: 'numeric',
@@ -127,7 +135,7 @@ function dtToTime(isoStr, tz) {
     second: '2-digit',
     hour12: true,
   });
-  return formatter.format(d);
+  return formatter.format(new Date(ms));
 }
 
 export async function fetchZmanim(date, lat, lng, tzid, candleMinutes = 18) {
@@ -137,7 +145,7 @@ export async function fetchZmanim(date, lat, lng, tzid, candleMinutes = 18) {
   if (zmanimCache[cacheKey]) return zmanimCache[cacheKey];
 
   // getZmanimJson returns a flat object: keys are method names minus "get", values are ISO strings
-  const z = getZmanimJson({
+  const zRaw = getZmanimJson({
     date: new Date(date.getFullYear(), date.getMonth(), date.getDate()),
     timeZoneId: tz,
     latitude: lat,
@@ -146,14 +154,22 @@ export async function fetchZmanim(date, lat, lng, tzid, candleMinutes = 18) {
     complexZmanim: true,
   });
 
+  // Flatten: the library may return { BasicZmanim: {...}, ComplexZmanim: {...} } or a flat object
+  const z = (zRaw.BasicZmanim || zRaw.ComplexZmanim)
+    ? { ...(zRaw.BasicZmanim || {}), ...(zRaw.ComplexZmanim || {}) }
+    : zRaw;
+
+  console.log("[KosherZmanim] keys:", Object.keys(z).slice(0, 20));
+  console.log("[KosherZmanim] Sunrise:", z.Sunrise, "SofZmanShmaGRA:", z.SofZmanShmaGRA);
+
   const t = (iso) => dtToTime(iso, tz);
 
   // Compute candle lighting from sunset
   let candleLightingStr = "—";
   if (z.Sunset) {
-    const sunsetMs = new Date(z.Sunset).getTime();
+    const sunsetMs = (typeof z.Sunset.toMillis === 'function') ? z.Sunset.toMillis() : new Date(z.Sunset).getTime();
     const candleMs = sunsetMs - candleMinutes * 60000;
-    candleLightingStr = dtToTime(new Date(candleMs).toISOString(), tz);
+    candleLightingStr = dtToTime(candleMs, tz);
   }
 
   const result = {
