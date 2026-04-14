@@ -7,7 +7,7 @@ import { useZmanim } from "@/lib/useZmanim";
 import { getHolidayCategory } from "@/lib/holidayUtils";
 import { getImportedEventsForDate } from "@/components/calendar/ZmanimSync";
 import HolidayBadge from "./HolidayBadge";
-import { Sunrise, Sun, Sunset, Flame, Moon, Star, Clock, Calendar as CalendarIcon } from "lucide-react";
+import { Sunrise, Sun, Sunset, Flame, Moon, Star, Clock, Calendar as CalendarIcon, X } from "lucide-react";
 import SidePanel from "./SidePanel";
 
 const ZMAN_COLORS_BG = {
@@ -67,6 +67,14 @@ export default function DayView({ date }) {
 
   const t = (en, heb) => hebrewMode ? heb : en;
 
+  const deleteEvent = (idx) => {
+    const dateStr = date.toISOString().split("T")[0];
+    const allEvents = JSON.parse(localStorage.getItem("imported_zmanim_events") || "[]");
+    const filtered = allEvents.filter(e => e.date !== dateStr || e.title !== importedEvents[idx].title);
+    localStorage.setItem("imported_zmanim_events", JSON.stringify(filtered));
+    setImportedEvents(filtered.filter(e => e.date === dateStr));
+  };
+
   const activeZmanim = showZmanim
     ? ALL_ZMANIM.filter((z) => {
         if (z.key === "candleLighting" && !friday) return false;
@@ -102,11 +110,22 @@ export default function DayView({ date }) {
           {importedEvents.length > 0 && (
             <div className="mt-3 space-y-2">
               {importedEvents.map((event, idx) => (
-                <div key={idx} className="px-3 py-2 rounded-lg bg-accent/10 border border-accent/20">
-                  <p className="text-sm font-body font-semibold text-accent">{event.title}</p>
-                  {event.description && (
-                    <p className="text-xs text-muted-foreground font-body mt-1 whitespace-pre-wrap">{event.description}</p>
-                  )}
+                <div key={idx} className="px-3 py-2 rounded-lg bg-accent/10 border border-accent/20 group">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <p className="text-sm font-body font-semibold text-accent">{event.title}</p>
+                      {event.description && (
+                        <p className="text-xs text-muted-foreground font-body mt-1 whitespace-pre-wrap">{event.description}</p>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => deleteEvent(idx)}
+                      className="ml-2 flex-shrink-0 opacity-50 group-hover:opacity-100 text-accent hover:text-destructive transition-colors"
+                      title={t("Delete event", "מחק אירוע")}
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
