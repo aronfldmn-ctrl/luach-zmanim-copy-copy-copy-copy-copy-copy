@@ -6,6 +6,7 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import Calendar from '@/pages/Calendar.jsx';
+import { SettingsProvider } from '@/lib/settingsContext';
 // Add page imports here
 
 const AuthenticatedApp = () => {
@@ -33,11 +34,13 @@ const AuthenticatedApp = () => {
 
   // Render the main app
   return (
-    <Routes>
-      <Route path="/" element={<Calendar />} />
-      <Route path="/:view" element={<Calendar />} />
-      <Route path="*" element={<PageNotFound />} />
-    </Routes>
+    <SettingsProvider>
+      <Routes>
+        <Route path="/" element={<Calendar />} />
+        <Route path="/:view" element={<Calendar />} />
+        <Route path="*" element={<PageNotFound />} />
+      </Routes>
+    </SettingsProvider>
   );
 };
 
