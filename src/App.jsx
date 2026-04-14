@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
-import Calendar from '@/pages/Calendar.jsx';
+import Calendar from '@/pages/Calendar';
 import { SettingsProvider } from '@/lib/settingsContext';
 // Add page imports here
 
