@@ -26,6 +26,14 @@ const VIEW_VARIANTS = {
   }),
 };
 
+function Calendar() {
+  return (
+    <SettingsProvider>
+      <CalendarApp />
+    </SettingsProvider>
+  );
+}
+
 function CalendarApp() {
   const navigate = useNavigate();
   const { view = "month" } = useParams();
@@ -210,10 +218,4 @@ function CalendarContent({ currentDate, setCurrentDate, direction, setDirection,
   );
 }
 
-export default function Calendar() {
-  return (
-    <SettingsProvider>
-      <CalendarApp />
-    </SettingsProvider>
-  );
-}
+export default Calendar;
