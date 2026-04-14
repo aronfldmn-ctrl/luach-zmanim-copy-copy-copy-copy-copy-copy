@@ -42,7 +42,7 @@ export default function DafYomiPanel({ date }) {
           {t("Daf Yomi", HEB_UI.daf_yomi)}
         </p>
         <p className="text-sm font-body font-semibold text-primary truncate">
-          {dafYomi.display}
+           {dafYomi.title || `${dafYomi.masechta} ${dafYomi.daf}`}
         </p>
       </div>
     </div>
