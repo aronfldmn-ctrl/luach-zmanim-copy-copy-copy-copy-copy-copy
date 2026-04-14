@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Calendar as CalendarIcon, Loader2, Trash2, Download } from "lucide-react";
+import { Calendar as CalendarIcon, Loader2 } from "lucide-react";
 import { useSettings, HEB_UI, ALL_ZMANIM } from "@/lib/settingsContext";
 import { fetchZmanim, getHebrewDate } from "@/lib/hebrewDateUtils";
 import { addDays, format } from "date-fns";
@@ -46,106 +46,24 @@ export default function ZmanimSync() {
             title: `${format(date, "MMM d")} - ${heb.dayHeb}`,
             description,
             date: date.toISOString().split("T")[0],
+            startTime: "00:00",
           });
         }
       }
 
-      // Create calendar entries
-      if ("calendar" in navigator) {
-        for (const event of events) {
-          try {
-            await navigator.calendar.createEvent({
-              title: event.title,
-              description: event.description,
-              startDate: event.date,
-            });
-          } catch (err) {
-            console.error("Error creating calendar event:", err);
-          }
-        }
-      }
-
-      // Fallback: generate ICS file for download
+      // Generate and download ICS file
       if (events.length > 0) {
         generateAndDownloadICS(events);
       }
     } catch (error) {
       console.error("Sync error:", error);
+      alert(t("Failed to sync zmanim", "נכשל בסנכרון הזמנים"));
     } finally {
       setSyncing(false);
     }
   };
 
-  const handleImportFromCalendar = async () => {
-    setSyncing(true);
-    try {
-      if (!("calendar" in navigator)) {
-        alert(t("Calendar API not available", "Calendar API לא זמין"));
-        return;
-      }
 
-      const today = new Date();
-      const endDate = addDays(today, syncZmanimDays);
-
-      // Request access to calendar events in date range
-      const events = await navigator.calendar.getEvents({
-        from: today.toISOString().split("T")[0],
-        to: endDate.toISOString().split("T")[0],
-      });
-
-      // Filter for synced events (those with the marker)
-      const syncedEvents = events.filter(e => 
-        e.description && e.description.includes(ZMANIM_MARKER)
-      );
-
-      if (syncedEvents.length === 0) {
-        alert(t("No synced events found", "לא נמצאו אירועים מסונכרנים"));
-        return;
-      }
-
-      // Store IDs for potential deletion
-      localStorage.setItem(
-        "jcal_synced_event_ids",
-        JSON.stringify(syncedEvents.map(e => e.id))
-      );
-
-      alert(t(`Imported ${syncedEvents.length} events`, `${syncedEvents.length} אירועים יובאו`));
-    } catch (error) {
-      console.error("Import error:", error);
-      alert(t("Error importing events", "שגיאה בייבוא אירועים"));
-    } finally {
-      setSyncing(false);
-    }
-  };
-
-  const handleDeleteSyncedEvents = async () => {
-    if (!confirm(t("Delete all synced events?", "למחוק את כל האירועים המסונכרנים?"))) {
-      return;
-    }
-
-    setSyncing(true);
-    try {
-      const eventIds = JSON.parse(localStorage.getItem("jcal_synced_event_ids") || "[]");
-
-      if ("calendar" in navigator) {
-        for (const id of eventIds) {
-          try {
-            await navigator.calendar.deleteEvent(id);
-          } catch (err) {
-            console.error("Error deleting event:", err);
-          }
-        }
-      }
-
-      localStorage.removeItem("jcal_synced_event_ids");
-      alert(t("Synced events deleted", "אירועים מסונכרנים נמחקו"));
-    } catch (error) {
-      console.error("Delete error:", error);
-      alert(t("Error deleting events", "שגיאה במחיקת אירועים"));
-    } finally {
-      setSyncing(false);
-    }
-  };
 
   const generateAndDownloadICS = (events) => {
     const icsContent = generateICS(events);
@@ -168,21 +86,14 @@ PRODID:-//Jewish Calendar//Zmanim Sync//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
 X-WR-CALNAME:Zmanim
-X-WR-TIMEZONE:${location.tzid || "America/New_York"}
-BEGIN:VTIMEZONE
-TZID:${location.tzid || "America/New_York"}
-BEGIN:STANDARD
-DTSTART:19700101T000000
-TZOFFSETFROM:+0000
-TZOFFSETTO:+0000
-END:STANDARD
-END:VTIMEZONE\n`;
+X-WR-TIMEZONE:${location.tzid || "America/New_York"}\n`;
 
     events.forEach((event) => {
+      const cleanDesc = event.description.replace(/\n/g, "\\n");
       ics += `BEGIN:VEVENT
-DTSTART:${event.date.replace(/-/g, "")}
+DTSTART;VALUE=DATE:${event.date.replace(/-/g, "")}
 SUMMARY:${event.title}
-DESCRIPTION:${event.description}
+DESCRIPTION:${cleanDesc}
 UID:${Math.random().toString(36).substr(2, 9)}@jewishcalendar
 DTSTAMP:${now}
 END:VEVENT\n`;
@@ -220,45 +131,23 @@ END:VEVENT\n`;
         </select>
       </div>
 
-      <div className="flex gap-2">
-        <Button
-          onClick={handleSync}
-          disabled={syncing}
-          className="flex-1 font-body"
-        >
-          {syncing ? (
-            <>
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              {t("Syncing...", "סנכרון...")}
-            </>
-          ) : (
-            <>
-              <CalendarIcon className="h-4 w-4 mr-2" />
-              {t("Export", "ייצוא")}
-            </>
-          )}
-        </Button>
-
-        <Button
-          onClick={handleImportFromCalendar}
-          disabled={syncing}
-          variant="outline"
-          className="flex-1 font-body"
-          title={t("Import synced events from calendar", "ייבא אירועים מסונכרנים מהליומן")}
-        >
-          <Download className="h-4 w-4" />
-        </Button>
-
-        <Button
-          onClick={handleDeleteSyncedEvents}
-          disabled={syncing}
-          variant="outline"
-          className="flex-1 font-body"
-          title={t("Delete synced events", "מחק אירועים מסונכרנים")}
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
-      </div>
+      <Button
+        onClick={handleSync}
+        disabled={syncing}
+        className="w-full font-body"
+      >
+        {syncing ? (
+          <>
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            {t("Syncing...", "סנכרון...")}
+          </>
+        ) : (
+          <>
+            <CalendarIcon className="h-4 w-4 mr-2" />
+            {t("Export to Calendar", "ייצוא לליומן")}
+          </>
+        )}
+      </Button>
     </div>
   );
 }
