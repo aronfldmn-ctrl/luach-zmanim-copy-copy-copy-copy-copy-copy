@@ -151,7 +151,7 @@ function CalendarApp() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleNavigate, handleToday, cycleView]);
+  }, [handleNavigate, handleToday, cycleView, navigate]);
 
   return (
     <div className="min-h-screen bg-background safe-area-inset-top pb-16 md:pb-0">
