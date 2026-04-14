@@ -21,7 +21,6 @@ const AppContent = () => {
   return (
     <>
       <OfflineIndicator />
-      <PermissionRequester />
       <Routes>
         <Route path="/" element={<Calendar />} />
         <Route path="/*" element={<Calendar />} />
@@ -54,7 +53,12 @@ const AuthenticatedApp = () => {
     }
   }
 
-  return <AppContent />;
+  return (
+    <>
+      <PermissionRequester />
+      <AppContent />
+    </>
+  );
 };
 
 
