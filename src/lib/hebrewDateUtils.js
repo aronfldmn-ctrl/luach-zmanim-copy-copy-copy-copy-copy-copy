@@ -1,5 +1,6 @@
 // Hebrew date conversion utilities (zmanim via kosher-zmanim — local KosherJava JS port)
 import { getZmanimJson } from "kosher-zmanim";
+import { calculateZmanimOffline } from "./offlineZmanim";
 
 const HEBREW_MONTHS = [
   "Nisan", "Iyar", "Sivan", "Tammuz", "Av", "Elul",
@@ -144,44 +145,51 @@ export async function fetchZmanim(date, lat, lng, tzid, candleMinutes = 18) {
   const cacheKey = `kj4_${dateStr}_${lat}_${lng}_${tz}_${candleMinutes}`;
   if (zmanimCache[cacheKey]) return zmanimCache[cacheKey];
 
-  // getZmanimJson returns a flat object: keys are method names minus "get", values are ISO strings
-  const zRaw = getZmanimJson({
-    date: new Date(date.getFullYear(), date.getMonth(), date.getDate()),
-    timeZoneId: tz,
-    latitude: lat,
-    longitude: lng,
-    elevation: 0,
-    complexZmanim: true,
-  });
+  let result;
+  
+  try {
+    // Try to use kosher-zmanim first
+    const zRaw = getZmanimJson({
+      date: new Date(date.getFullYear(), date.getMonth(), date.getDate()),
+      timeZoneId: tz,
+      latitude: lat,
+      longitude: lng,
+      elevation: 0,
+      complexZmanim: true,
+    });
 
-  // The library returns { metadata: {...}, Zmanim: { Sunrise: DateTime, ... } }
-  const z = zRaw.Zmanim || zRaw.BasicZmanim || zRaw.ComplexZmanim || zRaw;
+    // The library returns { metadata: {...}, Zmanim: { Sunrise: DateTime, ... } }
+    const z = zRaw.Zmanim || zRaw.BasicZmanim || zRaw.ComplexZmanim || zRaw;
+    const t = (iso) => dtToTime(iso, tz);
 
-  const t = (iso) => dtToTime(iso, tz);
+    // Compute candle lighting from sunset
+    let candleLightingStr = "—";
+    if (z.Sunset) {
+      const sunsetMs = (typeof z.Sunset.toMillis === 'function') ? z.Sunset.toMillis() : new Date(z.Sunset).getTime();
+      const candleMs = sunsetMs - candleMinutes * 60000;
+      candleLightingStr = dtToTime(candleMs, tz);
+    }
 
-  // Compute candle lighting from sunset
-  let candleLightingStr = "—";
-  if (z.Sunset) {
-    const sunsetMs = (typeof z.Sunset.toMillis === 'function') ? z.Sunset.toMillis() : new Date(z.Sunset).getTime();
-    const candleMs = sunsetMs - candleMinutes * 60000;
-    candleLightingStr = dtToTime(candleMs, tz);
+    result = {
+      alotHaShachar: t(z.Alos72),
+      zmanTzitzit: t(z.Misheyakir10Point2Degrees),
+      sunrise: t(z.Sunrise),
+      sofShmaGRA: t(z.SofZmanShmaGRA),
+      sofShmaMA: t(z.SofZmanShmaMGA),
+      sofTfila: t(z.SofZmanTfilaGRA || z.SofZmanTfillaGRA),
+      midday: t(z.Chatzos || z.SunTransit),
+      minchaGedolah: t(z.MinchaGedola),
+      plagHaMincha: t(z.PlagHamincha),
+      sunset: t(z.Sunset),
+      candleLighting: candleLightingStr,
+      tzeitKochavim: t(z.TzaisGeonim8Point5Degrees || z.Tzais72),
+      rabbeinuTam: t(z.Tzais72 || z.TzaisRabbeinuTam),
+    };
+  } catch (err) {
+    // Fallback to offline calculation when kosher-zmanim fails or is unavailable
+    console.log("Using offline Zmanim calculation", err?.message);
+    result = calculateZmanimOffline(new Date(date.getFullYear(), date.getMonth(), date.getDate()), lat, lng, tz, candleMinutes);
   }
-
-  const result = {
-    alotHaShachar: t(z.Alos72),
-    zmanTzitzit: t(z.Misheyakir10Point2Degrees),
-    sunrise: t(z.Sunrise),
-    sofShmaGRA: t(z.SofZmanShmaGRA),
-    sofShmaMA: t(z.SofZmanShmaMGA),
-    sofTfila: t(z.SofZmanTfilaGRA || z.SofZmanTfillaGRA),
-    midday: t(z.Chatzos || z.SunTransit),
-    minchaGedolah: t(z.MinchaGedola),
-    plagHaMincha: t(z.PlagHamincha),
-    sunset: t(z.Sunset),
-    candleLighting: candleLightingStr,
-    tzeitKochavim: t(z.TzaisGeonim8Point5Degrees || z.Tzais72),
-    rabbeinuTam: t(z.Tzais72 || z.TzaisRabbeinuTam),
-  };
 
   zmanimCache[cacheKey] = result;
   return result;
