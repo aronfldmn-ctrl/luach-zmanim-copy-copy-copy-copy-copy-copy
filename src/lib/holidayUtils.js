@@ -9,7 +9,7 @@ export const HOLIDAY_NAMES = {
   'Erev Pesach': { en: 'Erev Pesach', heb: 'ערב פסח' },
   'Pesach': { en: 'Pesach', heb: 'פסח' },
   'שביעי של פסח': { en: '7th day of Pesach', heb: 'שביעי של פסח' },
-  'אחרון של פסח': { en: 'Last day of Pesach', heb: 'אחרון של פסח' },
+  'אחרון של פסח': { en: '8th day of Pesach', heb: 'אחרון של פסח' },
   'Chol HaMoed Pesach': { en: 'Chol HaMoed Pesach', heb: 'חול המועד פסח' },
    'Chol HaMoed Sukkot': { en: 'Chol HaMoed Sukkot', heb: 'חול המועד סוכות' },
    'Erev Shavuot': { en: 'Erev Shavuot', heb: 'ערב שבועות' },
