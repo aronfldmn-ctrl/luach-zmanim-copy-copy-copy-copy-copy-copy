@@ -6,10 +6,10 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import { SettingsProvider } from '@/lib/settingsContext';
+import OfflineIndicator from '@/components/OfflineIndicator';
 import PermissionRequester from '@/components/PermissionRequester';
-import OfflineIndicator from '@/components/OfflineIndicator.jsx';
 import { registerServiceWorker } from '@/lib/offline';
-import Calendar from '@/pages/Calendar/index.jsx';
+import Calendar from '@/pages/Calendar';
 // Add page imports here
 
 // Register Service Worker on app load
