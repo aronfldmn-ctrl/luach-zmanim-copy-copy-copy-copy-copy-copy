@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { addDays, addWeeks, addMonths, addYears } from "date-fns";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import CalendarHeader from "@/components/calendar/CalendarHeader";
 import DayView from "@/components/calendar/DayView";
 import WeekView from "@/components/calendar/WeekView";
@@ -14,6 +14,7 @@ const VIEWS = ["day", "week", "month", "year"];
 
 function Calendar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const view = location.pathname.slice(1) || "month";
@@ -42,9 +43,9 @@ function Calendar() {
 
   const handleViewChange = useCallback((newView) => {
     if (VIEWS.includes(newView)) {
-      window.location.pathname = `/${newView}`;
+      navigate(`/${newView}`);
     }
-  }, []);
+  }, [navigate]);
 
   const handleToday = useCallback(() => {
     setCurrentDate(new Date());
@@ -52,7 +53,8 @@ function Calendar() {
 
   const handleDateSelect = useCallback((date) => {
     setCurrentDate(date);
-  }, []);
+    navigate("/day");
+  }, [navigate]);
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
