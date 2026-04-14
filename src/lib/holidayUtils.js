@@ -118,7 +118,6 @@ export const HOLIDAY_CATEGORIES_MAP = {
   'Erev Purim': HOLIDAY_CATEGORIES.MINOR,
   
   // Fasts
-  'Yom Kippur': HOLIDAY_CATEGORIES.FAST,
   'Tisha B\'Av': HOLIDAY_CATEGORIES.FAST,
   'Fast of Gedaliah': HOLIDAY_CATEGORIES.FAST,
   'Ta\'anit Esther': HOLIDAY_CATEGORIES.FAST,
