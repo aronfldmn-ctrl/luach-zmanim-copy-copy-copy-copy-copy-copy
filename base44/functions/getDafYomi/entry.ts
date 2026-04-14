@@ -99,7 +99,7 @@ Deno.serve(async (req) => {
               masechetaHeb: masechetaHeb,
               daf: daf,
               amud: amud || 'a', // Default to 'a' if not specified
-              title: `${masechta} ${daf}`,
+              title: `${masechta} (${masechetaHeb}) ${daf}`,
               titleHeb: `${masechetaHeb} ${toHebrewNumerals(parseInt(daf))}`
             }
           });
