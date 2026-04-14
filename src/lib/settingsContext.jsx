@@ -21,8 +21,18 @@ export const HEB_UI = {
 };
 
 export const ALL_ZMANIM = [
-  { key: 'sunrise', labelEn: 'Sunrise', labelHeb: 'עלות השחר' },
+  { key: 'alotHaShachar', labelEn: 'Alot HaShachar', labelHeb: 'עלות השחר' },
+  { key: 'zmanTzitzit', labelEn: 'Zman Tzitzit', labelHeb: 'זמן ציצית' },
+  { key: 'sunrise', labelEn: 'Sunrise', labelHeb: 'הנץ החמה' },
+  { key: 'sofShmaGRA', labelEn: 'Sof Shma (GRA)', labelHeb: 'סוף שמע (גר"א)' },
+  { key: 'sofShmaMA', labelEn: 'Sof Shma (MGA)', labelHeb: 'סוף שמע (מ"א)' },
+  { key: 'sofTfila', labelEn: 'Sof Tfila', labelHeb: 'סוף תפילה' },
+  { key: 'midday', labelEn: 'Midday', labelHeb: 'חצות' },
+  { key: 'minchaGedolah', labelEn: 'Mincha Gedola', labelHeb: 'מנחה גדולה' },
+  { key: 'plagHaMincha', labelEn: 'Plag HaMincha', labelHeb: 'פלג המנחה' },
   { key: 'sunset', labelEn: 'Sunset', labelHeb: 'שקיעה' },
+  { key: 'tzeitKochavim', labelEn: 'Tzeit Kochavim', labelHeb: 'צאת הכוכבים' },
+  { key: 'rabbeinuTam', labelEn: 'Rabbenu Tam', labelHeb: 'רבינו תם' },
 ];
 
 export function SettingsProvider({ children }) {
@@ -30,7 +40,20 @@ export function SettingsProvider({ children }) {
   const [hebrewMode, setHebrewMode] = useState(false);
   const [celsiusMode, setCelsiusMode] = useState(false);
   const [showWeather, setShowWeather] = useState(true);
-  const [zmanimVisible, setZmanimVisible] = useState({ sunrise: true, sunset: true });
+  const [zmanimVisible, setZmanimVisible] = useState({ 
+    alotHaShachar: true, 
+    zmanTzitzit: true, 
+    sunrise: true, 
+    sofShmaGRA: true, 
+    sofShmaMA: true, 
+    sofTfila: true, 
+    midday: true, 
+    minchaGedolah: true, 
+    plagHaMincha: true, 
+    sunset: true, 
+    tzeitKochavim: true, 
+    rabbeinuTam: true 
+  });
   const [showZmanimSeconds, setShowZmanimSeconds] = useState(false);
   const [showZmanim, setShowZmanim] = useState(true);
   const [showStatusBar, setShowStatusBar] = useState(true);
