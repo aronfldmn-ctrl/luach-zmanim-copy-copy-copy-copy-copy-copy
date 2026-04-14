@@ -1,3 +1,23 @@
+const toHebrewNumerals = (num) => {
+  const ones = ['', 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט'];
+  const tens = ['', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע', 'פ', 'צ'];
+  const hundreds = ['', 'ק', 'ר', 'ש', 'ת'];
+  
+  const numStr = String(num);
+  let result = '';
+  
+  for (let i = 0; i < numStr.length; i++) {
+    const digit = parseInt(numStr[i]);
+    const place = numStr.length - i - 1;
+    
+    if (place === 2) result += hundreds[digit];
+    else if (place === 1) result += tens[digit];
+    else if (place === 0) result += ones[digit];
+  }
+  
+  return result;
+};
+
 Deno.serve(async (req) => {
   try {
     const hebNames = {
@@ -80,7 +100,7 @@ Deno.serve(async (req) => {
               daf: daf,
               amud: amud || 'a', // Default to 'a' if not specified
               title: `${masechta} ${daf}`,
-              titleHeb: `${masechetaHeb} ${daf}`
+              titleHeb: `${masechetaHeb} ${toHebrewNumerals(parseInt(daf))}`
             }
           });
         }
