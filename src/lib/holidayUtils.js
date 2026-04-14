@@ -56,6 +56,9 @@ export const HOLIDAY_DESCRIPTIONS = {
   'Lag B\'Omer': 'Spring holiday and Jewish pride',
   'Yom HaZikaron': 'Israeli Fallen Soldiers and Victims of Terror Remembrance Day',
   
+  // Sefirat HaOmer (dynamically named with day count)
+  'Sefirat HaOmer': 'Counting of the Omer - 49 days from Passover to Shavuot',
+  
   // Other
   'Rosh Chodesh': 'Beginning of Hebrew month',
 };
@@ -101,6 +104,19 @@ export const HOLIDAY_CATEGORIES_MAP = {
   'Rosh Chodesh': HOLIDAY_CATEGORIES.OBSERVANCE,
   'Lulav & Etrog': HOLIDAY_CATEGORIES.MINOR,
 };
+
+// Handle dynamic Sefirat HaOmer day names
+export function getHolidayCategoryDynamic(holidayName) {
+  if (holidayName && holidayName.startsWith('Sefirat HaOmer')) {
+    return HOLIDAY_CATEGORIES.OBSERVANCE;
+  }
+  return getHolidayCategory(holidayName);
+}
+
+export function getHolidayColorDynamic(holidayName) {
+  const category = getHolidayCategoryDynamic(holidayName);
+  return HOLIDAY_COLORS[category] || HOLIDAY_COLORS[HOLIDAY_CATEGORIES.MINOR];
+}
 
 export function getHolidayCategory(holidayName) {
   return HOLIDAY_CATEGORIES_MAP[holidayName] || HOLIDAY_CATEGORIES.MINOR;
