@@ -233,7 +233,7 @@ export function getJewishHolidays(date) {
   }
   if (m === 3 && d === 5) holidays.push("Erev Shavuot");
   if (m === 3 && d === 6) holidays.push("Shavuot");
-  if (m === 3 && d === 7) holidays.push("Shavuot (2nd day)");
+  if (m === 3 && d === 7) holidays.push("Shavuot");
   if (m === 3 && d === 8) holidays.push("Isru Chag Shavuot");
   if (m === 5 && d === 9) holidays.push("Tisha B'Av");
   if (m === 5 && d === 15) holidays.push("Tu B'Av");
