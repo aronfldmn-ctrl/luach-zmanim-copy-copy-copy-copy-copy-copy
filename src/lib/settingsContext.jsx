@@ -24,6 +24,8 @@ export function SettingsProvider({ children }) {
     setSyncZmanimDays,
     zmanimVisible: { sunrise: true, sunset: true },
     showZmanimSeconds: false,
+    holidayFilters: { yom_tov: true, fast: true, minor: true },
+    candleLightingMinutes: 18,
   });
 
   return (
