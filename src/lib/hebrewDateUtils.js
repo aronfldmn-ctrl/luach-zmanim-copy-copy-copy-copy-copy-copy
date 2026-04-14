@@ -136,7 +136,8 @@ export async function fetchZmanim(date, lat, lng, tzid, candleMinutes = 18) {
   const cacheKey = `kj4_${dateStr}_${lat}_${lng}_${tz}_${candleMinutes}`;
   if (zmanimCache[cacheKey]) return zmanimCache[cacheKey];
 
-  const zJson = getZmanimJson({
+  // getZmanimJson returns a flat object: keys are method names minus "get", values are ISO strings
+  const z = getZmanimJson({
     date: new Date(date.getFullYear(), date.getMonth(), date.getDate()),
     timeZoneId: tz,
     latitude: lat,
@@ -144,9 +145,6 @@ export async function fetchZmanim(date, lat, lng, tzid, candleMinutes = 18) {
     elevation: 0,
     complexZmanim: true,
   });
-
-  const z = zJson.BasicZmanim || {};
-  const cz = zJson.ComplexZmanim || {};
 
   const t = (iso) => dtToTime(iso, tz);
 
@@ -159,8 +157,8 @@ export async function fetchZmanim(date, lat, lng, tzid, candleMinutes = 18) {
   }
 
   const result = {
-    alotHaShachar: t(cz.AlosHashachar || cz.Alos72),
-    zmanTzitzit: t(cz.Misheyakir11Point5Degrees || cz.Misheyakir),
+    alotHaShachar: t(z.AlosHashachar || z.Alos72),
+    zmanTzitzit: t(z.Misheyakir11Point5Degrees || z.Misheyakir),
     sunrise: t(z.Sunrise),
     sofShmaGRA: t(z.SofZmanShmaGRA),
     sofShmaMA: t(z.SofZmanShmaMGA),
@@ -170,8 +168,8 @@ export async function fetchZmanim(date, lat, lng, tzid, candleMinutes = 18) {
     plagHaMincha: t(z.PlagHamincha),
     sunset: t(z.Sunset),
     candleLighting: candleLightingStr,
-    tzeitKochavim: t(cz.TzaisGeonim8Point5Degrees || z.Tzais72),
-    rabbeinuTam: t(cz.Tzais72 || cz.TzaisRabbeinuTam),
+    tzeitKochavim: t(z.TzaisGeonim8Point5Degrees || z.Tzais72),
+    rabbeinuTam: t(z.Tzais72 || z.TzaisRabbeinuTam),
   };
 
   zmanimCache[cacheKey] = result;
