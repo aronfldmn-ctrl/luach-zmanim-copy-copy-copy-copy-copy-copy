@@ -35,6 +35,13 @@ const ZMAN_ICONS = {
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
 
+const HEBREW_DAYS = ['יום ראשון', 'יום שני', 'יום שלישי', 'יום רביעי', 'יום חמישי', 'יום שישי', 'שבת קודש'];
+
+function getHebrewDayName(date) {
+  const dayOfWeek = date.getDay();
+  return HEBREW_DAYS[dayOfWeek];
+}
+
 function timeToMinutes(timeStr) {
   if (!timeStr || timeStr === "...") return -1;
   const match = timeStr.match(/^(\d+):(\d+)(?::\d+)?\s(AM|PM)$/);
@@ -89,8 +96,12 @@ export default function DayView({ date }) {
         <div className="p-4 border-b border-border bg-muted/30">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="font-heading font-semibold text-lg">{format(date, "EEEE")}</h2>
-              <p className="text-sm text-muted-foreground font-body">{format(date, "MMMM d, yyyy")}</p>
+              <h2 className="font-heading font-semibold text-lg" dir={hebrewMode ? "rtl" : "ltr"}>
+                {hebrewMode ? getHebrewDayName(date) : format(date, "EEEE")}
+              </h2>
+              <p className="text-sm text-muted-foreground font-body" dir={hebrewMode ? "rtl" : "ltr"}>
+                {hebrewMode ? `${hebrewDate.dayHeb} ${hebrewDate.monthNameHeb} ${hebrewDate.year}` : format(date, "MMMM d, yyyy")}
+              </p>
             </div>
             <div className="text-right">
               <p className="text-2xl font-heading font-bold text-accent">{hebrewDate.dayHeb}</p>
