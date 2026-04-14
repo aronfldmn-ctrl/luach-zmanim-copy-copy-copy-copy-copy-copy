@@ -1,16 +1,17 @@
-import { Dafyomi } from 'kosher-zmanim/dist/kosher-zmanim.js';
+import { YomiCalculator } from 'kosher-zmanim/dist/kosher-zmanim.js';
 
 export async function fetchDafYomi(date) {
   try {
-    const daf = new Dafyomi(date);
-    const mesechta = daf.getMasechta();
-    const dafPage = daf.getDaf();
+    const dayOfDaf = YomiCalculator.getDayOfDaf(date);
+    const masechta = YomiCalculator.getMasechta(dayOfDaf);
+    const dafPage = YomiCalculator.getDaf(dayOfDaf);
     
     return {
-      ref: `${mesechta} ${dafPage}`,
-      display: `${mesechta} ${dafPage}`,
-      mesechta,
-      dafPage
+      ref: `${masechta} ${dafPage}`,
+      display: `${masechta} ${dafPage}`,
+      masechta,
+      dafPage,
+      dayOfDaf
     };
   } catch (error) {
     console.error('Daf Yomi fetch error:', error);
