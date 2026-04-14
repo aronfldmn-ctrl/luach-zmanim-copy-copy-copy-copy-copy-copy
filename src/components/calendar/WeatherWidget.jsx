@@ -54,22 +54,19 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
   const effectiveView = compact ? "compact" : weekly ? "weekly" : view;
 
   useEffect(() => {
+    // Clear old weather caches on mount to bypass stale data
+    if (typeof window !== 'undefined') {
+      try {
+        Object.keys(localStorage).forEach(key => {
+          if (key.startsWith('weather_full_')) localStorage.removeItem(key);
+        });
+      } catch (e) {}
+    }
+
     setLoading(true);
     setError(null);
     const tempUnit = celsiusMode ? "celsius" : "fahrenheit";
     const cacheKey = `weather_full_${location.lat}_${location.lng}_${tempUnit}`;
-    
-    // Clear all weather caches to force fresh fetch
-    try {
-      const keys = Object.keys(localStorage);
-      keys.forEach(k => {
-        if (k.startsWith('weather_full_')) {
-          localStorage.removeItem(k);
-        }
-      });
-    } catch (e) {
-      // Ignore cache clearing errors
-    }
     
     // Try cache first
     const cached = getFromCache(cacheKey);
