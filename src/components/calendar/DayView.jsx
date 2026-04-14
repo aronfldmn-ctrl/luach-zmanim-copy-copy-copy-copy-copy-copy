@@ -147,36 +147,38 @@ export default function DayView({ date }) {
           )}
         </div>
 
-        <div className="max-h-[600px] overflow-y-auto">
-          {HOURS.map((hour) => {
-            const eventsThisHour = activeZmanim
-              .filter((z) => timeToHour(zmanim[z.key]) === hour)
-              .sort((a, b) => timeToMinutes(zmanim[a.key]) - timeToMinutes(zmanim[b.key]));
-            return (
-              <div key={hour} className="flex border-b border-border/30 min-h-[52px]">
-                <div className="w-16 flex-shrink-0 text-right pr-3 pt-2">
-                  <span className="text-xs text-muted-foreground font-body tabular-nums">
-                    {hour === 0 ? '12 AM' : hour < 12 ? `${hour} AM` : hour === 12 ? '12 PM' : `${hour - 12} PM`}
-                  </span>
-                </div>
-                <div className="flex-1 border-l border-border/50 pl-3 py-1.5 space-y-1">
-                  {eventsThisHour.map((z) => {
-                    const Icon = ZMAN_ICONS[z.key] || Clock;
-                    const color = ZMAN_COLORS_BG[z.key] || "bg-muted text-foreground border-border";
-                    return (
-                      <div key={z.key} className={`flex items-center gap-2 px-3 py-1.5 rounded-md border text-xs font-body ${color}`}>
-                        <Icon className="h-3 w-3 flex-shrink-0" />
-                        {/* Show Hebrew label when in Hebrew mode */}
-                        <span className="font-medium">{t(z.labelEn, z.labelHeb)}</span>
-                        <span className="ml-auto tabular-nums opacity-80">{formatZmanTime(zmanim[z.key], showZmanimSeconds)}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        {showZmanim && activeZmanim.length > 0 && (
+          <div className="max-h-[600px] overflow-y-auto">
+             {HOURS.map((hour) => {
+               const eventsThisHour = activeZmanim
+                 .filter((z) => timeToHour(zmanim[z.key]) === hour)
+                 .sort((a, b) => timeToMinutes(zmanim[a.key]) - timeToMinutes(zmanim[b.key]));
+               return (
+                 <div key={hour} className="flex border-b border-border/30 min-h-[52px]">
+                   <div className="w-16 flex-shrink-0 text-right pr-3 pt-2">
+                     <span className="text-xs text-muted-foreground font-body tabular-nums">
+                       {hour === 0 ? '12 AM' : hour < 12 ? `${hour} AM` : hour === 12 ? '12 PM' : `${hour - 12} PM`}
+                     </span>
+                   </div>
+                   <div className="flex-1 border-l border-border/50 pl-3 py-1.5 space-y-1">
+                     {eventsThisHour.map((z) => {
+                       const Icon = ZMAN_ICONS[z.key] || Clock;
+                       const color = ZMAN_COLORS_BG[z.key] || "bg-muted text-foreground border-border";
+                       return (
+                         <div key={z.key} className={`flex items-center gap-2 px-3 py-1.5 rounded-md border text-xs font-body ${color}`}>
+                           <Icon className="h-3 w-3 flex-shrink-0" />
+                           {/* Show Hebrew label when in Hebrew mode */}
+                           <span className="font-medium">{t(z.labelEn, z.labelHeb)}</span>
+                           <span className="ml-auto tabular-nums opacity-80">{formatZmanTime(zmanim[z.key], showZmanimSeconds)}</span>
+                         </div>
+                       );
+                     })}
+                   </div>
+                 </div>
+               );
+             })}
+           </div>
+        )}
       </div>
 
       {/* Side panel with Zmanim/Weather tabs */}
