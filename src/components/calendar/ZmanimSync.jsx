@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar as CalendarIcon, Loader2 } from "lucide-react";
-import { useSettings, HEB_UI } from "@/lib/settingsContext";
-import { fetchZmanim } from "@/lib/hebrewDateUtils";
-import { addDays } from "date-fns";
+import { useSettings, HEB_UI, ALL_ZMANIM } from "@/lib/settingsContext";
+import { fetchZmanim, getHebrewDate } from "@/lib/hebrewDateUtils";
+import { addDays, format } from "date-fns";
 
 const SYNC_DURATION_OPTIONS = [7, 14, 30, 60];
 
 export default function ZmanimSync() {
-  const { location, syncZmanimDays, setSyncZmanimDays, hebrewMode } = useSettings();
+  const { location, syncZmanimDays, setSyncZmanimDays, hebrewMode, zmanimVisible } = useSettings();
   const [syncing, setSyncing] = useState(false);
 
   const t = (en, heb) => hebrewMode ? heb : en;
@@ -23,14 +23,27 @@ export default function ZmanimSync() {
       // Fetch Zmanim for each day
       for (let i = 0; i < syncZmanimDays; i++) {
         const date = addDays(today, i);
+        const heb = getHebrewDate(date);
         const zmanim = await fetchZmanim(date, location.lat, location.lng, tz, 18);
         
-        if (zmanim && zmanim.candleLighting) {
+        if (zmanim) {
+          // Build description with enabled Zmanim
+          const enabledZmanim = ALL_ZMANIM
+            .filter(z => zmanimVisible[z.key])
+            .map(z => {
+              const zmanimLabel = hebrewMode ? z.labelHeb : z.labelEn;
+              const zmanimTime = zmanim[z.key];
+              return zmanimTime ? `${zmanimLabel}: ${zmanimTime}` : null;
+            })
+            .filter(Boolean)
+            .join("\n");
+
+          const description = `${heb.displayHeb}\n${location.name}\n\n${enabledZmanim}`;
+
           events.push({
-            title: `Zmanim - ${date.toLocaleDateString()}`,
-            description: `Prayer times for ${location.name}`,
+            title: `${format(date, "MMM d")} - ${heb.dayHeb}`,
+            description,
             date: date.toISOString().split("T")[0],
-            time: zmanim.candleLighting,
           });
         }
       }
