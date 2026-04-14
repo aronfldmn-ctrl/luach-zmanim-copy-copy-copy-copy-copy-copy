@@ -1,21 +1,17 @@
 export async function fetchDafYomi(date) {
   try {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const dateStr = `${year}-${month}-${day}`;
-
-    const res = await fetch(`https://www.shas.org/api/dafyomi?date=${dateStr}`);
+    const res = await fetch('https://www.shas.org/api/v1/daf-yomi');
     if (!res.ok) return null;
 
     const data = await res.json();
     
-    if (data && data.masechta && data.daf) {
+    if (data && data.current_daf && data.current_daf.masechta && data.current_daf.daf) {
       return {
-        ref: `${data.masechta} ${data.daf}`,
-        display: `${data.masechta} ${data.daf}`,
-        masechta: data.masechta,
-        dafPage: data.daf
+        ref: `${data.current_daf.masechta} ${data.current_daf.daf}`,
+        display: `${data.current_daf.masechta} ${data.current_daf.daf}`,
+        masechta: data.current_daf.masechta,
+        dafPage: data.current_daf.daf,
+        cycle: data.cycle
       };
     }
     
