@@ -5,8 +5,9 @@ import { useSettings, HEB_UI } from "@/lib/settingsContext";
 import { fetchParasha } from "@/lib/parasha";
 import { getHolidayCategory } from "@/lib/holidayUtils";
 import HolidayBadge from "./HolidayBadge";
-import { Flame, BookOpen } from "lucide-react";
+import { Flame, BookOpen, Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getImportedEventsForDate } from "./ZmanimSync";
 import SidePanel from "./SidePanel";
 
 const DAY_LABELS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Shabbat"];
@@ -146,6 +147,13 @@ export default function MonthView({ date, onDateSelect, onWeekSelect }) {
                         <span className="text-[8px] text-muted-foreground font-body pl-3">
                           {t(`${candleLightingMinutes}m before`, `${candleLightingMinutes} דק'`)}
                         </span>
+                      </div>
+                    )}
+
+                    {getImportedEventsForDate(day).length > 0 && inMonth && (
+                      <div className="mt-1 flex items-center gap-1">
+                        <CalendarIcon className="h-2.5 w-2.5 text-primary flex-shrink-0" />
+                        <span className="text-[8px] font-body text-primary">{t("Event", "אירוע")}</span>
                       </div>
                     )}
                   </button>

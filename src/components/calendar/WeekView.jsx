@@ -6,8 +6,9 @@ import { useSettings, HEB_UI } from "@/lib/settingsContext";
 import { fetchParasha } from "@/lib/parasha";
 import { getHolidayCategory } from "@/lib/holidayUtils";
 import HolidayBadge from "./HolidayBadge";
-import { Flame, Sunrise, Sunset, BookOpen } from "lucide-react";
+import { Flame, Sunrise, Sunset, BookOpen, Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getImportedEventsForDate } from "./ZmanimSync";
 import SidePanel from "./SidePanel";
 
 const DAY_LABELS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Shabbat"];
@@ -93,6 +94,15 @@ export default function WeekView({ date, onDateSelect }) {
                      <HolidayBadge holiday={holiday} compact={true} />
                    </div>
                  )}
+
+                {getImportedEventsForDate(day).length > 0 && (
+                  <div className="flex items-center gap-1 mb-1.5">
+                    <CalendarIcon className="h-2.5 w-2.5 text-primary flex-shrink-0" />
+                    <span className="text-[10px] font-body text-primary font-semibold">
+                      {t("Event", "אירוע")}
+                    </span>
+                  </div>
+                )}
 
                 {shabbat && parasha && (
                   <div className="flex items-center gap-1 mb-1.5">

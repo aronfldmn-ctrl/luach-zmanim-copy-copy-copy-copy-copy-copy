@@ -268,6 +268,20 @@ END:VEVENT\n`;
 
       {syncMode === "import" && (
         <div className="space-y-3">
+          <div className="flex justify-between items-center">
+            <h4 className="text-sm font-body font-medium">{t("Manage imported events", "ניהול אירועים שיובאו")}</h4>
+            <button
+              onClick={() => {
+                localStorage.removeItem("imported_zmanim_events");
+                alert(t("All imported events cleared", "כל האירועים המיובאים נמחקו"));
+                window.location.reload();
+              }}
+              className="text-xs text-destructive hover:text-destructive/80 font-body"
+            >
+              {t("Clear All", "מחק הכל")}
+            </button>
+          </div>
+
           <div className="p-4 bg-muted rounded-lg">
             <label className="text-sm text-muted-foreground font-body block mb-2">
               {t("Select ICS file", "בחר קובץ ICS")}
