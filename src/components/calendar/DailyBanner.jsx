@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { X, Cloud, Sun, CloudRain, CloudSnow } from "lucide-react";
-import { useSettings } from "@/lib/settingsContext";
+import { useSettings } from "@/lib/settingsContext.jsx";
 import { getHebrewDate, getJewishHoliday } from "@/lib/hebrewDateUtils";
 
 const WMO_LABELS = {
