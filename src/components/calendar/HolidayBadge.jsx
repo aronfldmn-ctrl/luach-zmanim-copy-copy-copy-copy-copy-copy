@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { getHolidayDescription, getHolidayColorDynamic } from '@/lib/holidayUtils';
+import { getHolidayDescription, getHolidayColorDynamic, getHolidayNameLocalized } from '@/lib/holidayUtils';
 import { useSettings } from '@/lib/settingsContext';
 
 export default function HolidayBadge({ holiday, compact = false }) {
@@ -9,6 +9,8 @@ export default function HolidayBadge({ holiday, compact = false }) {
   const description = getHolidayDescription(holiday);
   const colors = getHolidayColorDynamic(holiday);
 
+  const displayName = getHolidayNameLocalized(holiday, hebrewMode);
+
   if (compact) {
     return (
       <div className="relative inline-block">
@@ -17,8 +19,9 @@ export default function HolidayBadge({ holiday, compact = false }) {
           onMouseEnter={() => setShowTooltip(true)}
           onMouseLeave={() => setShowTooltip(false)}
           onTouchStart={() => setShowTooltip(!showTooltip)}
+          dir={hebrewMode ? "rtl" : "ltr"}
         >
-          {holiday}
+          {displayName}
         </span>
         {showTooltip && (
           <div className="absolute z-10 bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-foreground text-primary-foreground text-xs rounded-lg shadow-lg whitespace-nowrap">
@@ -37,8 +40,9 @@ export default function HolidayBadge({ holiday, compact = false }) {
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
         onTouchStart={() => setShowTooltip(!showTooltip)}
+        dir={hebrewMode ? "rtl" : "ltr"}
       >
-        <p className={`text-sm font-body font-semibold ${colors.text}`}>{holiday}</p>
+        <p className={`text-sm font-body font-semibold ${colors.text}`}>{displayName}</p>
         <p className={`text-xs font-body ${colors.text} opacity-80`}>{description}</p>
       </div>
       {showTooltip && (

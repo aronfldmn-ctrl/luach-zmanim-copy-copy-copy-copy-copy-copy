@@ -7,6 +7,43 @@ export const HOLIDAY_CATEGORIES = {
   OBSERVANCE: 'observance',     // Other observances
 };
 
+export const HOLIDAY_NAMES = {
+  'Pesach': { en: 'Pesach', heb: 'פסח' },
+  'Pesach (8th day)': { en: 'Pesach (8th day)', heb: 'פסח (יום ח׳)' },
+  'Erev Pesach': { en: 'Erev Pesach', heb: 'ערב פסח' },
+  'Chol HaMoed Pesach': { en: 'Chol HaMoed Pesach', heb: 'חול המועד פסח' },
+  'Shavuot': { en: 'Shavuot', heb: 'שבועות' },
+  'Erev Shavuot': { en: 'Erev Shavuot', heb: 'ערב שבועות' },
+  'Rosh Hashanah': { en: 'Rosh Hashanah', heb: 'ראש השנה' },
+  'Erev Rosh Hashana': { en: 'Erev Rosh Hashanah', heb: 'ערב ראש השנה' },
+  'Yom Kippur': { en: 'Yom Kippur', heb: 'יום הכיפורים' },
+  'Erev Yom Kippur': { en: 'Erev Yom Kippur', heb: 'ערב יום הכיפורים' },
+  'Sukkot': { en: 'Sukkot', heb: 'סוכות' },
+  'Chol HaMoed Sukkot': { en: 'Chol HaMoed Sukkot', heb: 'חול המועד סוכות' },
+  'Erev Sukkot': { en: 'Erev Sukkot', heb: 'ערב סוכות' },
+  'Shemini Atzeret': { en: 'Shemini Atzeret', heb: 'שמיני עצרת' },
+  'Simchat Torah': { en: 'Simchat Torah', heb: 'שמחת תורה' },
+  'Hanukkah': { en: 'Hanukkah', heb: 'חנוכה' },
+  'Tu B\'Shevat': { en: 'Tu B\'Shevat', heb: 'ט״ו בשבט' },
+  'Purim': { en: 'Purim', heb: 'פורים' },
+  'Shushan Purim': { en: 'Shushan Purim', heb: 'פורים שושן' },
+  'Erev Purim': { en: 'Erev Purim', heb: 'ערב פורים' },
+  'Ta\'anit Esther': { en: 'Ta\'anit Esther', heb: 'תעניית אסתר' },
+  'Tisha B\'Av': { en: 'Tisha B\'Av', heb: 'תשעה באב' },
+  'Fast of Gedaliah': { en: 'Fast of Gedaliah', heb: 'צום גדליה' },
+  'Tzom Gedaliah': { en: 'Tzom Gedaliah', heb: 'צום גדליה' },
+  'Asara B\'Tevet': { en: 'Asara B\'Tevet', heb: 'עשרה בטבת' },
+  'Yom HaShoah': { en: 'Yom HaShoah', heb: 'יום השואה' },
+  '17 of Tammuz': { en: '17 of Tammuz', heb: 'י״ז בתמוז' },
+  '10 of Tevet': { en: '10 of Tevet', heb: 'עשרה בטבת' },
+  'Israel Independence Day': { en: 'Israel Independence Day', heb: 'יום העצמאות' },
+  'Lag B\'Omer': { en: 'Lag B\'Omer', heb: 'ל״ג בעומר' },
+  'Yom HaZikaron': { en: 'Yom HaZikaron', heb: 'יום הזיכרון' },
+  'Tu B\'Av': { en: 'Tu B\'Av', heb: 'ט״ו באב' },
+  'Rosh Chodesh': { en: 'Rosh Chodesh', heb: 'ראש חודש' },
+  'Sefirat HaOmer': { en: 'Sefirat HaOmer', heb: 'ספירת העומר' },
+};
+
 export const HOLIDAY_DESCRIPTIONS = {
   // Passover
   'Pesach': 'Passover - Festival of Freedom (7 days)',
@@ -124,6 +161,21 @@ export function getHolidayCategory(holidayName) {
 
 export function getHolidayDescription(holidayName) {
   return HOLIDAY_DESCRIPTIONS[holidayName] || holidayName;
+}
+
+export function getHolidayNameLocalized(holidayName, hebrewMode) {
+  // Handle dynamic Sefirat HaOmer names (e.g., "Sefirat HaOmer - Day 5")
+  if (holidayName && holidayName.startsWith('Sefirat HaOmer - Day')) {
+    const day = holidayName.match(/Day (\d+)/)?.[1];
+    if (day && hebrewMode) {
+      return `ספירת העומר - יום ${day}`;
+    }
+    return holidayName;
+  }
+  
+  const names = HOLIDAY_NAMES[holidayName];
+  if (!names) return holidayName;
+  return hebrewMode ? names.heb : names.en;
 }
 
 export const HOLIDAY_COLORS = {
