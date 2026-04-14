@@ -21,9 +21,9 @@ function MiniMonth({ monthDate, selectedDate, onDateSelect, hebrewMode }) {
   // Get Hebrew month name(s) for this Gregorian month (use 1st and 15th to cover both Hebrew months)
   const heb1 = getHebrewDate(monthStart);
   const hebMid = getHebrewDate(new Date(monthDate.getFullYear(), monthDate.getMonth(), 15));
-  const hebMonths = heb1.monthName === hebMid.monthName
-    ? heb1.monthName
-    : `${heb1.monthName} – ${hebMid.monthName}`;
+  const sameMonth = heb1.monthName === hebMid.monthName;
+  const hebMonthsEn = sameMonth ? heb1.monthName : `${heb1.monthName} – ${hebMid.monthName}`;
+  const hebMonthsHeb = sameMonth ? heb1.monthNameHeb : `${heb1.monthNameHeb} – ${hebMid.monthNameHeb}`;
 
   const engName = format(monthDate, "MMMM");
 
@@ -31,11 +31,11 @@ function MiniMonth({ monthDate, selectedDate, onDateSelect, hebrewMode }) {
     <div className="bg-card border border-border rounded-lg p-3 hover:shadow-md transition-shadow">
       <div className="text-center mb-2">
         <h3 className="font-heading font-semibold text-sm text-foreground leading-tight">
-          {hebrewMode ? hebMonths : engName}
+          {engName}
         </h3>
-        {!hebrewMode && (
-          <p className="text-[10px] text-muted-foreground font-body" dir="rtl">{hebMonths}</p>
-        )}
+        <p className="text-[10px] text-muted-foreground font-body" dir="rtl">
+          {hebrewMode ? hebMonthsHeb : hebMonthsEn}
+        </p>
       </div>
       <div className="grid grid-cols-7 gap-0">
         {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
