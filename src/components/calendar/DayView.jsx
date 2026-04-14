@@ -31,15 +31,21 @@ const ZMAN_ICONS = {
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
 
-function timeToHour(timeStr) {
+function timeToMinutes(timeStr) {
   if (!timeStr || timeStr === "...") return -1;
   const match = timeStr.match(/^(\d+):(\d+)\s(AM|PM)$/);
   if (!match) return -1;
   let h = parseInt(match[1]);
+  const m = parseInt(match[2]);
   const ampm = match[3];
   if (ampm === 'PM' && h !== 12) h += 12;
   if (ampm === 'AM' && h === 12) h = 0;
-  return h;
+  return h * 60 + m;
+}
+
+function timeToHour(timeStr) {
+  const mins = timeToMinutes(timeStr);
+  return mins === -1 ? -1 : Math.floor(mins / 60);
 }
 
 export default function DayView({ date }) {
@@ -84,7 +90,9 @@ export default function DayView({ date }) {
 
         <div className="max-h-[600px] overflow-y-auto">
           {HOURS.map((hour) => {
-            const eventsThisHour = activeZmanim.filter((z) => timeToHour(zmanim[z.key]) === hour);
+            const eventsThisHour = activeZmanim
+              .filter((z) => timeToHour(zmanim[z.key]) === hour)
+              .sort((a, b) => timeToMinutes(zmanim[a.key]) - timeToMinutes(zmanim[b.key]));
             return (
               <div key={hour} className="flex border-b border-border/30 min-h-[52px]">
                 <div className="w-16 flex-shrink-0 text-right pr-3 pt-2">
