@@ -6,6 +6,7 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import { SettingsProvider } from '@/lib/settingsContext';
+import PermissionRequester from '@/components/PermissionRequester';
 import Calendar from '@/pages/Calendar';
 // Add page imports here
 
@@ -35,6 +36,7 @@ const AuthenticatedApp = () => {
   // Render the main app
   return (
     <SettingsProvider>
+      <PermissionRequester />
       <Routes>
         <Route path="/" element={<Calendar />} />
         <Route path="/:view" element={<Calendar />} />
