@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useSettings, ALL_ZMANIM, HEB_UI } from "@/lib/settingsContext";
 import { base44 } from "@/api/base44Client";
 import ZmanimSync from "./ZmanimSync";
+import { HOLIDAY_CATEGORIES, HOLIDAY_COLORS } from "@/lib/holidayUtils";
 
 export default function SettingsPanel() {
   const [open, setOpen] = useState(false);
@@ -27,6 +28,7 @@ export default function SettingsPanel() {
     showDafYomi, setShowDafYomi,
     enableNotifications, setEnableNotifications,
     autoSyncLocation, setAutoSyncLocation,
+    holidayFilters, setHolidayFilters,
   } = useSettings();
 
   const t = (en, heb) => hebrewMode ? heb : en;
@@ -321,6 +323,36 @@ export default function SettingsPanel() {
             {/* Zmanim Calendar Sync */}
             <section>
               <ZmanimSync />
+            </section>
+
+            {/* Holiday Filters */}
+            <section>
+              <h3 className="font-body font-semibold text-sm text-muted-foreground uppercase tracking-wider mb-3">
+                {t("Holiday Display", "הצגת חגים")}
+              </h3>
+              <div className="space-y-2 border border-border rounded-lg overflow-hidden">
+                {Object.entries({
+                  [HOLIDAY_CATEGORIES.YOM_TOV]: { en: "Yom Tov (Major Holidays)", heb: "יום טוב (חגים גדולים)" },
+                  [HOLIDAY_CATEGORIES.INTERMEDIATE]: { en: "Intermediate Days", heb: "ימי חול המועד" },
+                  [HOLIDAY_CATEGORIES.FAST]: { en: "Fast Days", heb: "ימי צום" },
+                  [HOLIDAY_CATEGORIES.MINOR]: { en: "Minor Holidays", heb: "חגים קטנים" },
+                  [HOLIDAY_CATEGORIES.OBSERVANCE]: { en: "Observances", heb: "ימים מיוחדים" },
+                }).map(([key, label]) => {
+                  const colors = HOLIDAY_COLORS[key];
+                  return (
+                    <div key={key} className="flex items-center justify-between px-3 py-2.5 border-b border-border/50 last:border-0 hover:bg-muted/50 transition-colors">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-3 h-3 rounded-full ${colors.bg} ${colors.border} border`} />
+                        <p className="text-sm font-body font-medium">{t(label.en, label.heb)}</p>
+                      </div>
+                      <Switch
+                        checked={holidayFilters[key]}
+                        onCheckedChange={(checked) => setHolidayFilters({ ...holidayFilters, [key]: checked })}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
             </section>
 
             </div>

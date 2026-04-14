@@ -4,7 +4,9 @@ import { getHebrewDate, getJewishHoliday, isShabbat, isFriday } from "@/lib/hebr
 import { useWeekZmanim } from "@/lib/useWeekZmanim";
 import { useSettings, HEB_UI } from "@/lib/settingsContext";
 import { fetchParasha } from "@/lib/parasha";
-import { Star, Flame, Sunrise, Sunset, BookOpen } from "lucide-react";
+import { getHolidayCategory } from "@/lib/holidayUtils";
+import HolidayBadge from "./HolidayBadge";
+import { Flame, Sunrise, Sunset, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import SidePanel from "./SidePanel";
 
@@ -16,7 +18,7 @@ export default function WeekView({ date, onDateSelect }) {
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
   const today = new Date();
   const zmanimMap = useWeekZmanim(date);
-  const { hebrewMode, candleLightingMinutes } = useSettings();
+  const { hebrewMode, candleLightingMinutes, holidayFilters } = useSettings();
   const [parasha, setParasha] = useState(null);
 
   const t = (en, heb) => hebrewMode ? heb : en;
@@ -86,12 +88,11 @@ export default function WeekView({ date, onDateSelect }) {
                   {heb.monthName} {heb.day}
                 </p>
 
-                {holiday && (
-                  <div className="flex items-center gap-1 mb-1.5">
-                    <Star className="h-3 w-3 text-accent flex-shrink-0" />
-                    <span className="text-[10px] font-body text-accent font-medium truncate">{holiday}</span>
-                  </div>
-                )}
+                {holiday && holidayFilters[getHolidayCategory(holiday)] && (
+                   <div className="mb-2">
+                     <HolidayBadge holiday={holiday} compact={true} />
+                   </div>
+                 )}
 
                 {shabbat && parasha && (
                   <div className="flex items-center gap-1 mb-1.5">

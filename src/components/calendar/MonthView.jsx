@@ -3,7 +3,9 @@ import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSa
 import { getHebrewDate, getJewishHoliday, isShabbat, isFriday, fetchZmanim } from "@/lib/hebrewDateUtils";
 import { useSettings, HEB_UI } from "@/lib/settingsContext";
 import { fetchParasha } from "@/lib/parasha";
-import { Star, Flame, BookOpen } from "lucide-react";
+import { getHolidayCategory } from "@/lib/holidayUtils";
+import HolidayBadge from "./HolidayBadge";
+import { Flame, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import SidePanel from "./SidePanel";
 
@@ -11,7 +13,7 @@ const DAY_LABELS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Shabbat"];
 const DAY_LABELS_HEB = [HEB_UI.sun, HEB_UI.mon, HEB_UI.tue, HEB_UI.wed, HEB_UI.thu, HEB_UI.fri, HEB_UI.shabbat];
 
 export default function MonthView({ date, onDateSelect, onWeekSelect }) {
-  const { location, hebrewMode, candleLightingMinutes } = useSettings();
+  const { location, hebrewMode, candleLightingMinutes, holidayFilters } = useSettings();
   const [zmanimMap, setZmanimMap] = useState({});
   const [parashaMap, setParashaMap] = useState({});
 
@@ -125,12 +127,13 @@ export default function MonthView({ date, onDateSelect, onWeekSelect }) {
                       <span className="text-[10px] font-body text-accent">{heb.dayHeb}</span>
                     </div>
 
-                    {holiday && (
-                      <div className="flex items-center gap-0.5 mt-1">
-                        <Star className="h-2.5 w-2.5 text-accent flex-shrink-0" />
-                        <span className="text-[9px] font-body text-accent truncate">{holiday}</span>
-                      </div>
-                    )}
+                    {holiday && holidayFilters[getHolidayCategory(holiday)] && (
+                       <div className="mt-1">
+                         <div className="inline-block">
+                           <HolidayBadge holiday={holiday} compact={true} />
+                         </div>
+                       </div>
+                     )}
 
                     {friday && inMonth && (
                       <div className="flex flex-col gap-0.5 mt-0.5">

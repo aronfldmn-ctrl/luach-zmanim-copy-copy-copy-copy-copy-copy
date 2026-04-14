@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
+import { HOLIDAY_CATEGORIES } from "./holidayUtils";
 
 const DEFAULT_LOCATION = {
   name: "New York, NY",
@@ -21,6 +22,14 @@ const DEFAULT_ZMANIM_VISIBLE = {
   candleLighting: true,
   tzeitKochavim: true,
   rabbeinuTam: true,
+};
+
+const DEFAULT_HOLIDAY_FILTERS = {
+  [HOLIDAY_CATEGORIES.YOM_TOV]: true,
+  [HOLIDAY_CATEGORIES.INTERMEDIATE]: true,
+  [HOLIDAY_CATEGORIES.FAST]: true,
+  [HOLIDAY_CATEGORIES.MINOR]: true,
+  [HOLIDAY_CATEGORIES.OBSERVANCE]: true,
 };
 
 const SettingsContext = createContext(null);
@@ -48,6 +57,7 @@ export function SettingsProvider({ children }) {
   const [enableNotifications, setEnableNotificationsState] = useState(() => loadFromStorage("jcal_notifications", false));
   const [syncZmanimDays, setSyncZmanimDaysState] = useState(() => loadFromStorage("jcal_sync_zmanim_days", 7));
   const [autoSyncLocation, setAutoSyncLocationState] = useState(() => loadFromStorage("jcal_auto_sync_location", false));
+  const [holidayFilters, setHolidayFiltersState] = useState(() => loadFromStorage("jcal_holiday_filters", DEFAULT_HOLIDAY_FILTERS));
 
   const setLocation = (loc) => {
     setLocationState(loc);
@@ -101,6 +111,10 @@ export function SettingsProvider({ children }) {
     setAutoSyncLocationState(v);
     localStorage.setItem("jcal_auto_sync_location", JSON.stringify(v));
   };
+  const setHolidayFilters = (v) => {
+    setHolidayFiltersState(v);
+    localStorage.setItem("jcal_holiday_filters", JSON.stringify(v));
+  };
 
   return (
     <SettingsContext.Provider value={{
@@ -117,6 +131,7 @@ export function SettingsProvider({ children }) {
       enableNotifications, setEnableNotifications,
       syncZmanimDays, setSyncZmanimDays,
       autoSyncLocation, setAutoSyncLocation,
+      holidayFilters, setHolidayFilters,
     }}>
       {children}
     </SettingsContext.Provider>

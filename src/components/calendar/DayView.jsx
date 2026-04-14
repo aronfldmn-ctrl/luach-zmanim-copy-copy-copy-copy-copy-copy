@@ -3,6 +3,8 @@ import { format } from "date-fns";
 import { getHebrewDate, getJewishHoliday, isShabbat, isFriday, formatZmanTime } from "@/lib/hebrewDateUtils";
 import { useSettings, ALL_ZMANIM, HEB_UI } from "@/lib/settingsContext";
 import { useZmanim } from "@/lib/useZmanim";
+import { getHolidayCategory } from "@/lib/holidayUtils";
+import HolidayBadge from "./HolidayBadge";
 import { Sunrise, Sun, Sunset, Flame, Moon, Star, Clock } from "lucide-react";
 import SidePanel from "./SidePanel";
 
@@ -49,7 +51,7 @@ function timeToHour(timeStr) {
 }
 
 export default function DayView({ date }) {
-  const { showZmanim, zmanimVisible, hebrewMode, showZmanimSeconds } = useSettings();
+  const { showZmanim, zmanimVisible, hebrewMode, showZmanimSeconds, holidayFilters } = useSettings();
   const { zmanim } = useZmanim(date);
   const hebrewDate = getHebrewDate(date);
   const holiday = getJewishHoliday(date);
@@ -80,10 +82,14 @@ export default function DayView({ date }) {
               <p className="text-sm text-muted-foreground font-body">{hebrewDate.monthNameHeb} {hebrewDate.year}</p>
             </div>
           </div>
-          {(holiday || shabbat) && (
-            <div className="mt-2 flex items-center gap-2">
-              <Star className="h-4 w-4 text-accent" />
-              <span className="text-sm font-medium text-accent font-body">{holiday || t("Shabbat Kodesh", "שבת קודש")}</span>
+          {holiday && holidayFilters[getHolidayCategory(holiday)] && (
+            <div className="mt-3">
+              <HolidayBadge holiday={holiday} compact={false} />
+            </div>
+          )}
+          {shabbat && !holiday && (
+            <div className="mt-3 px-3 py-2 rounded-lg bg-secondary text-secondary-foreground">
+              <p className="text-sm font-body font-semibold">{t("Shabbat Kodesh", "שבת קודש")}</p>
             </div>
           )}
         </div>
