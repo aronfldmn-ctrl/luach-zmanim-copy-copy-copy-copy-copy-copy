@@ -17,9 +17,21 @@ function CalendarApp() {
   const [view, setView] = useState("month");
   const { showStatusBar } = useSettings();
 
-  // Initialize push notifications when running as native Android/iOS app
+  // Initialize push notifications and request permissions on startup
   useEffect(() => {
-    initPushNotifications();
+    const initPermissions = async () => {
+      await initPushNotifications();
+      // Request location permission for weather/zmanim
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          () => console.log('Location permission granted'),
+          () => console.log('Location permission denied')
+        );
+      }
+    };
+    
+    initPermissions();
+    
     scheduleDailyNotification({
       title: "Jewish Calendar",
       body: "Tap to see today's Hebrew date, Zmanim & weather",
