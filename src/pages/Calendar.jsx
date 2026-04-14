@@ -32,6 +32,33 @@ function CalendarApp() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [direction, setDirection] = useState(0);
 
+  const handleNavigate = useCallback((dir) => {
+    setDirection(dir);
+    setCurrentDate((prev) => {
+      if (view === "day") return addDays(prev, dir);
+      if (view === "week") return addWeeks(prev, dir);
+      if (view === "month") return addMonths(prev, dir);
+      if (view === "year") return addYears(prev, dir);
+      return prev;
+    });
+  }, [view]);
+
+  const handleToday = useCallback(() => setCurrentDate(new Date()), []);
+
+  const handleDateSelect = (date) => {
+    setCurrentDate(date);
+    if (view === "year") navigate("/month");
+    else if (view === "month") navigate("/day");
+    else if (view === "week") navigate("/day");
+  };
+
+  const cycleView = useCallback((dir) => {
+    const idx = VIEWS.indexOf(view);
+    const next = (idx + dir + VIEWS.length) % VIEWS.length;
+    setDirection(dir);
+    navigate(`/${VIEWS[next]}`);
+  }, [view, navigate]);
+
   // Initialize push notifications and request permissions on startup
   useEffect(() => {
     const initPermissions = async () => {
@@ -54,13 +81,6 @@ function CalendarApp() {
       minute: 0,
     });
   }, []);
-
-  const cycleView = useCallback((dir) => {
-    const idx = VIEWS.indexOf(view);
-    const next = (idx + dir + VIEWS.length) % VIEWS.length;
-    setDirection(dir);
-    navigate(`/${VIEWS[next]}`);
-  }, [view, navigate]);
 
   // Handle hardware back button (mobile)
   useEffect(() => {
@@ -131,26 +151,6 @@ function CalendarApp() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleNavigate, handleToday, cycleView, navigate]);
-
-  const handleNavigate = useCallback((dir) => {
-    setDirection(dir);
-    setCurrentDate((prev) => {
-      if (view === "day") return addDays(prev, dir);
-      if (view === "week") return addWeeks(prev, dir);
-      if (view === "month") return addMonths(prev, dir);
-      if (view === "year") return addYears(prev, dir);
-      return prev;
-    });
-  }, [view]);
-
-  const handleToday = useCallback(() => setCurrentDate(new Date()), []);
-
-  const handleDateSelect = (date) => {
-    setCurrentDate(date);
-    if (view === "year") navigate("/month");
-    else if (view === "month") navigate("/day");
-    else if (view === "week") navigate("/day");
-  };
 
   return (
     <CalendarContent 
