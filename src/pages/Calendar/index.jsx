@@ -56,6 +56,11 @@ function Calendar() {
     navigate("/day");
   }, [navigate]);
 
+  const handleMonthSelect = useCallback((date) => {
+    setCurrentDate(date);
+    navigate("/month");
+  }, [navigate]);
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <StatusBar />
@@ -79,7 +84,7 @@ function Calendar() {
             <MonthView date={currentDate} onDateSelect={handleDateSelect} />
           )}
           {activeView === "year" && (
-            <YearView date={currentDate} onDateSelect={handleDateSelect} />
+            <YearView date={currentDate} onDateSelect={handleDateSelect} onMonthSelect={handleMonthSelect} />
           )}
         </div>
       </main>

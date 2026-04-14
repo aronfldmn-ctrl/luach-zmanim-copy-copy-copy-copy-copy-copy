@@ -74,14 +74,10 @@ function MiniMonth({ monthDate, selectedDate, onDateSelect, onMonthSelect, hebre
   );
 }
 
-export default function YearView({ date, onDateSelect }) {
+export default function YearView({ date, onDateSelect, onMonthSelect }) {
   const year = date.getFullYear();
   const months = Array.from({ length: 12 }, (_, i) => new Date(year, i, 1));
   const { hebrewMode } = useSettings();
-
-  const handleMonthClick = (monthDate) => {
-    onDateSelect(monthDate);
-  };
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -91,7 +87,7 @@ export default function YearView({ date, onDateSelect }) {
           monthDate={monthDate}
           selectedDate={date}
           onDateSelect={onDateSelect}
-          onMonthSelect={handleMonthClick}
+          onMonthSelect={onMonthSelect}
           hebrewMode={hebrewMode}
         />
       ))}
