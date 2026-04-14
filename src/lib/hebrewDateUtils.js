@@ -207,9 +207,9 @@ export function getJewishHoliday(date) {
   if (m === 1 && d >= 15 && d <= 21) return "Pesach";
   if (m === 1 && d === 22) return "Pesach (8th day)";
   if (m === 2 && d === 18) return "Lag B'Omer";
-  if ((m === 2 && d >= 16) || (m === 3 && d <= 5)) {
+  if ((m === 1 && d >= 16) || (m === 2 && d <= 5)) {
     let dayOfOmer;
-    if (m === 2) dayOfOmer = d - 15;
+    if (m === 1) dayOfOmer = d - 15;
     else dayOfOmer = 30 + d;
     return `Sefirat HaOmer - Day ${dayOfOmer}`;
   }
