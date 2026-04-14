@@ -9,6 +9,7 @@ import YearView from "@/components/calendar/YearView";
 import StatusBar from "@/components/calendar/StatusBar";
 import DailyBanner from "@/components/calendar/DailyBanner";
 import BottomNav from "@/components/calendar/BottomNav";
+import { useKeyboardNavigation } from "@/lib/useKeyboardNavigation";
 
 const VIEWS = ["day", "week", "month", "year"];
 
@@ -65,6 +66,19 @@ function Calendar() {
     setCurrentDate(date);
     navigate("/week");
   }, [navigate]);
+
+  useKeyboardNavigation({
+    up: () => handleNavigate(-1),
+    down: () => handleNavigate(1),
+    left: () => handleNavigate(-1),
+    right: () => handleNavigate(1),
+    select: () => handleDateSelect(currentDate),
+    today: handleToday,
+    dayView: () => handleViewChange("day"),
+    weekView: () => handleViewChange("week"),
+    monthView: () => handleViewChange("month"),
+    yearView: () => handleViewChange("year"),
+  });
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
