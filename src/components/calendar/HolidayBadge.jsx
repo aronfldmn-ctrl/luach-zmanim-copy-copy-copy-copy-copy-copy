@@ -43,7 +43,9 @@ export default function HolidayBadge({ holiday, compact = false }) {
         dir={hebrewMode ? "rtl" : "ltr"}
       >
         <p className={`text-sm font-body font-semibold ${colors.text}`}>{displayName}</p>
-        <p className={`text-xs font-body ${colors.text} opacity-80`}>{description}</p>
+        {description !== holiday && (
+          <p className={`text-xs font-body ${colors.text} opacity-80`}>{description}</p>
+        )}
       </div>
       {showTooltip && (
         <div className="absolute z-10 bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-foreground text-primary-foreground text-xs rounded-lg shadow-lg">
