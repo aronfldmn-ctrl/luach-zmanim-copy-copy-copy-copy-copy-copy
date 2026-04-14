@@ -62,25 +62,16 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
     // Try cache first
     const cached = getFromCache(cacheKey);
     if (cached) {
-      // Restore dates from cached strings or date fields
+      // Restore dates from cached strings or date fields - always reconstruct dates
       const restored = {
        ...cached,
-       daily: (cached.daily || []).map(day => {
-         let date;
-         if (day.dateStr) {
-           date = new Date(day.dateStr + "T12:00:00");
-         } else if (day.date instanceof Date) {
-           date = day.date;
-         } else if (typeof day.date === 'string') {
-           date = new Date(day.date);
-         } else {
-           date = new Date();
-         }
-         return { ...day, date };
-       }),
+       daily: (cached.daily || []).map(day => ({
+         ...day,
+         date: day.dateStr ? new Date(day.dateStr + "T12:00:00") : normalizeDate(day.date)
+       })),
        hourly: (cached.hourly || []).map(h => ({
          ...h,
-         time: h.time instanceof Date ? h.time : new Date(h.time),
+         time: normalizeDate(h.time),
        })),
       };
       setWeather(restored);
@@ -124,25 +115,16 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
         // Fallback to cache on error
         const fallback = getFromCache(cacheKey);
         if (fallback) {
-          // Restore dates from cached strings or date fields
+          // Restore dates from cached strings or date fields - always reconstruct dates
           const restored = {
             ...fallback,
-            daily: (fallback.daily || []).map(day => {
-              let date;
-              if (day.dateStr) {
-                date = new Date(day.dateStr + "T12:00:00");
-              } else if (day.date instanceof Date) {
-                date = day.date;
-              } else if (typeof day.date === 'string') {
-                date = new Date(day.date);
-              } else {
-                date = new Date();
-              }
-              return { ...day, date };
-            }),
+            daily: (fallback.daily || []).map(day => ({
+              ...day,
+              date: day.dateStr ? new Date(day.dateStr + "T12:00:00") : normalizeDate(day.date)
+            })),
             hourly: (fallback.hourly || []).map(h => ({
               ...h,
-              time: h.time instanceof Date ? h.time : new Date(h.time),
+              time: normalizeDate(h.time),
             })),
           };
           setWeather(restored);
