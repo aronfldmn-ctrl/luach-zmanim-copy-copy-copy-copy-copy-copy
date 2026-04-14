@@ -168,11 +168,9 @@ function CalendarApp() {
 }
 
 function CalendarContent({ currentDate, setCurrentDate, direction, setDirection, navigate, view, handleNavigate, handleToday, handleDateSelect }) {
-  const { showStatusBar } = useSettings();
-
   return (
     <div className="min-h-screen bg-background safe-area-inset-top pb-16 md:pb-0">
-      {showStatusBar && <StatusBar />}
+      <StatusBar />
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
         <CalendarHeader
           currentDate={currentDate}
