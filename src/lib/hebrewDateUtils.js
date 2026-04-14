@@ -168,7 +168,7 @@ export async function fetchZmanim(date, lat, lng, tzid, candleMinutes = 18) {
   }
 
   const result = {
-    alotHaShachar: t(z.AlosHashachar || z.Alos72),
+    alotHaShachar: t(z.Alos72),
     zmanTzitzit: t(z.Misheyakir11Point5Degrees || z.Misheyakir),
     sunrise: t(z.Sunrise),
     sofShmaGRA: t(z.SofZmanShmaGRA),
