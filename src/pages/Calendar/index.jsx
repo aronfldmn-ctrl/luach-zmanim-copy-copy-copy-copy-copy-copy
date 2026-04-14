@@ -12,6 +12,8 @@ import DailyBanner from "@/components/calendar/DailyBanner";
 import BottomNav from "@/components/calendar/BottomNav.jsx";
 import { useKeyboardNavigation } from "@/lib/useKeyboardNavigation";
 import { useSettings } from "@/lib/settingsContext";
+import { scheduleDailyNotification, requestNotificationPermission } from "@/lib/pushNotifications";
+import { getHebrewDate } from "@/lib/hebrewDateUtils";
 
 const VIEWS = ["day", "week", "month", "year"];
 
@@ -22,7 +24,7 @@ function Calendar() {
   const [pullRefresh, setPullRefresh] = useState(0);
   const scrollContainerRef = useRef(null);
   const touchStartRef = useRef(0);
-  const { autoSyncLocation, setLocation, showStatusBar } = useSettings();
+  const { autoSyncLocation, setLocation, showStatusBar, enableNotifications } = useSettings();
 
   const view = location.pathname.slice(1) || "month";
   const isValidView = VIEWS.includes(view);
@@ -117,6 +119,22 @@ function Calendar() {
       });
     }
   }, [autoSyncLocation, setLocation]);
+
+  useEffect(() => {
+    if (enableNotifications) {
+      requestNotificationPermission().then((granted) => {
+        if (granted) {
+          const heb = getHebrewDate(new Date());
+          scheduleDailyNotification({
+            title: "Jewish Calendar",
+            body: `Today is ${heb.displayHeb}`,
+            hour: 8,
+            minute: 0,
+          });
+        }
+      });
+    }
+  }, [enableNotifications]);
 
   useKeyboardNavigation({
     up: () => handleNavigate(-1),

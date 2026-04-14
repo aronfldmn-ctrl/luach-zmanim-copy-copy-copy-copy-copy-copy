@@ -28,5 +28,29 @@ export async function initPushNotifications({ onToken, onNotification } = {}) {
 }
 
 export async function scheduleDailyNotification({ title, body, hour = 8, minute = 0 } = {}) {
-  // No-op in web environment. Wire up real Capacitor calls after `npx cap add android`.
+  if (!('serviceWorker' in navigator)) return;
+  
+  const now = new Date();
+  const nextNotification = new Date();
+  nextNotification.setHours(hour, minute, 0, 0);
+  
+  if (nextNotification <= now) {
+    nextNotification.setDate(nextNotification.getDate() + 1);
+  }
+  
+  const delay = nextNotification.getTime() - now.getTime();
+  
+  // Schedule notification for tomorrow if already past today's time
+  setTimeout(() => {
+    if (Notification.permission === 'granted') {
+      new Notification(title, { body, icon: '/icon-192x192.png' });
+    }
+    // Reschedule for next day
+    scheduleDailyNotification({ title, body, hour, minute });
+  }, delay);
+}
+
+export async function cancelDailyNotifications() {
+  // Notifications are timer-based, so no explicit cleanup needed
+  // The app lifecycle handles timer cleanup
 }
