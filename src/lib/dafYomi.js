@@ -5,14 +5,16 @@ export async function fetchDafYomi(date) {
     const day = String(date.getDate()).padStart(2, '0');
     const dateStr = `${year}-${month}-${day}`;
 
-    const res = await fetch(`https://www.sefaria.org/api/daf-yomi/${dateStr}`);
+    const res = await fetch(`https://www.sefaria.org/api/v2/daf-yomi/${dateStr}`);
+    if (!res.ok) return null;
+    
     const data = await res.json();
     
-    // Sefaria returns ref in the response
-    if (data && data.ref) {
+    if (data && data.daf_yomi && data.daf_yomi[0]) {
+      const ref = data.daf_yomi[0].name || data.daf_yomi[0];
       return {
-        ref: data.ref,
-        display: data.ref.replace(/\s+/g, '\u00A0'),
+        ref,
+        display: (typeof ref === 'string' ? ref : ref.name).replace(/\s+/g, '\u00A0'),
       };
     }
     
