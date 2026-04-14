@@ -58,20 +58,24 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
     if (cached) {
       // Restore dates from cached strings or date fields
       const restored = {
-        ...cached,
-        daily: (cached.daily || []).map(day => {
-          let date;
-          if (day.dateStr) {
-            date = new Date(day.dateStr + "T12:00:00");
-          } else if (day.date instanceof Date) {
-            date = day.date;
-          } else if (typeof day.date === 'string') {
-            date = new Date(day.date);
-          } else {
-            date = new Date();
-          }
-          return { ...day, date };
-        }),
+       ...cached,
+       daily: (cached.daily || []).map(day => {
+         let date;
+         if (day.dateStr) {
+           date = new Date(day.dateStr + "T12:00:00");
+         } else if (day.date instanceof Date) {
+           date = day.date;
+         } else if (typeof day.date === 'string') {
+           date = new Date(day.date);
+         } else {
+           date = new Date();
+         }
+         return { ...day, date };
+       }),
+       hourly: (cached.hourly || []).map(h => ({
+         ...h,
+         time: h.time instanceof Date ? h.time : new Date(h.time),
+       })),
       };
       setWeather(restored);
       setLoading(false);
@@ -97,7 +101,15 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
           high: Math.round(data.daily.temperature_2m_max[i]),
           low: Math.round(data.daily.temperature_2m_min[i]),
         }));
-        const weatherData = { current, daily, hourlyAll: data.hourly };
+        // Process hourly data into arrays for easier access
+        const hourly = (data.hourly?.time || []).map((timeStr, i) => ({
+          time: new Date(timeStr),
+          temp: Math.round(data.hourly.temperature_2m[i]),
+          code: data.hourly.weathercode[i],
+          precip: data.hourly.precipitation_probability[i],
+          wind: Math.round(data.hourly.windspeed_10m[i]),
+        }));
+        const weatherData = { current, daily, hourly, hourlyAll: data.hourly };
         setWeather(weatherData);
         setInCache(cacheKey, weatherData, 60 * 60 * 1000); // Cache for 1 hour
         setLoading(false);
@@ -122,6 +134,10 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
               }
               return { ...day, date };
             }),
+            hourly: (fallback.hourly || []).map(h => ({
+              ...h,
+              time: h.time instanceof Date ? h.time : new Date(h.time),
+            })),
           };
           setWeather(restored);
         } else {
