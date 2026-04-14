@@ -4,7 +4,6 @@ export const HOLIDAY_CATEGORIES = {
   INTERMEDIATE: 'intermediate',  // Chol HaMoed
   FAST: 'fast',                 // Fasting days
   MINOR: 'minor',               // Minor holidays/commemorations
-  OBSERVANCE: 'observance',     // Other observances
 };
 
 export const HOLIDAY_NAMES = {
@@ -181,7 +180,6 @@ export const HOLIDAY_COLORS = {
   [HOLIDAY_CATEGORIES.INTERMEDIATE]: { bg: 'bg-orange-100 dark:bg-orange-950', border: 'border-orange-300 dark:border-orange-700', text: 'text-orange-700 dark:text-orange-300' },
   [HOLIDAY_CATEGORIES.FAST]: { bg: 'bg-slate-200 dark:bg-slate-800', border: 'border-slate-400 dark:border-slate-600', text: 'text-slate-700 dark:text-slate-300' },
   [HOLIDAY_CATEGORIES.MINOR]: { bg: 'bg-blue-100 dark:bg-blue-950', border: 'border-blue-300 dark:border-blue-700', text: 'text-blue-700 dark:text-blue-300' },
-  [HOLIDAY_CATEGORIES.OBSERVANCE]: { bg: 'bg-purple-100 dark:bg-purple-950', border: 'border-purple-300 dark:border-purple-700', text: 'text-purple-700 dark:text-purple-300' },
 };
 
 export function getHolidayColor(holidayName) {

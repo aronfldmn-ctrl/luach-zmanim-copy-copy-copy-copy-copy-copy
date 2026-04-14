@@ -29,7 +29,6 @@ const DEFAULT_HOLIDAY_FILTERS = {
   [HOLIDAY_CATEGORIES.INTERMEDIATE]: true,
   [HOLIDAY_CATEGORIES.FAST]: true,
   [HOLIDAY_CATEGORIES.MINOR]: true,
-  [HOLIDAY_CATEGORIES.OBSERVANCE]: true,
 };
 
 const SettingsContext = createContext(null);
