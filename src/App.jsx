@@ -17,7 +17,7 @@ if (typeof window !== 'undefined') {
   registerServiceWorker();
 }
 
-const AuthenticatedApp = () => {
+const AppContent = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
   // Show loading spinner while checking app public settings or auth
@@ -58,14 +58,14 @@ function App() {
 
   return (
     <Router>
-      <AuthProvider>
-        <QueryClientProvider client={queryClientInstance}>
+      <QueryClientProvider client={queryClientInstance}>
+        <AuthProvider>
           <SettingsProvider>
-            <AuthenticatedApp />
+            <AppContent />
             <Toaster />
           </SettingsProvider>
-        </QueryClientProvider>
-      </AuthProvider>
+        </AuthProvider>
+      </QueryClientProvider>
     </Router>
   )
 }
