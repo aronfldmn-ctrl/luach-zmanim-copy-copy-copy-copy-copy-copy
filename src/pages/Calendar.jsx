@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { addDays, addWeeks, addMonths, addYears } from "date-fns";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { SettingsProvider } from "@/lib/settingsContext";
+import { SettingsProvider, useSettings } from "@/lib/settingsContext";
 import CalendarHeader from "@/components/calendar/CalendarHeader";
 import DayView from "@/components/calendar/DayView";
 import WeekView from "@/components/calendar/WeekView";
@@ -26,7 +26,7 @@ const VIEW_VARIANTS = {
   }),
 };
 
-export default function Calendar() {
+function CalendarContent() {
   const navigate = useNavigate();
   const { view = "month" } = useParams();
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -63,7 +63,6 @@ export default function Calendar() {
   useEffect(() => {
     const initPermissions = async () => {
       await initPushNotifications();
-      // Request location permission for weather/zmanim
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           () => console.log('Location permission granted'),
@@ -95,35 +94,34 @@ export default function Calendar() {
     return () => document.removeEventListener("backbutton", handleBackButton);
   }, [view, navigate]);
 
-  // D-pad / keyboard navigation for non-touch phones
+  // D-pad / keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Don't intercept when typing in inputs
       if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
 
       switch (e.key) {
         case "ArrowLeft":
-        case "4": // Phone keypad left
+        case "4":
           e.preventDefault();
           handleNavigate(-1);
           break;
         case "ArrowRight":
-        case "6": // Phone keypad right
+        case "6":
           e.preventDefault();
           handleNavigate(1);
           break;
         case "ArrowUp":
-        case "2": // Phone keypad up
+        case "2":
           e.preventDefault();
           cycleView(-1);
           break;
         case "ArrowDown":
-        case "8": // Phone keypad down
+        case "8":
           e.preventDefault();
           cycleView(1);
           break;
         case "Enter":
-        case "5": // Phone keypad center
+        case "5":
           e.preventDefault();
           handleToday();
           break;
@@ -153,48 +151,53 @@ export default function Calendar() {
   }, [handleNavigate, handleToday, cycleView, navigate]);
 
   return (
-    <SettingsProvider>
-      <>
-        <DailyBanner />
-        <div className="min-h-screen bg-background safe-area-inset-top pb-16 md:pb-0">
-          <StatusBar />
-          <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
-            <CalendarHeader
-              currentDate={currentDate}
-              view={view}
-              onViewChange={(v) => navigate(`/${v}`)}
-              onNavigate={handleNavigate}
-              onToday={handleToday}
-            />
+    <>
+      <DailyBanner />
+      <div className="min-h-screen bg-background safe-area-inset-top pb-16 md:pb-0">
+        <StatusBar />
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
+          <CalendarHeader
+            currentDate={currentDate}
+            view={view}
+            onViewChange={(v) => navigate(`/${v}`)}
+            onNavigate={handleNavigate}
+            onToday={handleToday}
+          />
 
-            <div className="mt-2">
-              <AnimatePresence mode="wait" custom={direction}>
-                <motion.div
-                  key={view}
-                  custom={direction}
-                  variants={VIEW_VARIANTS}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                >
-                  {view === "day" && <DayView date={currentDate} />}
-                  {view === "week" && <WeekView date={currentDate} onDateSelect={handleDateSelect} />}
-                  {view === "month" && <MonthView date={currentDate} onDateSelect={handleDateSelect} />}
-                  {view === "year" && <YearView date={currentDate} onDateSelect={handleDateSelect} />}
-                </motion.div>
-              </AnimatePresence>
-            </div>
-
-            {/* Keyboard shortcut hint */}
-            <div className="mt-6 text-center text-[10px] text-muted-foreground font-body opacity-40 hidden md:block">
-              ← → Navigate · ↑ ↓ Change view · Enter = Today · 1=Day 3=Month 9=Year
-            </div>
+          <div className="mt-2">
+            <AnimatePresence mode="wait" custom={direction}>
+              <motion.div
+                key={view}
+                custom={direction}
+                variants={VIEW_VARIANTS}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              >
+                {view === "day" && <DayView date={currentDate} />}
+                {view === "week" && <WeekView date={currentDate} onDateSelect={handleDateSelect} />}
+                {view === "month" && <MonthView date={currentDate} onDateSelect={handleDateSelect} />}
+                {view === "year" && <YearView date={currentDate} onDateSelect={handleDateSelect} />}
+              </motion.div>
+            </AnimatePresence>
           </div>
 
-          <BottomNav />
+          <div className="mt-6 text-center text-[10px] text-muted-foreground font-body opacity-40 hidden md:block">
+            ← → Navigate · ↑ ↓ Change view · Enter = Today · 1=Day 3=Month 9=Year
+          </div>
         </div>
-      </>
+
+        <BottomNav />
+      </div>
+    </>
+  );
+}
+
+export default function Calendar() {
+  return (
+    <SettingsProvider>
+      <CalendarContent />
     </SettingsProvider>
   );
 }
