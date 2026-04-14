@@ -198,8 +198,8 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
             const dayColor = getWeatherInfo(day.code).color;
             const isToday = normalizedDate.toDateString() === todayDate.toDateString();
             const dayLabel = hebrewMode
-              ? DAY_LABELS_HEB[day.date.getDay()]
-              : DAY_LABELS_EN[day.date.getDay()];
+             ? DAY_LABELS_HEB[normalizedDate.getDay()]
+             : DAY_LABELS_EN[normalizedDate.getDay()];
             return (
               <div key={i} className={`flex flex-col items-center gap-1 p-1.5 rounded-lg ${isToday ? "bg-accent/10 border border-accent/20" : "hover:bg-muted/50"}`}>
                 <span className={`text-[10px] font-body font-medium ${isToday ? "text-accent" : "text-muted-foreground"}`}>{dayLabel}</span>
