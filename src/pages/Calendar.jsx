@@ -8,6 +8,7 @@ import MonthView from "@/components/calendar/MonthView";
 import YearView from "@/components/calendar/YearView";
 import StatusBar from "@/components/calendar/StatusBar.jsx";
 import DailyBanner from "@/components/calendar/DailyBanner.jsx";
+import { initPushNotifications, scheduleDailyNotification } from "@/lib/pushNotifications";
 
 const VIEWS = ["day", "week", "month", "year"];
 
@@ -15,6 +16,17 @@ function CalendarApp() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState("month");
   const { showStatusBar } = useSettings();
+
+  // Initialize push notifications when running as native Android/iOS app
+  useEffect(() => {
+    initPushNotifications();
+    scheduleDailyNotification({
+      title: "Jewish Calendar",
+      body: "Tap to see today's Hebrew date, Zmanim & weather",
+      hour: 8,
+      minute: 0,
+    });
+  }, []);
 
   const handleNavigate = useCallback((direction) => {
     setCurrentDate((prev) => {

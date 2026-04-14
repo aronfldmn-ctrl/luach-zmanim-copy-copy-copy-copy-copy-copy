@@ -1,0 +1,18 @@
+{
+  "appId": "com.jewishcalendar.app",
+  "appName": "Jewish Calendar",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_icon_config_sample",
+      "iconColor": "#3B4F8A",
+      "sound": "beep.wav"
+    }
+  }
+}
