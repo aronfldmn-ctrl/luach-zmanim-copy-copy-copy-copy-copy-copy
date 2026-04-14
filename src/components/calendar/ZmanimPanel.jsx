@@ -51,7 +51,7 @@ export default function ZmanimPanel({ date }) {
             {format(date, "EEEE, MMM d")} · {hebrewDate.displayEn}
           </p>
           <p className="text-[10px] text-muted-foreground font-body opacity-60 mt-0.5">
-            {t("via Hebcal · KosherJava", HEB_UI.via_hebcal)}
+            {t("via KosherJava (local)", "מקור: KosherJava")}
           </p>
         </div>
         {(holiday || shabbat) && (
