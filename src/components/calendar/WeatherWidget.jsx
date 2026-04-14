@@ -56,13 +56,22 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
     // Try cache first
     const cached = getFromCache(cacheKey);
     if (cached) {
-      // Restore dates from cached strings
+      // Restore dates from cached strings or date fields
       const restored = {
         ...cached,
-        daily: (cached.daily || []).map(day => ({
-          ...day,
-          date: day.dateStr ? new Date(day.dateStr + "T12:00:00") : new Date(),
-        })),
+        daily: (cached.daily || []).map(day => {
+          let date;
+          if (day.dateStr) {
+            date = new Date(day.dateStr + "T12:00:00");
+          } else if (day.date instanceof Date) {
+            date = day.date;
+          } else if (typeof day.date === 'string') {
+            date = new Date(day.date);
+          } else {
+            date = new Date();
+          }
+          return { ...day, date };
+        }),
       };
       setWeather(restored);
       setLoading(false);
@@ -97,13 +106,22 @@ export default function WeatherWidget({ compact = false, weekly = false, view = 
         // Fallback to cache on error
         const fallback = getFromCache(cacheKey);
         if (fallback) {
-          // Restore dates from cached strings
+          // Restore dates from cached strings or date fields
           const restored = {
             ...fallback,
-            daily: (fallback.daily || []).map(day => ({
-              ...day,
-              date: day.dateStr ? new Date(day.dateStr + "T12:00:00") : new Date(),
-            })),
+            daily: (fallback.daily || []).map(day => {
+              let date;
+              if (day.dateStr) {
+                date = new Date(day.dateStr + "T12:00:00");
+              } else if (day.date instanceof Date) {
+                date = day.date;
+              } else if (typeof day.date === 'string') {
+                date = new Date(day.date);
+              } else {
+                date = new Date();
+              }
+              return { ...day, date };
+            }),
           };
           setWeather(restored);
         } else {
