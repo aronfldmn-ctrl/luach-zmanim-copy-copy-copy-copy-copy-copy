@@ -79,8 +79,8 @@ Deno.serve(async (req) => {
               masechetaHeb: masechetaHeb,
               daf: daf,
               amud: amud || 'a', // Default to 'a' if not specified
-              title: `${masechta} ${daf}${amud || 'a'}`,
-              titleHeb: `${masechetaHeb} ${daf}${amud || 'a'}`
+              title: `${masechta} ${daf}`,
+              titleHeb: `${masechetaHeb} ${daf}`
             }
           });
         }
