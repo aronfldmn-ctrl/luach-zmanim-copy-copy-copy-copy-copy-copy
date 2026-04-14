@@ -101,6 +101,7 @@ export const HOLIDAY_CATEGORIES_MAP = {
   // Yom Tov (major holidays)
   'Erev Pesach': HOLIDAY_CATEGORIES.YOM_TOV,
   'Pesach': HOLIDAY_CATEGORIES.YOM_TOV,
+  'Pesach (8th day)': HOLIDAY_CATEGORIES.YOM_TOV,
   'Chol HaMoed Pesach': HOLIDAY_CATEGORIES.YOM_TOV,
   'Erev Shavuot': HOLIDAY_CATEGORIES.YOM_TOV,
   'Shavuot': HOLIDAY_CATEGORIES.YOM_TOV,
