@@ -14,7 +14,6 @@ export default function PermissionRequester() {
 
   const handleRequestPermissions = async () => {
     try {
-      // Request location permission
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           () => {},
@@ -22,7 +21,6 @@ export default function PermissionRequester() {
         );
       }
 
-      // Request notification permission
       if ("Notification" in window && Notification.permission === "default") {
         await Notification.requestPermission();
       }
