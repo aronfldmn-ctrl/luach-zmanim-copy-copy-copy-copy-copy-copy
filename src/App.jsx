@@ -49,6 +49,7 @@ const AuthenticatedApp = () => {
         <Route path="/" element={<Calendar />} />
         <Route path="/*" element={<Calendar />} />
       </Routes>
+      <Toaster />
     </>
   );
 };
@@ -62,7 +63,6 @@ function App() {
         <AuthProvider>
           <SettingsProvider>
             <AuthenticatedApp />
-            <Toaster />
           </SettingsProvider>
         </AuthProvider>
       </QueryClientProvider>
