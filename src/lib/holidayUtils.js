@@ -26,6 +26,7 @@ export const HOLIDAY_NAMES = {
 
   'Shemini Atzeret': { en: 'Shemini Atzeret', heb: 'שמיני עצרת' },
   'Simchat Torah': { en: 'Simchat Torah', heb: 'שמחת תורה' },
+  'Hoshana Rabah': { en: 'Hoshana Rabah', heb: 'הושענה רבה' },
   'Hanukkah': { en: 'Hanukkah', heb: 'חנוכה' },
   'Chanukah': { en: 'Chanukah', heb: 'חנוכה' },
   'Tu B\'Shevat': { en: 'Tu B\'Shevat', heb: 'ט״ו בשבט' },
@@ -117,6 +118,7 @@ export const HOLIDAY_CATEGORIES_MAP = {
   'Chol HaMoed Sukkot': HOLIDAY_CATEGORIES.YOM_TOV,
   'Shemini Atzeret': HOLIDAY_CATEGORIES.YOM_TOV,
   'Simchat Torah': HOLIDAY_CATEGORIES.YOM_TOV,
+  'Hoshana Rabah': HOLIDAY_CATEGORIES.YOM_TOV,
   
   // Minor
   'Erev Purim': HOLIDAY_CATEGORIES.MINOR,

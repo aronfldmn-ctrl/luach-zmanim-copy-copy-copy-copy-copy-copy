@@ -203,7 +203,8 @@ export function getJewishHolidays(date) {
   if (m === 7 && d === 9) holidays.push("Erev Yom Kippur");
   if (m === 7 && d === 10) holidays.push("Yom Kippur");
   if (m === 7 && d === 14) holidays.push("Erev Sukkot");
-  if (m === 7 && (d === 15 || d === 16 || d === 21)) holidays.push("Sukkot");
+  if (m === 7 && (d === 15 || d === 16)) holidays.push("Sukkot");
+  if (m === 7 && d === 21) holidays.push("Hoshana Rabah");
   if (m === 7 && d >= 17 && d <= 20) holidays.push("Chol HaMoed Sukkot");
   if (m === 7 && d === 22) holidays.push("Shemini Atzeret");
   if (m === 7 && d === 23) holidays.push("Simchat Torah");
