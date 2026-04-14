@@ -22,7 +22,7 @@ function Calendar() {
   const [pullRefresh, setPullRefresh] = useState(0);
   const scrollContainerRef = useRef(null);
   const touchStartRef = useRef(0);
-  const { autoSyncLocation, setLocation } = useSettings();
+  const { autoSyncLocation, setLocation, showStatusBar } = useSettings();
 
   const view = location.pathname.slice(1) || "month";
   const isValidView = VIEWS.includes(view);
@@ -128,7 +128,7 @@ function Calendar() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <StatusBar />
+      {showStatusBar && <StatusBar />}
       <DailyBanner />
 
       <main
