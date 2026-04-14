@@ -3,45 +3,45 @@
 // Each masechta and daf page is fixed by order
 
 const masechtas = [
-  { name: 'Brachot', dafim: 64 },
-  { name: 'Shabbat', dafim: 157 },
-  { name: 'Eruvin', dafim: 105 },
-  { name: 'Pesachim', dafim: 121 },
-  { name: 'Rosh Hashanah', dafim: 35 },
-  { name: 'Yoma', dafim: 88 },
-  { name: 'Sukkah', dafim: 56 },
-  { name: 'Beitzah', dafim: 40 },
-  { name: 'Taanit', dafim: 31 },
-  { name: 'Megillah', dafim: 32 },
-  { name: 'Moed Katan', dafim: 29 },
-  { name: 'Chagigah', dafim: 27 },
-  { name: 'Yevamot', dafim: 122 },
-  { name: 'Ketubot', dafim: 112 },
-  { name: 'Nedarim', dafim: 91 },
-  { name: 'Nazir', dafim: 66 },
-  { name: 'Sotah', dafim: 49 },
-  { name: 'Gittin', dafim: 90 },
-  { name: 'Kiddushin', dafim: 82 },
-  { name: 'Bava Kamma', dafim: 119 },
-  { name: 'Bava Metzia', dafim: 119 },
-  { name: 'Bava Batra', dafim: 176 },
-  { name: 'Sanhedrin', dafim: 113 },
-  { name: 'Makkot', dafim: 24 },
-  { name: 'Shevuot', dafim: 49 },
-  { name: 'Avodah Zarah', dafim: 76 },
-  { name: 'Horayot', dafim: 14 },
-  { name: 'Zevaim', dafim: 120 },
-  { name: 'Menachot', dafim: 110 },
-  { name: 'Chullin', dafim: 142 },
-  { name: 'Bekhorot', dafim: 61 },
-  { name: 'Arachin', dafim: 34 },
-  { name: 'Temurah', dafim: 34 },
-  { name: 'Keritot', dafim: 28 },
-  { name: 'Meilah', dafim: 22 },
-  { name: 'Kinnim', dafim: 4 },
-  { name: 'Tamid', dafim: 9 },
-  { name: 'Midot', dafim: 3 },
-  { name: 'Nida', dafim: 73 }
+  { name: 'Brachot', nameHeb: 'ברכות', dafim: 64 },
+  { name: 'Shabbat', nameHeb: 'שבת', dafim: 157 },
+  { name: 'Eruvin', nameHeb: 'עירובין', dafim: 105 },
+  { name: 'Pesachim', nameHeb: 'פסחים', dafim: 121 },
+  { name: 'Rosh Hashanah', nameHeb: 'ראש השנה', dafim: 35 },
+  { name: 'Yoma', nameHeb: 'יומא', dafim: 88 },
+  { name: 'Sukkah', nameHeb: 'סוכה', dafim: 56 },
+  { name: 'Beitzah', nameHeb: 'ביצה', dafim: 40 },
+  { name: 'Taanit', nameHeb: 'תעניות', dafim: 31 },
+  { name: 'Megillah', nameHeb: 'מגילה', dafim: 32 },
+  { name: 'Moed Katan', nameHeb: 'מועד קטן', dafim: 29 },
+  { name: 'Chagigah', nameHeb: 'חגיגה', dafim: 27 },
+  { name: 'Yevamot', nameHeb: 'יבמות', dafim: 122 },
+  { name: 'Ketubot', nameHeb: 'כתובות', dafim: 112 },
+  { name: 'Nedarim', nameHeb: 'נדרים', dafim: 91 },
+  { name: 'Nazir', nameHeb: 'נזיר', dafim: 66 },
+  { name: 'Sotah', nameHeb: 'סוטה', dafim: 49 },
+  { name: 'Gittin', nameHeb: 'גיטין', dafim: 90 },
+  { name: 'Kiddushin', nameHeb: 'קידושין', dafim: 82 },
+  { name: 'Bava Kamma', nameHeb: 'בבא קמא', dafim: 119 },
+  { name: 'Bava Metzia', nameHeb: 'בבא מציעא', dafim: 119 },
+  { name: 'Bava Batra', nameHeb: 'בבא בתרא', dafim: 176 },
+  { name: 'Sanhedrin', nameHeb: 'סנהדרין', dafim: 113 },
+  { name: 'Makkot', nameHeb: 'מכות', dafim: 24 },
+  { name: 'Shevuot', nameHeb: 'שבועות', dafim: 49 },
+  { name: 'Avodah Zarah', nameHeb: 'עבודה זרה', dafim: 76 },
+  { name: 'Horayot', nameHeb: 'הוריות', dafim: 14 },
+  { name: 'Zevaim', nameHeb: 'זבחים', dafim: 120 },
+  { name: 'Menachot', nameHeb: 'מנחות', dafim: 110 },
+  { name: 'Chullin', nameHeb: 'חולין', dafim: 142 },
+  { name: 'Bekhorot', nameHeb: 'בכורות', dafim: 61 },
+  { name: 'Arachin', nameHeb: 'ערכין', dafim: 34 },
+  { name: 'Temurah', nameHeb: 'תמורה', dafim: 34 },
+  { name: 'Keritot', nameHeb: 'כריתות', dafim: 28 },
+  { name: 'Meilah', nameHeb: 'מעילה', dafim: 22 },
+  { name: 'Kinnim', nameHeb: 'קינים', dafim: 4 },
+  { name: 'Tamid', nameHeb: 'תמיד', dafim: 9 },
+  { name: 'Midot', nameHeb: 'מדות', dafim: 3 },
+  { name: 'Nida', nameHeb: 'נידה', dafim: 73 }
 ];
 
 function calculateDafYomi(date) {
@@ -65,9 +65,11 @@ function calculateDafYomi(date) {
       const amud = dayInCycle % 2 === 0 ? 'a' : 'b';
       return {
         masechta: masechtas[i].name,
+        masechetaHeb: masechtas[i].nameHeb,
         daf: daf,
         amud: amud,
-        title: `${masechtas[i].name} ${daf}${amud}`
+        title: `${masechtas[i].name} ${daf}${amud}`,
+        titleHeb: `${masechtas[i].nameHeb} ${daf}${amud}`
       };
     }
     dayInCycle -= dafCount;
@@ -85,9 +87,11 @@ Deno.serve(async (req) => {
       return Response.json({
         data: {
           masechta: dafYomi.masechta,
+          masechetaHeb: dafYomi.masechetaHeb,
           daf: String(dafYomi.daf),
           amud: dafYomi.amud,
-          title: dafYomi.title
+          title: dafYomi.title,
+          titleHeb: dafYomi.titleHeb
         }
       });
     }
