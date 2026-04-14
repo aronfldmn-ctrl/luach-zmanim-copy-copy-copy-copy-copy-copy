@@ -19,8 +19,8 @@ export const HOLIDAY_NAMES = {
 
   'Yom Kippur': { en: 'Yom Kippur', heb: 'יום הכיפורים' },
 
+  'Erev Sukkot': { en: 'Erev Sukkot', heb: 'ערב סוכות' },
   'Sukkot': { en: 'Sukkot', heb: 'סוכות' },
-
 
   'Shemini Atzeret': { en: 'Shemini Atzeret', heb: 'שמיני עצרת' },
   'Simchat Torah': { en: 'Simchat Torah', heb: 'שמחת תורה' },
@@ -63,6 +63,7 @@ export const HOLIDAY_DESCRIPTIONS = {
   'Yom Kippur': 'Day of Atonement - Major fast day',
   
   // Sukkot
+  'Erev Sukkot': 'Evening before Sukkot - preparation day',
   'Sukkot': 'Feast of Tabernacles (7 days)',
   'Chol HaMoed Sukkot': 'Intermediate days of Sukkot',
   'Lulav & Etrog': 'Sukkot celebration day',
@@ -107,6 +108,7 @@ export const HOLIDAY_CATEGORIES_MAP = {
   'Rosh Hashana': HOLIDAY_CATEGORIES.YOM_TOV,
   'Erev Yom Kippur': HOLIDAY_CATEGORIES.YOM_TOV,
   'Yom Kippur': HOLIDAY_CATEGORIES.YOM_TOV,
+  'Erev Sukkot': HOLIDAY_CATEGORIES.YOM_TOV,
   'Sukkot': HOLIDAY_CATEGORIES.YOM_TOV,
   'Shemini Atzeret': HOLIDAY_CATEGORIES.YOM_TOV,
   'Simchat Torah': HOLIDAY_CATEGORIES.YOM_TOV,
