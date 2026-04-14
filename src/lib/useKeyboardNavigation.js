@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import * as React from 'react';
+const { useEffect } = React;
 
 export function useKeyboardNavigation(handlers) {
   useEffect(() => {
