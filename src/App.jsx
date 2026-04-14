@@ -55,12 +55,12 @@ function App() {
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
-        <Router>
-          <SettingsProvider>
+        <SettingsProvider>
+          <Router>
             <OfflineIndicator />
             <AuthenticatedApp />
-          </SettingsProvider>
-        </Router>
+          </Router>
+        </SettingsProvider>
         <Toaster />
       </QueryClientProvider>
     </AuthProvider>
