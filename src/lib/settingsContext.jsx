@@ -14,19 +14,20 @@ export const ALL_ZMANIM = [
 ];
 
 export function SettingsProvider({ children }) {
+  const [syncZmanimDays, setSyncZmanimDays] = useState(30);
   const [settings, setSettings] = useState({
     location: { lat: 40.7128, lng: -74.0060, name: 'New York', tzid: 'America/New_York' },
     hebrewMode: false,
     celsiusMode: false,
     showWeather: true,
-    syncZmanimDays: 30,
-    setSyncZmanimDays: () => {},
+    syncZmanimDays,
+    setSyncZmanimDays,
     zmanimVisible: { sunrise: true, sunset: true },
     showZmanimSeconds: false,
   });
 
   return (
-    <SettingsContext.Provider value={settings}>
+    <SettingsContext.Provider value={{ ...settings, syncZmanimDays, setSyncZmanimDays }}>
       {children}
     </SettingsContext.Provider>
   );
