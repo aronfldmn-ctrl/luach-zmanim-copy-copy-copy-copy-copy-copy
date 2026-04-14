@@ -130,13 +130,14 @@ export default function MonthView({ date, onDateSelect, onWeekSelect }) {
 
                     {holidays.length > 0 && (
                        <div className="mt-1 space-y-1">
-                         {holidays.filter(Boolean).map((holiday, idx) => 
-                           holiday && holidayFilters[getHolidayCategoryDynamic(holiday)] && (
+                         {holidays.filter(Boolean).map((holiday, idx) => {
+                           const holidayName = typeof holiday === 'string' ? holiday : holiday?.desc || holiday;
+                           return holidayName && holidayFilters[getHolidayCategoryDynamic(holidayName)] && (
                              <div key={idx} className="inline-block">
-                               <HolidayBadge holiday={holiday} compact={true} />
+                               <HolidayBadge holiday={holidayName} compact={true} />
                              </div>
-                           )
-                         )}
+                           );
+                         })}
                        </div>
                      )}
 
