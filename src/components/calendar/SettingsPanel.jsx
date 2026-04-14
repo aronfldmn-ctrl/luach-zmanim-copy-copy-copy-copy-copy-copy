@@ -78,7 +78,8 @@ export default function SettingsPanel() {
   const handleDeleteAccount = async () => {
     if (window.confirm(t("Are you sure? This cannot be undone.", "האם אתה בטוח? לא ניתן לבטל זאת."))) {
       try {
-        await base44.asServiceRole.entities.User.delete(await base44.auth.me().then(u => u.id));
+        const user = await base44.auth.me();
+        await base44.asServiceRole.entities.User.delete(user.id);
         await base44.auth.logout("/");
       } catch (error) {
         alert(t("Error deleting account", "שגיאה במחיקת חשבון"));
